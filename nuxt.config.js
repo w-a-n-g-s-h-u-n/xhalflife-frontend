@@ -33,7 +33,10 @@ export default {
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/stylelint
-    '@nuxtjs/stylelint-module'
+    '@nuxtjs/stylelint-module',
+
+    // TODO 根据环境变量加载不同文件，发布不同版本
+    ['@nuxtjs/dotenv', { filename: '.env.dev' }]
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)

@@ -28,7 +28,16 @@
 </template>
 
 <script>
-export default {}
+export default {
+  onLoad () {
+    console.log('process', process)
+  },
+  data () {
+    return {
+      a: process.env.A
+    }
+  }
+}
 </script>
 
 <style>
