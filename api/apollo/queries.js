@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
-export const STREAM_LIST = gql`
- query streams($first: Int!) {
+export const STREAM_LIST = gql`{
+streams(first: 10) {
     id
     sender
     recipient
@@ -19,4 +19,5 @@ export const STREAM_LIST = gql`
       txhash
     }
   }
+}
  `
