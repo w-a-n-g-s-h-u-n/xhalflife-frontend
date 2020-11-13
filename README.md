@@ -24,3 +24,19 @@ For more detail, refer to yellowpaper of xHalfLife and xVote.
 For xDEX token farmed from XDEX voting pool, ordinary farming pools, and founder teams' fund, any income is rewarded through xHalfLife protocol. We wish the template of money stream can become one of backbone standard in crypto financing world.
 
 xHalfLife is inspired by Sablier Protocol.
+
+## Build Setup
+
+``` bash
+# install dependencies
+$ yarn
+
+# serve with hot reload at localhost:9090
+$ yarn dev
+
+# build for production and launch server
+$ yarn build
+$ yarn start
+
+# generate static project
+$ yarn generate
