@@ -1,10 +1,16 @@
 <template>
-  <div>
-    <Nuxt />
-  </div>
+  <Nuxt />
 </template>
 
 <style>
+html,
+body,
+#__nuxt,
+#__layout,
+.el-container {
+  height: 100%;
+}
+
 html {
   font-family:
     'Source Sans Pro',
