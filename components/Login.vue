@@ -1,7 +1,7 @@
 <template>
-  <el-button :disabled="isMetaMaskConnected" @click="onClick" round>
+  <span :disabled="isMetaMaskConnected" @click="onClick" round>
     {{ isMetaMaskConnected?'MetaMask Connected':'Connect MetaMask' }}
-  </el-button>
+  </span>
 </template>
 
 <script>
