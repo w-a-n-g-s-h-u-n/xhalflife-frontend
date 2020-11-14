@@ -1,12 +1,18 @@
 <template>
-  <el-container>
-    <el-header>
-      <div class="module header">
+  <div class="container">
+    <div class="header">
+      <div class="content">
+        <img class="logo" src="~/assets/logo.png" alt="">
+        <span class="nav-item active">
+          <span class="text">xHalfLife</span>
+          <span class="indicator"></span>
+        </span>
         <Login style="float: right;" />
         <div style="clear: both;" />
       </div>
-    </el-header>
-    <el-main>
+    </div>
+
+    <div class="main">
       <div class="module module-one">
         <div class="card-1">
           {{ stats.totalCount }}
@@ -31,9 +37,9 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-    </el-main>
-    <el-footer>Footer</el-footer>
-  </el-container>
+    </div>
+    <div class="footer">Footer</div>
+  </div>
 </template>
 
 <script>

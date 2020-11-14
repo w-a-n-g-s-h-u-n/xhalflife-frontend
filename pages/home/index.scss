@@ -4,17 +4,59 @@ body {
   background: #1b1c45;
 }
 
-body > .el-container {
+body > .container {
   background: #051840;
   margin-bottom: 40px;
 }
 
-.el-header {
+.header {
   background-color: #161638;
   color: #333;
   text-align: center;
-  line-height: 60px;
-  padding-top: 20px;
+  height: 60px;
+
+  .content {
+    width: 998px;
+    position: relative;
+    margin: 0 auto;
+    height: 100%;
+
+    .logo {
+      width: 110px;
+      height: 30px;
+      position: absolute;
+      left: -110px;
+      top: 15px;
+    }
+
+    .nav-item.active {
+      float: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      height: 33px;
+      margin-top: 18px;
+      margin-left: 50px;
+      width: 80px;
+
+      .text {
+        font-family: pingfangsc-semibold;
+        font-size: 16px;
+        color: #fff;
+        letter-spacing: 0;
+        text-align: center;
+      }
+
+      .indicator {
+        background-image: linear-gradient(136deg, #2bf7dd 0%, #3a8ff7 51%, #da37fa 100%);
+        border-radius: 3px;
+        width: 20px;
+        height: 4px;
+        margin-top: 7px;
+      }
+    }
+  }
 }
 
 .el-footer {
@@ -22,13 +64,6 @@ body > .el-container {
   color: #333;
   text-align: center;
   line-height: 60px;
-}
-
-.el-aside {
-  background-color: #d3dce6;
-  color: #333;
-  text-align: center;
-  line-height: 200px;
 }
 
 .el-main {
