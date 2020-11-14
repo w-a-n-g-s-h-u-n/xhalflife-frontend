@@ -70,9 +70,8 @@ body > .container {
   color: #333;
   text-align: center;
   height: 100%;
-  padding-bottom: 120px;
 
-  .module.crumb {
+  >.crumb {
     height: 60px;
     padding-top: 20px;
     background: transparent;
@@ -83,7 +82,7 @@ body > .container {
     letter-spacing: 0;
   }
 
-  .module-stat {
+  & > .module-stat {
     .card {
       float: left;
       width: 322px;
@@ -125,6 +124,10 @@ body > .container {
       margin-left: 16px;
     }
   }
+
+  & > .module-tabs {
+    margin-top: 30px;
+  }
 }
 
 .footer {
@@ -133,10 +136,6 @@ body > .container {
   text-align: center;
   line-height: 60px;
   height: 120px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
 
   .module {
     background: transparent;

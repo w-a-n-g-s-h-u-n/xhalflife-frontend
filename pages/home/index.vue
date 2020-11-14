@@ -33,7 +33,7 @@
         <div style="clear: both;" />
       </div>
 
-      <div class="module">
+      <div class="module module-tabs">
         <el-tabs type="border-card" tab-position="left">
           <el-tab-pane label="全部">
             <stream-list />
