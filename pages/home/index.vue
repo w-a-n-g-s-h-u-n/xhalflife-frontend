@@ -5,7 +5,7 @@
         <img class="logo" src="~/assets/logo.png" alt="">
         <span class="nav-item active">
           <span class="text">xHalfLife</span>
-          <span class="indicator"></span>
+          <span class="indicator" />
         </span>
         <Login style="float: right;" />
         <div style="clear: both;" />
@@ -13,17 +13,26 @@
     </div>
 
     <div class="main">
-      <div class="module module-one">
-        <div class="card-1">
-          {{ stats.totalCount }}
-        </div>
-        <div class="card-2">
-          {{ stats.xdexLocked }}
-        </div>
-        <div class="card-3">
-          {{ stats.xdexWithdrawed }}
-        </div>
+      <div class="module crumb" >
+        Home
       </div>
+      <div class="module module-stat">
+        <div class="card card-1">
+          <div class="label"> Total Streams</div>
+          <div class="value"> {{ stats.totalCount }}</div>
+
+        </div>
+        <div class="card card-2">
+          <div class="label">XDEX Toatal Locked</div>
+          <div class="value"> {{ stats.xdexLocked | precision18 }}</div>
+        </div>
+        <div class="card card-3">
+          <div class="label">XDEX Withdrawed</div>
+          <div class="value"> {{ stats.xdexWithdrawed | precision18}}</div>
+        </div>
+        <div style="clear: both;" />
+      </div>
+
       <div class="module">
         <el-tabs type="border-card" tab-position="left">
           <el-tab-pane label="全部">
@@ -38,7 +47,12 @@
         </el-tabs>
       </div>
     </div>
-    <div class="footer">Footer</div>
+
+    <div class="footer">
+      <div class="module">
+        Footer
+      </div>
+    </div>
   </div>
 </template>
 

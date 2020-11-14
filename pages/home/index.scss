@@ -2,11 +2,11 @@
 html,
 body {
   background: #1b1c45;
+  font-family: PingFangSC-Semibold;
 }
 
 body > .container {
   background: #051840;
-  margin-bottom: 40px;
 }
 
 .header {
@@ -59,37 +59,53 @@ body > .container {
   }
 }
 
-.el-footer {
-  background: #1b1c45;
-  color: #333;
-  text-align: center;
-  line-height: 60px;
+.module {
+  position: relative;
+  margin: 0 auto;
+  width: 998px;
 }
 
-.el-main {
+.main {
   background-color: #1e2049;
   color: #333;
   text-align: center;
-}
+  height: 100%;
+  padding-bottom: 120px;
 
-.module {
-  position: relative;
-  width: 998px;
-  margin: 0 auto;
-  background: aliceblue;
-  padding: 10px;
+  .module.crumb {
+    height: 60px;
+    padding-top: 20px;
+    background: transparent;
+    text-align: left;
+    //font-family: PingFangSC-Semibold ;
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: 0;
+  }
 
-  &.module-one {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    & > div {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+  .module-stat {
+    .card {
+      float: left;
+      width: 322px;
       height: 105px;
-      width: 30%;
+      padding-left: 25px;
+      padding-top: 25px;
+      padding-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .label {
+        font-size: 15px;
+        color: #fff;
+        letter-spacing: 0;
+      }
+
+      .value {
+        font-size: 28px;
+        color: #fff;
+        letter-spacing: 0;
+      }
     }
 
     .card-1 {
@@ -100,12 +116,30 @@ body > .container {
     .card-2 {
       background-image: linear-gradient(270deg, #e877ae 0%, #7f73f1 100%);
       border-radius: 12px;
+      margin-left: 16px;
     }
 
     .card-3 {
       background-image: linear-gradient(270deg, #2a6ffa 0%, #6617cd 100%);
       border-radius: 12px;
+      margin-left: 16px;
     }
+  }
+}
+
+.footer {
+  background: #1b1c45;
+  color: #333;
+  text-align: center;
+  line-height: 60px;
+  height: 120px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  .module {
+    background: transparent;
   }
 }
 
