@@ -77,8 +77,10 @@
               <stream-list />
             </div>
           </div>
-          <div v-else-if="activeTab=='b'" >
-            <stream-list-mine />
+          <div v-else-if="activeTab=='b'" style="position: absolute; left: 0; top: 0;">
+            <div  style="width: 1138px; height: 100%;">
+              <stream-list-mine />
+            </div>
           </div>
           <div v-else >
             <create-stream-form style="width: 500px; margin: 0 auto;" />

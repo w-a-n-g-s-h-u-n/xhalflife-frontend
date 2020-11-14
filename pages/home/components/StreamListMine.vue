@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="tabs">
       <el-radio-group v-model="current" @change="change">
         <el-radio-button label="send">
           My sent
@@ -14,45 +14,62 @@
     <div>
       <el-table
         :data="curTableData"
-        style="width: 100%;"
+        class="table"
+        :cell-style="cellStyle"
+        :header-cell-style="cellStyle"
       >
         <el-table-column
+          width="50"
           prop="id"
           label="ID"
         />
         <el-table-column
-          prop="recipient"
           label="Recipient"
-        />
-        <el-table-column
-          prop="depositAmount"
-          label="Deposited"
-        />
-        <el-table-column
-          prop="unlockRatio"
-          label="Withdrawable"
-        />
-        <el-table-column
-          prop="startBlock"
-          label="Start Block"
-        />
+          style="background: #272958;"
+        >
+          <template slot-scope="scope">
+            <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="Deposited" width="100">
+          <template slot-scope="scope">
+            <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="Withdrawable">
+          <template slot-scope="scope">
+            <span :title="scope.row.unlockRatio">{{ scope.row.startBlock | precision18 }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="Start Block" width="150">
+          <template slot-scope="scope">
+            <span :title="scope.row.startBlock">#{{ scope.row.startBlock }}</span>
+          </template>
+        </el-table-column>
 
         <el-table-column
           prop="startBlock"
           label="Status"
         />
-        <el-table-column
-          prop="sender"
-          label="Sender"
-        />
-        <el-table-column
-          prop="timestamp"
-          label="Date"
-        />
+        <el-table-column label="Sender" width="100">
+          <template slot-scope="scope">
+            <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="" fixed="right" width="100">
+          <template slot-scope="scope">
+            <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
+          </template>
+        </el-table-column>
+
         <el-table-column
           fixed="right"
           label=""
-          width="120"
+          width="100"
         >
           <template slot-scope="scope">
             <el-button :id="scope.id" size="small" round>
@@ -62,6 +79,7 @@
         </el-table-column>
       </el-table>
       <el-pagination
+        class="pagination"
         :current-page.sync="currentPage"
         :page-size="100"
         layout="prev, pager, next, jumper"
@@ -132,11 +150,27 @@ export default {
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    cellStyle (obj) {
+      console.log(obj)
+      if (obj.columnIndex === 7 || obj.columnIndex === 8) {
+        return 'background-color:#1e2049;border-bottom-color:#2E2F5C;color:#7E7F9C;'
+      } else {
+        return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
+      }
     }
   }
 }
 </script>
 
-<!--<style scoped>-->
+<style scoped>
+  .tabs {
+    width: 938px;
+    margin-bottom: 10px;
+  }
 
-<!--</style>-->
+  .pagination {
+    width: 938px;
+    margin-top: 20px;
+  }
+</style>
