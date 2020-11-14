@@ -9,34 +9,46 @@
         label="ID"
       />
       <el-table-column
-        prop="recipient"
         label="Recipient"
-      />
-      <el-table-column
-        prop="depositAmount"
-        label="Deposited"
-      />
+      >
+        <template slot-scope="scope">
+          <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Deposited">
+        <template slot-scope="scope">
+          <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="unlockRatio"
         label="Withdrawable"
       />
-      <el-table-column
-        prop="startBlock"
-        label="Start Block"
-      />
+
+      <el-table-column label="Start Block">
+        <template slot-scope="scope">
+          <span :title="scope.row.startBlock">#{{ scope.row.startBlock }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column
         prop="startBlock"
         label="Status"
       />
-      <el-table-column
-        prop="sender"
-        label="Sender"
-      />
-      <el-table-column
-        prop="timestamp"
-        label="Date"
-      />
+      <el-table-column label="Sender">
+        <template slot-scope="scope">
+          <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Date">
+        <template slot-scope="scope">
+          <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         fixed="right"
         label=""
