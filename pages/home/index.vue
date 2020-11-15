@@ -44,19 +44,19 @@
         <div style="clear: both;" />
       </div>
 
-<!--      <div class="module module-tabs">-->
-<!--        <el-tabs type="border-card" tab-position="left">-->
-<!--          <el-tab-pane label="全部">-->
-<!--            <stream-list />-->
-<!--          </el-tab-pane>-->
-<!--          <el-tab-pane label="我的">-->
-<!--            <stream-list-mine />-->
-<!--          </el-tab-pane>-->
-<!--          <el-tab-pane label="创建">-->
-<!--            <create-stream-form />-->
-<!--          </el-tab-pane>-->
-<!--        </el-tabs>-->
-<!--      </div>-->
+      <!--      <div class="module module-tabs">-->
+      <!--        <el-tabs type="border-card" tab-position="left">-->
+      <!--          <el-tab-pane label="全部">-->
+      <!--            <stream-list />-->
+      <!--          </el-tab-pane>-->
+      <!--          <el-tab-pane label="我的">-->
+      <!--            <stream-list-mine />-->
+      <!--          </el-tab-pane>-->
+      <!--          <el-tab-pane label="创建">-->
+      <!--            <create-stream-form />-->
+      <!--          </el-tab-pane>-->
+      <!--        </el-tabs>-->
+      <!--      </div>-->
 
       <div class="module module-tabs">
         <div class="navs">
@@ -71,18 +71,18 @@
             新建
           </div>
         </div>
-        <div class="content" >
+        <div class="content">
           <div v-if="activeTab=='a'" style="position: absolute; left: 0; top: 0;">
-            <div  style="width: 1138px; height: 100%;">
+            <div style="width: 1138px; height: 100%;">
               <stream-list />
             </div>
           </div>
           <div v-else-if="activeTab=='b'" style="position: absolute; left: 0; top: 0;">
-            <div  style="width: 1138px; height: 100%;">
+            <div style="width: 1138px; height: 100%;">
               <stream-list-mine />
             </div>
           </div>
-          <div v-else >
+          <div v-else>
             <create-stream-form style="width: 500px; margin: 0 auto;" />
           </div>
         </div>
@@ -90,11 +90,11 @@
       </div>
     </div>
 
-    <div class="footer">
-      <div class="module">
-        Footer
-      </div>
-    </div>
+    <!--    <div class="footer">-->
+    <!--      <div class="module">-->
+    <!--        Footer-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 </template>
 
@@ -120,7 +120,10 @@ export default {
         // xdexLocked: "1751482191135041897338"
         // xdexWithdrawed: "31374951721958102662"
       },
-      activeTab: 'a'
+      activeTab: 'a',
+
+      drawer: false,
+      direction: 'ttb'
     }
   },
   mounted () {

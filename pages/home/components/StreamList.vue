@@ -1,8 +1,8 @@
 <template>
   <div style="width: 100%;">
     <el-table
-      :data="tableData"
       v-loading="loading"
+      :data="tableData"
       class="table"
       :cell-style="cellStyle"
       :header-cell-style="cellStyle"
@@ -61,9 +61,12 @@
         width="100"
       >
         <template slot-scope="scope">
-          <el-button :id="scope.id" size="small" round>
-            View Detail
-          </el-button>
+          <NuxtLink to="/detail">
+            <el-button :id="scope.id" size="small" round @click="drawer = true">
+              View Detail
+            </el-button>
+          </NuxtLink>
+
         </template>
       </el-table-column>
     </el-table>

@@ -13,6 +13,7 @@
 
     <div>
       <el-table
+        v-loading="loading"
         :data="curTableData"
         class="table"
         :cell-style="cellStyle"
@@ -133,15 +134,19 @@ export default {
     },
     // TODO 分页
     async getListBySender (type = 'refresh') {
+      this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: { first: 10 } })
       console.log('StreamList send', ret)
       this.sendInfo.list = ret.data.streams
+      this.loading = false
       return ret
     },
     async getListByRecipient (type = 'refresh') {
+      this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: { first: 10 } })
       console.log('StreamList receive', ret)
       this.receiveInfo.list = ret.data.streams
+      this.loading = false
       return ret
     },
 

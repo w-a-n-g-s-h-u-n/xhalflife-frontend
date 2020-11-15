@@ -162,6 +162,7 @@ export default {
           const approveTx = await contractXDEX.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
           const approveResult = await approveTx.wait()
           console.log('approveResult', approveResult)
+          // this.$message('Please wait MetaMast to approve')
         }
 
         // 提交
@@ -169,6 +170,7 @@ export default {
         console.log('this.formData', { recipient, depositAmount, startBlock, kBlock, unlockRatio })
         const tx = await contract.createStream(recipient, depositAmount, startBlock, kBlock, unlockRatio)
         const createStreamResult = await tx.wait()
+        // this.$message('Please wait MetaMast to create the stream')
         console.log('createStreamResult', createStreamResult)
       } catch (e) {
         console.error(e)
