@@ -1,7 +1,13 @@
 <template>
-  <span :disabled="isMetaMaskConnected" @click="onClick" round>
-    {{ isMetaMaskConnected?'MetaMask Connected':'Connect MetaMask' }}
-  </span>
+  <el-button v-if="isMetaMaskConnected" class="connected" size="mini" type="success">
+    MetaMask Connected
+  </el-button>
+  <el-button v-else round @click="onClick">
+    Connect MetaMask
+  </el-button>
+<!--  <el-button v-else :class="{'connected':isMetaMaskConnected}" round @click="onClick">-->
+<!--    {{ isMetaMaskConnected?'MetaMask Connected':'Connect MetaMask' }}-->
+<!--  </el-button>-->
 </template>
 
 <script>
@@ -35,5 +41,9 @@ export default {
 }
 </script>
 
-<!--<style scoped>-->
-<!--</style>-->
+<style scoped>
+  .connected {
+    color: green;
+    margin-top: 15px;
+  }
+</style>
