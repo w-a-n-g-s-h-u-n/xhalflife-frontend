@@ -2,6 +2,7 @@
   <div style="width: 100%;">
     <el-table
       :data="tableData"
+      v-loading="loading"
       class="table"
       :cell-style="cellStyle"
       :header-cell-style="cellStyle"
@@ -101,7 +102,8 @@ __typename: (...)
   data () {
     return {
       tableData: [],
-      page: 1
+      page: 1,
+      loading: false
     }
   },
   mounted () {
@@ -110,9 +112,12 @@ __typename: (...)
   },
   methods: {
     async getList () {
+      this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: 10 } })
       console.log('StreamList ret', ret)
       this.tableData = ret.data.streams
+      this.loading = false
+
       return ret
     },
     handleSizeChange (val) {
