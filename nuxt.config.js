@@ -27,7 +27,6 @@ export default {
     '@/plugins/element-ui',
     '@/plugins/apollo',
     '@/plugins/app-mounted.js',
-    '@/plugins/error.js',
     '@/plugins/vue-filters.js'
   ],
 

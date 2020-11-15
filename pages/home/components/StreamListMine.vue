@@ -73,9 +73,11 @@
           width="100"
         >
           <template slot-scope="scope">
-            <el-button :id="scope.id" size="small" round>
-              View Detail
-            </el-button>
+            <NuxtLink to="/detail">
+              <el-button :id="scope.id" size="small" round>
+                View Detail
+              </el-button>
+            </NuxtLink>
           </template>
         </el-table-column>
       </el-table>
