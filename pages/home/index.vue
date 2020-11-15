@@ -1,39 +1,101 @@
 <template>
-  <el-container>
-    <el-header>
-      <div class="module header">
+  <div class="container">
+    <div class="header">
+      <div class="content">
+        <img class="logo" src="~/assets/logo.png" alt="">
+        <span class="nav-item active">
+          <span class="text">xHalfLife</span>
+          <span class="indicator" />
+        </span>
         <Login style="float: right;" />
         <div style="clear: both;" />
       </div>
-    </el-header>
-    <el-main>
-      <div class="module module-one">
-        <div class="card-1">
-          {{ stats.totalCount }}
-        </div>
-        <div class="card-2">
-          {{ stats.xdexLocked }}
-        </div>
-        <div class="card-3">
-          {{ stats.xdexWithdrawed }}
-        </div>
+    </div>
+
+    <div class="main">
+      <div class="module crumb">
+        Home
       </div>
-      <div class="module">
-        <el-tabs type="border-card" tab-position="left">
-          <el-tab-pane label="全部">
-            <stream-list />
-          </el-tab-pane>
-          <el-tab-pane label="我的">
-            <stream-list-mine />
-          </el-tab-pane>
-          <el-tab-pane label="创建">
-            <create-stream-form />
-          </el-tab-pane>
-        </el-tabs>
+      <div class="module module-stat">
+        <div class="card card-1">
+          <div class="label">
+            Total Streams
+          </div>
+          <div class="value">
+            {{ stats.totalCount }}
+          </div>
+        </div>
+        <div class="card card-2">
+          <div class="label">
+            XDEX Toatal Locked
+          </div>
+          <div class="value">
+            {{ stats.xdexLocked | precision18 }}
+          </div>
+        </div>
+        <div class="card card-3">
+          <div class="label">
+            XDEX Withdrawed
+          </div>
+          <div class="value">
+            {{ stats.xdexWithdrawed | precision18 }}
+          </div>
+        </div>
+        <div style="clear: both;" />
       </div>
-    </el-main>
-    <el-footer>Footer</el-footer>
-  </el-container>
+
+      <!--      <div class="module module-tabs">-->
+      <!--        <el-tabs type="border-card" tab-position="left">-->
+      <!--          <el-tab-pane label="全部">-->
+      <!--            <stream-list />-->
+      <!--          </el-tab-pane>-->
+      <!--          <el-tab-pane label="我的">-->
+      <!--            <stream-list-mine />-->
+      <!--          </el-tab-pane>-->
+      <!--          <el-tab-pane label="创建">-->
+      <!--            <create-stream-form />-->
+      <!--          </el-tab-pane>-->
+      <!--        </el-tabs>-->
+      <!--      </div>-->
+
+      <div class="module module-tabs">
+        <div class="navs">
+          <div class="nav" :class="{'active':activeTab=='a'}" @click="onSwitchTab('a')">
+            全部
+          </div>
+          <div class="nav" :class="{'active':activeTab=='b'}" @click="onSwitchTab('b')">
+            我的
+          </div>
+
+          <div class="nav" :class="{'active':activeTab=='c'}" @click="onSwitchTab('c')">
+            新建
+          </div>
+        </div>
+        <div class="content">
+          <div v-if="activeTab=='a'" style="position: absolute; left: 0; top: 0;">
+            <div style="width: 1138px; height: 100%;">
+              <stream-list />
+            </div>
+          </div>
+          <div v-else-if="activeTab=='b'" style="position: absolute; left: 0; top: 0;">
+            <div style="width: 1138px; height: 100%;">
+              <stream-list-mine />
+            </div>
+          </div>
+          <div v-else>
+            <create-stream-form style="width: 500px; margin: 0 auto;" />
+          </div>
+        </div>
+        <div style="clear: both;" />
+      </div>
+    </div>
+
+    <!--    <div class="footer">-->
+    <!--      <div class="module">-->
+    <!--        Footer-->
+    <!--      </div>-->
+    <!--    </div>-->
+  </div>
 </template>
 
 <script>
@@ -57,7 +119,11 @@ export default {
         // totalCount: "4"
         // xdexLocked: "1751482191135041897338"
         // xdexWithdrawed: "31374951721958102662"
-      }
+      },
+      activeTab: 'a',
+
+      drawer: false,
+      direction: 'ttb'
     }
   },
   mounted () {
@@ -79,6 +145,12 @@ export default {
     // const b2 = await XHalfLifeContract.balanceOf('0xc3bcc607335ae9EA59736700A87C1E3bc0ec32D9')
   },
   methods: {
+    onSwitchTab (v) {
+      console.log('onSwitchTab', v)
+      this.$nextTick(() => {
+        this.activeTab = v
+      })
+    },
     async getStreamStats () {
       const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA })
       console.log('getStreamStats', ret)

@@ -7,12 +7,13 @@ html,
 body,
 #__nuxt,
 #__layout,
-.el-container {
+.container {
   height: 100%;
 }
 
 html {
   font-family:
+    'PingFangSC-Semibold'
     'Source Sans Pro',
     -apple-system,
     BlinkMacSystemFont,
