@@ -15,5 +15,5 @@ Vue.filter('date', function (v) {
 Vue.filter('precision18', function (v) {
   if (!v || isNaN(v)) { return '' }
   const n = v / 10000000000000000
-  return n
+  return n.toFixed(2)
 })
