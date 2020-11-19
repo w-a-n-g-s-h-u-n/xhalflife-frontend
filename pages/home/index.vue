@@ -73,12 +73,12 @@
         </div>
         <div class="content">
           <div v-if="activeTab=='a'" style="position: absolute; left: 0; top: 0;">
-            <div style="width: 1138px; height: 100%;">
+            <div style=" height: 100%;">
               <stream-list />
             </div>
           </div>
           <div v-else-if="activeTab=='b'" style="position: absolute; left: 0; top: 0;">
-            <div style="width: 1138px; height: 100%;">
+            <div style=" height: 100%;">
               <stream-list-mine />
             </div>
           </div>

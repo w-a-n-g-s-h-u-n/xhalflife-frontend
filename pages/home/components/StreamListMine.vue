@@ -41,7 +41,7 @@
 
         <el-table-column label="Withdrawable">
           <template slot-scope="scope">
-            <span :title="scope.row.unlockRatio">{{ scope.row.startBlock | precision18 }}</span>
+            <span :title="scope.row.withdrawable">{{ (detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable) | precision18 }}</span>
           </template>
         </el-table-column>
 
@@ -76,8 +76,10 @@
             <NuxtLink to="/detail">
               <el-button :id="scope.id" size="small" round>
                 View Detail
+                <stream-balance :id="scope.row.id" :row="scope.row" />
               </el-button>
             </NuxtLink>
+            <stream-balance :id="scope.id" />
           </template>
         </el-table-column>
       </el-table>
@@ -96,6 +98,7 @@
 
 <script>
 import { STREAM_LIST_BY_SENDER, STREAM_LIST_BY_RECIPIENT } from '@/api/apollo/queries'
+import { mapState } from 'vuex'
 
 export default {
   name: 'StreamListMine',
@@ -103,20 +106,31 @@ export default {
     return {
       current: 'receive',
       sendInfo: {
-        list: [],
+        // list: [],
         page: 1,
         total: 1000
       },
       receiveInfo: {
-        list: [],
+        // list: [],
         page: 1,
         total: 1000
       }
     }
   },
   computed: {
+    ...mapState({
+      MySentList (state) {
+        return state.MySentList
+      },
+      myReceivedList (state) {
+        return state.myReceivedList
+      },
+      detailCache (state) {
+        return state.detailCache
+      }
+    }),
     curTableData () {
-      return this.current === 'send' ? this.sendInfo.list : this.receiveInfo.list
+      return this.current === 'send' ? this.MySentList : this.myReceivedList
     },
     currentPage () {
       return this.current === 'send' ? this.sendInfo.page : this.receiveInfo.page
@@ -139,7 +153,8 @@ export default {
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: { first: 10 } })
       console.log('StreamList send', ret)
-      this.sendInfo.list = ret.data.streams
+      // this.sendInfo.list = ret.data.streams
+      this.$store.commit('updateSteamList', { key: 'MySentList', value: ret.data.streams })
       this.loading = false
       return ret
     },
@@ -147,8 +162,11 @@ export default {
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: { first: 10 } })
       console.log('StreamList receive', ret)
-      this.receiveInfo.list = ret.data.streams
+      // this.receiveInfo.list = ret.data.streams
+      this.$store.commit('updateSteamList', { key: 'myReceivedList', value: ret.data.streams })
+
       this.loading = false
+
       return ret
     },
 
@@ -159,7 +177,6 @@ export default {
       console.log(`当前页: ${val}`)
     },
     cellStyle (obj) {
-      console.log(obj)
       if (obj.columnIndex === 7 || obj.columnIndex === 8) {
         return 'background-color:#1e2049;border-bottom-color:#2E2F5C;color:#7E7F9C;'
       } else {

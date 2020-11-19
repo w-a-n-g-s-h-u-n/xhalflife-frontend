@@ -2,7 +2,7 @@
   <div style="width: 100%;">
     <el-table
       v-loading="loading"
-      :data="tableData"
+      :data="homeList"
       class="table"
       :cell-style="cellStyle"
       :header-cell-style="cellStyle"
@@ -29,7 +29,7 @@
 
       <el-table-column label="Withdrawable">
         <template slot-scope="scope">
-          <span :title="scope.row.unlockRatio">{{ scope.row.startBlock | precision18 }}</span>
+          <span :title="scope.row.withdrawable">{{ (detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable) | precision18 }}</span>
         </template>
       </el-table-column>
 
@@ -62,11 +62,11 @@
       >
         <template slot-scope="scope">
           <NuxtLink to="/detail">
-            <el-button :id="scope.id" size="small" round @click="drawer = true">
+            <el-button :id="scope.row.id" size="small" round @click="drawer = true">
               View Detail
+              <stream-balance :id="scope.row.id" :row="scope.row" />
             </el-button>
           </NuxtLink>
-
         </template>
       </el-table-column>
     </el-table>
@@ -84,6 +84,8 @@
 
 <script>
 import { STREAM_LIST } from '@/api/apollo/queries'
+import { mapState } from 'vuex'
+
 export default {
   name: 'StreamList',
   // fetch () {
@@ -104,12 +106,20 @@ __typename: (...)
   * */
   data () {
     return {
-      tableData: [],
       page: 1,
       loading: false
     }
   },
-  mounted () {
+
+  computed: mapState({
+    homeList (state) {
+      return state.homeList
+    },
+    detailCache (state) {
+      return state.detailCache
+    }
+  }),
+  created () {
     console.log('StreamList mounted')
     this.getList()
   },
@@ -117,10 +127,9 @@ __typename: (...)
     async getList () {
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: 10 } })
-      console.log('StreamList ret', ret)
-      this.tableData = ret.data.streams
+      // console.log('StreamList ret', ret)
+      this.$store.commit('updateSteamList', { key: 'homeList', value: ret.data.streams })
       this.loading = false
-
       return ret
     },
     handleSizeChange (val) {
@@ -130,7 +139,6 @@ __typename: (...)
       console.log(`当前页: ${val}`)
     },
     cellStyle (obj) {
-      console.log(obj)
       if (obj.columnIndex === 7 || obj.columnIndex === 8) {
         return 'background-color:#1e2049;border-bottom-color:#2E2F5C;color:#7E7F9C;'
       } else {
