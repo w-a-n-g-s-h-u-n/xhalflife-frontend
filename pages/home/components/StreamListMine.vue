@@ -41,7 +41,7 @@
 
         <el-table-column label="Withdrawable">
           <template slot-scope="scope">
-            <span :title="scope.row.unlockRatio">{{ scope.row.startBlock | precision18 }}</span>
+            <span :title="scope.row.withdrawable">{{ (detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable) | precision18 }}</span>
           </template>
         </el-table-column>
 
@@ -76,6 +76,7 @@
             <NuxtLink to="/detail">
               <el-button :id="scope.id" size="small" round>
                 View Detail
+                <stream-balance :id="scope.row.id" :row="scope.row" />
               </el-button>
             </NuxtLink>
             <stream-balance :id="scope.id" />
@@ -123,6 +124,9 @@ export default {
       },
       myReceivedList (state) {
         return state.myReceivedList
+      },
+      detailCache (state) {
+        return state.detailCache
       }
     }),
     curTableData () {
