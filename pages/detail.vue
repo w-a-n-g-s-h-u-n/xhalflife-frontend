@@ -13,10 +13,15 @@
     </div>
 
     <div class="module">
-      <div class="actions">
-        <div> ID：1</div>
+      <div class="breadcrumb">
+        xHalfLife <span><i class="el-icon-right" /></span> Detail
+      </div>
+      <div class="actions-wrap">
+        <div class="detail-id">
+          <span>ID：{{ detail.id }}</span>
+        </div>
 
-        <div>
+        <div class="actions">
           <el-button type="primary">
             WithDraw
           </el-button>
@@ -27,45 +32,56 @@
       </div>
       <div class="detail-cards">
         <div class="left">
-          <el-card class="card" shadow="always">
-            <div slot="header">
+          <div class="card" shadow="always">
+            <div class="header">
               Recipent
             </div>
-            729 XDEX
-          </el-card>
-          <el-card class="card" shadow="always">
-            <div slot="header">
+            <div class="content">
+              729 XDEX
+            </div>
+          </div>
+          <div class="card" shadow="always">
+            <div class="header">
               Withdrawable
             </div>
-            101 XDEX
-          </el-card>
+            <div class="content">
+              101 XDEX
+            </div>
+          </div>
         </div>
         <div class="right">
-          <el-card class="card" shadow="always">
-            <div slot="header">
+          <div class="header">
+            <div class="title">
               DATE
             </div>
-            08 Jan 2019
-          </el-card>
-          <el-card class="card" shadow="always">
-            <div slot="header">
-              Withdrawable
+            <div class="status">STREAMING</div>
+          </div>
+          <div class="part1 block-info">
+            <div class="item item1">
+              <div class="label">StartBlock </div>
+              <div class="value">#11189412 </div>
             </div>
-            AMOUNT
-          </el-card>
-          <el-card class="card" shadow="always">
-            <div slot="header">
-              Receiver
+            <div class="item item2">
+              <div class="label">Unlock Ratio </div>
+              <div class="value">0.1%</div>
             </div>
-            0xd0A1...029C
-          </el-card>
-          <el-card class="card" shadow="always">
-            <div slot="header">
-              TRX ID
+            <div class="item item3">
+              <div class="label">Unlock K </div>
+              <div class="value">40</div>
             </div>
-            0xd0A1...029C
-          </el-card>
+          </div>
+          <div class="part2 sender item">
+            <div class="label">Sender </div>
+            <div class="value">0xCF5bECb7245E2e6eE2E092F0BD63F6Bd79eF19Fe</div>
+          </div>
+          <div class=" part3 recipent item">
+            <div class="label">Recipent </div>
+            <div class="value">0xCF5bECb7245E2e6eE2E092F0BD63F6Bd79eF19Fe</div>
+          </div>
         </div>
+      </div>
+      <div class="last-activity">
+
       </div>
     </div>
   </div>
@@ -73,17 +89,30 @@
 
 <script>
 import { STREAM_FUNDS_BY_STREAMID } from '@/api/apollo/queries'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Detail',
   data () {
     return {
-      id: 1
+      id: 0,
+      detail: {}
     }
   },
+  computed: {
+    ...mapState({
+      detailCache (state) {
+        return state.detailCache
+      }
+    })
+  },
   mounted () {
-    console.log('Home mounted')
-    this.getData()
+    console.log('Home mounted', this.$route)
+    const id = this.$route.query && this.$route.query.id
+    this.id = id
+    this.detail = this.detailCache[id]
+    // this.getData()
+    console.log(this.detail)
   },
   methods: {
     async getData () {
@@ -97,44 +126,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
   @import "~/pages/home/index.scss";
-
-  .actions {
-    display: flex;
-    justify-content: space-around;
-    margin: 30px;
-  }
-
-  .card {
-    margin: 5px;
-  }
-
-  .detail-cards {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-
-    .left {
-      display: flex;
-      flex-direction: column;
-      width: 320px;
-
-      .card {
-        width: 300px;
-      }
-    }
-
-    .right {
-      width: 670px;
-      display: flex;
-      flex-wrap: wrap;
-
-      .card {
-        width: 300px;
-      }
-    }
-  }
-
+  @import "~/pages/detail.scss";
 </style>

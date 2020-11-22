@@ -61,7 +61,7 @@
         width="100"
       >
         <template slot-scope="scope">
-          <NuxtLink to="/detail">
+          <NuxtLink :to="`/detail?id=${scope.row.id}`">
             <el-button :id="scope.row.id" size="small" round @click="drawer = true">
               View Detail
               <stream-balance :id="scope.row.id" :row="scope.row" />
