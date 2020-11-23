@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     status () {
-      let value = 'WAITING'
+      let value = 'LOADING'
       console.log('startBlock, currentBlock, remaining', this.startBlock, this.currentBlock, this.remaining)
 
       if (this.startBlock && this.currentBlock && this.remaining) {
@@ -30,6 +30,8 @@ export default {
           } else {
             value = 'STREAMING'
           }
+        } else {
+          value = 'WAITING'
         }
       }
       return value
