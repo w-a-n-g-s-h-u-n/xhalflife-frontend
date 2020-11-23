@@ -34,10 +34,10 @@
         <div class="left">
           <div class="card" shadow="always">
             <div class="header">
-              Recipent
+              Remaining
             </div>
             <div class="content">
-              729 XDEX
+              {{ detail.remaining | precision18 }}XDEX
             </div>
           </div>
           <div class="card" shadow="always">
@@ -45,7 +45,7 @@
               Withdrawable
             </div>
             <div class="content">
-              101 XDEX
+              {{ detail.withdrawable | precision18 }} XDEX
             </div>
           </div>
         </div>
@@ -54,35 +54,59 @@
             <div class="title">
               DATE
             </div>
-            <div class="status">STREAMING</div>
+            <div class="status">
+              <stream-status
+                :start-block="detail.startBlock"
+                :current-block="blockNumber"
+                :remaining="detail.remaining"
+              />
+            </div>
           </div>
           <div class="part1 block-info">
             <div class="item item1">
-              <div class="label">StartBlock </div>
-              <div class="value">#11189412 </div>
+              <div class="label">
+                StartBlock
+              </div>
+              <div class="value">
+                #{{ detail.startBlock }}
+              </div>
             </div>
             <div class="item item2">
-              <div class="label">Unlock Ratio </div>
-              <div class="value">0.1%</div>
+              <div class="label">
+                Unlock Ratio
+              </div>
+              <div class="value">
+                {{ detail.unlockRatio| precision18 }}%
+              </div>
             </div>
             <div class="item item3">
-              <div class="label">Unlock K </div>
-              <div class="value">40</div>
+              <div class="label">
+                Unlock K
+              </div>
+              <div class="value">
+                {{ detail.kBlock }}
+              </div>
             </div>
           </div>
           <div class="part2 sender item">
-            <div class="label">Sender </div>
-            <div class="value">0xCF5bECb7245E2e6eE2E092F0BD63F6Bd79eF19Fe</div>
+            <div class="label">
+              Sender
+            </div>
+            <div class="value">
+              {{ detail.sender }}
+            </div>
           </div>
           <div class=" part3 recipent item">
-            <div class="label">Recipent </div>
-            <div class="value">0xCF5bECb7245E2e6eE2E092F0BD63F6Bd79eF19Fe</div>
+            <div class="label">
+              Recipent
+            </div>
+            <div class="value">
+              {{ detail.recipient }}
+            </div>
           </div>
         </div>
       </div>
-      <div class="last-activity">
-
-      </div>
+      <div class="last-activity" />
     </div>
   </div>
 </template>
@@ -90,12 +114,14 @@
 <script>
 import { STREAM_FUNDS_BY_STREAMID } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
+import { getProvider } from '@/api/contract/ethers'
 
 export default {
   name: 'Detail',
   data () {
     return {
       id: 0,
+      blockNumber: 0,
       detail: {}
     }
   },
@@ -106,15 +132,21 @@ export default {
       }
     })
   },
-  mounted () {
+  async mounted () {
     console.log('Home mounted', this.$route)
     const id = this.$route.query && this.$route.query.id
     this.id = id
     this.detail = this.detailCache[id]
     // this.getData()
     console.log(this.detail)
+    this.blockNumber = await this.getBlockNumber()
   },
   methods: {
+    async getBlockNumber () {
+      const provider = await getProvider()
+      const blockNumber = await provider.getBlockNumber()
+      return blockNumber
+    },
     async getData () {
       const ret = await this.$apollo.query({ query: STREAM_FUNDS_BY_STREAMID })
       console.log('getStreamStats', ret)
