@@ -8,7 +8,7 @@
       :header-cell-style="cellStyle"
     >
       <el-table-column
-        width="50"
+        width="80"
         prop="id"
         label="ID"
       />
@@ -21,7 +21,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Deposited" width="100">
+      <el-table-column label="Deposited">
         <template slot-scope="scope">
           <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
         </template>
@@ -33,23 +33,28 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Start Block" width="150">
+      <el-table-column label="Start Block">
         <template slot-scope="scope">
           <span :title="scope.row.startBlock">#{{ scope.row.startBlock }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        prop="startBlock"
-        label="Status"
-      />
-      <el-table-column label="Sender" width="100">
+      <el-table-column label="Status">
+        <template slot-scope="scope">
+          <stream-status
+            :start-block="scope.row.startBlock"
+            :current-block="blockNumber"
+            :remaining="detailCache[scope.row.id] && detailCache[scope.row.id].remaining"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="Sender">
         <template slot-scope="scope">
           <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="" fixed="right" width="100">
+      <el-table-column label="" fixed="right">
         <template slot-scope="scope">
           <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
         </template>
@@ -85,6 +90,7 @@
 <script>
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
+import { getProvider } from '@/api/contract/ethers'
 
 export default {
   name: 'StreamList',
@@ -107,7 +113,8 @@ __typename: (...)
   data () {
     return {
       page: 1,
-      loading: false
+      loading: false,
+      blockNumber: 0
     }
   },
 
@@ -119,9 +126,13 @@ __typename: (...)
       return state.detailCache
     }
   }),
-  created () {
+  async created () {
     console.log('StreamList mounted')
     this.getList()
+
+    const provider = await getProvider()
+    const blockNumber = await provider.getBlockNumber()
+    this.blockNumber = blockNumber
   },
   methods: {
     async getList () {
