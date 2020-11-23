@@ -5,13 +5,17 @@ import metamask from '@/api/wallet/metamask'
 // TODO 动态化，MetaMask的当前网络优先env配置里的。
 // TODO 申请 infura key
 // 节点固定为InfuraProvider
+
+const App = {}
+
 export const getProvider = async (network) => {
   // const provider = new ethers.providers.InfuraProvider(network || process.env.DEFAULT_ETHEREUM_NETWORK)
   // return provider
 
+  if (App.provider) { return App.provider }
+
   // let isMetaMaskInstalled = true
   const ETHEREUM_NODE_URL = 'https://kovan.infura.io/v3/32d3935c7ba0400d97a7d8f983753a34'
-  const App = {}
   if (window.ethereum) {
     App.web3Provider = window.ethereum
     try {
