@@ -33,47 +33,49 @@ export const STREAM_GET_TOTAL_DATA = gql`{
   }
 }`
 
-export const STREAM_LIST_BY_RECIPIENT = gql`{
-  streams(first: 10, where: {recipient: "0x54be6df7b1c9fee57af2e8255bf319da65e4c0c0"}) {
-    id
-    sender
-    recipient
-    depositAmount
-    startBlock
-    kBlock
-    unlockRatio
-    timestamp
-    txs(first: 10, orderBy: timestamp, orderDirection: desc) {
-      block
-      event
-      from
+export const STREAM_LIST_BY_RECIPIENT = gql`
+  query streams($first: Int!, $recipient:Bytes!) {
+    streams(first: $first, where: {recipient: $recipient}) {
+      id
+      sender
+      recipient
+      depositAmount
+      startBlock
+      kBlock
+      unlockRatio
       timestamp
-      to
-      txhash
+      txs(first: $first, orderBy: timestamp, orderDirection: desc) {
+        block
+        event
+        from
+        timestamp
+        to
+        txhash
+      }
     }
-  }
-}`
+  }`
 
-export const STREAM_LIST_BY_SENDER = gql`{
-  streams(first: 10, where: {sender: "0xa031f03424aa6278afb74bf5e036a00f159c46d2"}) {
-    id
-    sender
-    recipient
-    depositAmount
-    startBlock
-    kBlock
-    unlockRatio
-    timestamp
-    txs(first: 10, orderBy: timestamp, orderDirection: desc) {
-      block
-      event
-      from
+export const STREAM_LIST_BY_SENDER = gql`
+  query streams($first: Int!, $sender:Bytes!) {
+    streams(first: $first, where: {sender: $sender}) {
+      id
+      sender
+      recipient
+      depositAmount
+      startBlock
+      kBlock
+      unlockRatio
       timestamp
-      to
-      txhash
+      txs(first: $first, orderBy: timestamp, orderDirection: desc) {
+        block
+        event
+        from
+        timestamp
+        to
+        txhash
+      }
     }
-  }
-}`
+  }`
 
 export const STREAM_FUNDS_BY_STREAMID = gql`{
   streams(where: {id: 2}) {
