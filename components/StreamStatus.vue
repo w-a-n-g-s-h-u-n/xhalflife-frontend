@@ -6,9 +6,9 @@ import { BigNumber } from 'ethers'
 export default {
   name: 'StreamStatus',
   props: {
-    startBlock: Number,
-    currentBlock: Number,
-    remaining: Number
+    startBlock: [Number, Object, String],
+    currentBlock: [Number, Object, String],
+    remaining: [Number, Object, String] // 可以是Bigumber对象 或string格式数字
   },
   data () {
     return {}
