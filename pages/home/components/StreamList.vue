@@ -72,15 +72,15 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      class="pagination"
-      :current-page.sync="page"
-      :page-size="100"
-      layout="prev, pager, next, jumper"
-      :total="1000"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+<!--    <el-pagination-->
+<!--      class="pagination"-->
+<!--      :current-page.sync="page"-->
+<!--      :page-size="100"-->
+<!--      layout="prev, pager, next, jumper"-->
+<!--      :total="1000"-->
+<!--      @size-change="handleSizeChange"-->
+<!--      @current-change="handleCurrentChange"-->
+<!--    />-->
   </div>
 </template>
 
@@ -88,6 +88,7 @@
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
 import { getProvider } from '@/api/contract/ethers'
+// import gql from 'graphql-tag'
 
 export default {
   name: 'StreamList',
@@ -111,10 +112,37 @@ __typename: (...)
     return {
       page: 1,
       loading: false,
-      blockNumber: 0
+      blockNumber: 0,
+      list: []
     }
   },
-
+  // apollo: {
+  //   list: {
+  //     query: () => {
+  //       return gql`
+  //       query streams($first: Int!) {
+  //           streams(first: $first){
+  //            id
+  //             timestamp
+  //             txs(first: $first, orderBy: timestamp, orderDirection: desc) {
+  //               to
+  //               txhash
+  //             }
+  //           }
+  //       } `
+  //     },
+  //     update: (data) => {
+  //       console.log('apollo data', data)
+  //       return data.streams
+  //     },
+  //     variables () {
+  //       // Use vue reactive properties here
+  //       return {
+  //         first: 3
+  //       }
+  //     }
+  //   }
+  // },
   computed: mapState({
     homeList (state) {
       return state.homeList
@@ -134,8 +162,8 @@ __typename: (...)
   methods: {
     async getList () {
       this.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: 10 } })
-      // console.log('StreamList ret', ret)
+      const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: 100 } })
+      console.log('StreamList ret', ret)
       this.$store.commit('updateSteamList', { key: 'homeList', value: ret.data.streams })
       this.loading = false
       return ret

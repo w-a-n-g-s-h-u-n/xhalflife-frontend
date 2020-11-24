@@ -9,10 +9,10 @@
       </div>
     </div>
 
-    <div>
+    <div v-if="current=='sent'">
       <el-table
-        v-loading="loading"
-        :data="curTableData"
+        v-loading="sendInfo.loading"
+        :data="MySentList"
         class="table"
         :cell-style="cellStyle"
         :header-cell-style="cellStyle"
@@ -82,15 +82,98 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        class="pagination"
-        :current-page.sync="currentPage"
-        :page-size="100"
-        layout="prev, pager, next, jumper"
-        :total="1000"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+<!--      <el-pagination-->
+<!--        class="pagination"-->
+<!--        :current-page.sync="currentPage"-->
+<!--        :page-size="100"-->
+<!--        layout="prev, pager, next, jumper"-->
+<!--        :total="1000"-->
+<!--        @size-change="handleSizeChange"-->
+<!--        @current-change="handleCurrentChange"-->
+<!--      />-->
+    </div>
+    <div v-else>
+      <el-table
+        v-loading="receiveInfo.loading"
+        :data="myReceivedList"
+        class="table"
+        :cell-style="cellStyle"
+        :header-cell-style="cellStyle"
+      >
+        <el-table-column
+          width="80"
+          prop="id"
+          label="ID"
+        />
+        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="100">
+          <template slot-scope="scope">
+            <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column align="center" label="Deposited">
+          <template slot-scope="scope">
+            <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column align="center" label="Withdrawable" min-width="120">
+          <template slot-scope="scope">
+            <span :title="scope.row.withdrawable">{{ (detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable) | precision18 }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column align="center" label="Start Block" min-width="100">
+          <template slot-scope="scope">
+            <span :title="scope.row.startBlock">#{{ scope.row.startBlock }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column align="center" label="Status" min-width="120">
+          <template slot-scope="scope">
+            <stream-status
+              :start-block="scope.row.startBlock"
+              :current-block="blockNumber"
+              :remaining="detailCache[scope.row.id] && detailCache[scope.row.id].remaining"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="Sender" min-width="100">
+          <template slot-scope="scope">
+            <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="Date" fixed="right" min-width="100">
+          <template slot-scope="scope">
+            <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          fixed="right"
+          label=""
+          width="110"
+        >
+          <template slot-scope="scope">
+            <NuxtLink :to="`/detail?id=${scope.row.id}`">
+              <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
+                View Detail
+                <stream-balance :id="scope.row.id" :row="scope.row" />
+              </el-button>
+            </NuxtLink>
+          </template>
+        </el-table-column>
+      </el-table>
+<!--      <el-pagination-->
+<!--        class="pagination"-->
+<!--        :current-page.sync="currentPage"-->
+<!--        :page-size="100"-->
+<!--        layout="prev, pager, next, jumper"-->
+<!--        :total="1000"-->
+<!--        @size-change="handleSizeChange"-->
+<!--        @current-change="handleCurrentChange"-->
+<!--      />-->
     </div>
   </div>
 </template>
@@ -105,11 +188,13 @@ export default {
     return {
       current: 'received',
       sendInfo: {
+        loading: false,
         // list: [],
         page: 1,
         total: 1000
       },
       receiveInfo: {
+        loading: false,
         // list: [],
         page: 1,
         total: 1000
@@ -129,10 +214,10 @@ export default {
       }
     }),
     curTableData () {
-      return this.current === 'send' ? this.MySentList : this.myReceivedList
+      return this.current === 'sent' ? this.MySentList : this.myReceivedList
     },
     currentPage () {
-      return this.current === 'send' ? this.sendInfo.page : this.receiveInfo.page
+      return this.current === 'sent' ? this.sendInfo.page : this.receiveInfo.page
     }
 
   },
@@ -144,28 +229,29 @@ export default {
     change (v) {
       console.log('change', v)
       this.current = v
-      this.current === 'send'
+      this.current === 'sent'
         ? this.getListBySender('refresh')
         : this.getListByRecipient('refresh')
     },
-    // TODO 分页
+    // TODO 分页 我发出的
     async getListBySender (type = 'refresh') {
-      this.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: { first: 10 } })
+      this.sendInfo.loading = true
+      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: { first: 100, sender: '0xa031f03424aa6278afb74bf5e036a00f159c46d2' } })
       console.log('StreamList send', ret)
       // this.sendInfo.list = ret.data.streams
       this.$store.commit('updateSteamList', { key: 'MySentList', value: ret.data.streams })
-      this.loading = false
+      this.sendInfo.loading = false
       return ret
     },
+    // 我收到的
     async getListByRecipient (type = 'refresh') {
-      this.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: { first: 10 } })
+      this.receiveInfo.loading = true
+      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: { first: 100, recipient: '0x93be566bae0f7c21aab1662879f55767dd4c594b' } })
       console.log('StreamList receive', ret)
       // this.receiveInfo.list = ret.data.streams
       this.$store.commit('updateSteamList', { key: 'myReceivedList', value: ret.data.streams })
 
-      this.loading = false
+      this.receiveInfo.loading = false
 
       return ret
     },
