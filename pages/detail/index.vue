@@ -24,13 +24,13 @@
         </div>
 
         <div class="actions">
-          <el-button type="primary" class="action-fund" v-if="canFund">
+          <el-button v-if="canFund" type="primary" class="action-fund">
             Fund
           </el-button>
-          <el-button type="primary" class="action-withdraw" v-if="canWithDraw">
+          <el-button v-if="canWithDraw" type="primary" class="action-withdraw">
             WithDraw
           </el-button>
-          <el-button type="success" class="action-cancel" v-if="canCancel">
+          <el-button v-if="canCancel" type="success" class="action-cancel">
             Cancel
           </el-button>
         </div>
@@ -182,5 +182,5 @@ export default {
 
 <style scoped lang="scss">
   @import "~/pages/home/index.scss";
-  @import "~/pages/detail.scss";
+  @import "./index.scss";
 </style>
