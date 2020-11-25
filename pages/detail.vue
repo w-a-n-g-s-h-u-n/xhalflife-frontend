@@ -2,7 +2,9 @@
   <div class="container">
     <div class="header">
       <div class="content">
-        <img class="logo" src="~/assets/logo.png" alt="">
+        <NuxtLink to="/">
+          <img class="logo" src="~/assets/logo.png" alt="">
+        </NuxtLink>
         <span class="nav-item active">
           <span class="text">xHalfLife</span>
           <span class="indicator" />
@@ -22,10 +24,13 @@
         </div>
 
         <div class="actions">
-          <el-button type="primary">
+          <el-button type="primary" class="action-fund" v-if="canFund">
+            Fund
+          </el-button>
+          <el-button type="primary" class="action-withdraw" v-if="canWithDraw">
             WithDraw
           </el-button>
-          <el-button type="success">
+          <el-button type="success" class="action-cancel" v-if="canCancel">
             Cancel
           </el-button>
         </div>
@@ -129,8 +134,26 @@ export default {
     ...mapState({
       detailCache (state) {
         return state.detailCache
+      },
+      account (state) {
+        return state.metamask && state.metamask.account
       }
-    })
+    }),
+    canWithDraw () {
+      const yes = this.account && this.account === this.detail.recipient && this.withdrawable > 0.0001
+      console.log('canWithDraw', this.account, this.recipient)
+      return yes
+    },
+    canFund () {
+      const yes = this.account && this.account === this.detail.sender
+      console.log('canFund', this.account, this.sender)
+      return yes
+    },
+    canCancel () {
+      const yes = this.account && (this.account === this.detail.recipient || this.account === this.detail.sender)
+      console.log('canCancel', this.account)
+      return yes
+    }
   },
   async mounted () {
     console.log('Home mounted', this.$route)

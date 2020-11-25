@@ -211,6 +211,9 @@ export default {
       },
       detailCache (state) {
         return state.detailCache
+      },
+      account (state) {
+        return state.metamask && state.metamask.account
       }
     }),
     curTableData () {
@@ -236,7 +239,7 @@ export default {
     // TODO 分页 我发出的
     async getListBySender (type = 'refresh') {
       this.sendInfo.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: { first: 100, sender: '0xa031f03424aa6278afb74bf5e036a00f159c46d2' } })
+      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: { first: 100, sender: this.account } })
       console.log('StreamList send', ret)
       // this.sendInfo.list = ret.data.streams
       this.$store.commit('updateSteamList', { key: 'MySentList', value: ret.data.streams })
@@ -246,7 +249,7 @@ export default {
     // 我收到的
     async getListByRecipient (type = 'refresh') {
       this.receiveInfo.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: { first: 100, recipient: '0x93be566bae0f7c21aab1662879f55767dd4c594b' } })
+      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: { first: 100, recipient: this.account } })
       console.log('StreamList receive', ret)
       // this.receiveInfo.list = ret.data.streams
       this.$store.commit('updateSteamList', { key: 'myReceivedList', value: ret.data.streams })
