@@ -1,0 +1,158 @@
+
+.container {
+  background-color: #1f2049;
+}
+
+.breadcrumb {
+  font-size: 16px;
+  color: #7e7f9c;
+  letter-spacing: 0;
+  height: 60px;
+  text-align: left;
+  width: 997px;
+  margin: 0 auto;
+  line-height: 60px;
+}
+
+.actions-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  height: 40px;
+  margin-bottom: 15px;
+
+  .detail-id {
+    font-size: 28px;
+    color: #fced3e;
+    letter-spacing: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .actions {
+    justify-content: space-around;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    background: #212352;
+    height: 54px;
+    padding-left: 24px;
+    line-height: 54px;
+    text-align: left;
+    font-size: 16px;
+    color: #56588e;
+  }
+
+  .content {
+    font-size: 28px;
+    color: #ffffff;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background: #272958;
+  }
+}
+
+.detail-cards {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    width: 245px;
+
+    .card {
+      width: 245px;
+      height: 190px;
+
+      .content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+      }
+    }
+  }
+
+  .right {
+    width: 740px;
+    height: 397px;
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      background: #212352;
+      color: #56588e;
+      height: 54px;
+      line-height: 54px;
+
+      .status {
+        float: right;
+      }
+    }
+
+    .item {
+      .label {
+        font-size: 14px;
+        font-family: PingFangSC-Regular;
+        color: #8284C1;
+        letter-spacing: 0;
+      }
+
+      .value {
+        font-size: 24px;
+        font-family: PingFangSC-Semibold;
+        color: #FFFFFF;
+        letter-spacing: 0;
+        line-height: 34px;
+        margin-top: 5px;
+
+      }
+    }
+
+    .part1 {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      height: 135px;
+
+      .item {
+        width: 33%;
+
+        &.item1 {
+          text-align: left;
+        }
+
+        &.item2 {
+          text-align: center;
+        }
+
+        &.item3 {
+          text-align: right;
+        }
+      }
+    }
+
+    .part2 {
+      height: 80px;
+    }
+
+    .part3 {
+      height: 80px;
+      margin-top: 30px;
+    }
+  }
+}

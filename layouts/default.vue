@@ -1,5 +1,14 @@
 <template>
-  <Nuxt />
+  <div style="width: 100%; height: 100%;">
+    <el-alert
+      v-if="$nuxt.isOffline"
+      title="您可能未连接到互联网, 请连接网络后重试~"
+      type="error"
+      effect="dark"
+      style="z-index: 999; max-width: 340px; position: fixed; top: 20px; right: 20px;"
+    />
+    <Nuxt />
+  </div>
 </template>
 
 <style>

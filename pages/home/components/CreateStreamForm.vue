@@ -78,6 +78,12 @@ export default {
       }
     }
   },
+  async mounted () {
+    const provider = await getProvider()
+    const blockNumber = await provider.getBlockNumber()
+    console.log(blockNumber)
+    this.formData.startBlock = blockNumber + 1000
+  },
   methods: {
     async onSubmitOld () {
       console.log(this.formData)
