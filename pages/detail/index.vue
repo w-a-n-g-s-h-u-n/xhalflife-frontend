@@ -13,7 +13,6 @@
         <div style="clear: both;" />
       </div>
     </div>
-    id
     <div class="module">
       <div class="breadcrumb">
         xHalfLife <span><i class="el-icon-right" /></span> Detail
@@ -54,7 +53,7 @@
             </div>
           </div>
         </div>
-        <div class="right">
+        <div class="right card">
           <div class="header">
             <div class="title">
               DATE
@@ -67,51 +66,91 @@
               />
             </div>
           </div>
-          <div class="part1 block-info">
-            <div class="item item1">
+          <div class="content">
+            <div class="part1 block-info">
+              <div class="item item1">
+                <div class="label">
+                  StartBlock
+                </div>
+                <div class="value">
+                  #{{ detail.startBlock }}
+                </div>
+              </div>
+              <div class="item item2">
+                <div class="label">
+                  Unlock Ratio
+                </div>
+                <div class="value">
+                  {{ detail.unlockRatio| precision18 }}%
+                </div>
+              </div>
+              <div class="item item3">
+                <div class="label">
+                  Unlock K
+                </div>
+                <div class="value">
+                  {{ detail.kBlock }}
+                </div>
+              </div>
+            </div>
+            <div class="part2 sender item">
               <div class="label">
-                StartBlock
+                Sender
               </div>
               <div class="value">
-                #{{ detail.startBlock }}
+                {{ detail.sender }}
               </div>
             </div>
-            <div class="item item2">
+            <div class=" part3 recipent item">
               <div class="label">
-                Unlock Ratio
+                Recipent
               </div>
               <div class="value">
-                {{ detail.unlockRatio| precision18 }}%
+                {{ detail.recipient }}
               </div>
-            </div>
-            <div class="item item3">
-              <div class="label">
-                Unlock K
-              </div>
-              <div class="value">
-                {{ detail.kBlock }}
-              </div>
-            </div>
-          </div>
-          <div class="part2 sender item">
-            <div class="label">
-              Sender
-            </div>
-            <div class="value">
-              {{ detail.sender }}
-            </div>
-          </div>
-          <div class=" part3 recipent item">
-            <div class="label">
-              Recipent
-            </div>
-            <div class="value">
-              {{ detail.recipient }}
             </div>
           </div>
         </div>
       </div>
-      <div class="last-activity" />
+      <div class="card last-activity">
+        <div class="header">
+          Last Activity
+        </div>
+        <div class="content">
+          <div class="part part1">
+            <div class="item item1">
+              Date
+            </div>
+            <div class="item item2">
+              08 Jan 2019
+            </div>
+          </div>
+          <div class="part part2">
+            <div class="item item1">
+              Amount
+            </div>
+            <div class="item item2">
+              1.5901 USDT
+            </div>
+          </div>
+          <div class="part part3">
+            <div class="item item1">
+              Receiver
+            </div>
+            <div class="item item2">
+              0xd0A1...029C
+            </div>
+          </div>
+          <div class="part part4">
+            <div class="item item1">
+              TRX ID
+            </div>
+            <div class="item item2">
+              0xd0A1...029C
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
