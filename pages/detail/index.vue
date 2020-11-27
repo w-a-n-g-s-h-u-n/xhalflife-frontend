@@ -13,14 +13,14 @@
         <div style="clear: both;" />
       </div>
     </div>
-
+    id
     <div class="module">
       <div class="breadcrumb">
         xHalfLife <span><i class="el-icon-right" /></span> Detail
       </div>
       <div class="actions-wrap">
         <div class="detail-id">
-          <span>ID：{{ detail.id }}</span>
+          <span>ID：{{ id }}</span>
         </div>
 
         <div class="actions">
@@ -160,7 +160,7 @@ export default {
     console.log('Home mounted', this.$route)
     const id = this.$route.query && this.$route.query.id
     this.id = id
-    this.detail = this.detailCache[id]
+    this.detail = { ...this.detail, ...this.detailCache[id] }
     // this.getData()
     console.log(this.detail)
     this.$store.dispatch('refreshLatestBlockNumber')
