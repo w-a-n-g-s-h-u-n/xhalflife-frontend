@@ -2,6 +2,12 @@ export const state = () => ({
   network: process.env.DEFAULT_ETHEREUM_NETWORK,
   provider: null,
 
+  // 整体统计
+  stats: {
+    totalCount: 0,
+    xdexLocked: '',
+    xdexWithdrawed: ''
+  },
   // 支持不同钱包
   metamask: {
     account: null,
@@ -50,6 +56,9 @@ export const mutations = {
   },
   updateBalanceInfo (state, { streamId, info }) {
     state.balanceInfo[streamId] = info
+  },
+  updateStats (state, payload) {
+    state.stats = payload || { totalCount: 0 }
   }
 }
 

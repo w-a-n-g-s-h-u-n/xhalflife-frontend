@@ -156,6 +156,7 @@ export default {
       console.log('getStreamStats', ret)
       const stats = (ret.data && ret.data.streamTotalDatas && ret.data.streamTotalDatas[0]) || {}
       this.stats = stats
+      this.$store.commit('updateStats', stats)
     }
   }
 }
