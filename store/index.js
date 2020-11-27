@@ -1,3 +1,5 @@
+import { getProvider } from '@/api/contract/ethers'
+
 export const state = () => ({
   network: process.env.DEFAULT_ETHEREUM_NETWORK,
   provider: null,
@@ -21,7 +23,9 @@ export const state = () => ({
   homeList: [],
   myReceivedList: [],
   MySentList: [],
-  detailCache: {}
+  detailCache: {},
+
+  blockNumber: 0 // 最新区块
 })
 
 export const mutations = {
@@ -66,5 +70,14 @@ export const getters = {
   isMetaMaskConnected: (state) => {
     console.log('getters', state)
     return !!state.metamask.account
+  }
+}
+
+export const actions = {
+  async refreshLatestBlockNumber (context) {
+    const provider = await getProvider()
+    const blockNumber = await provider.getBlockNumber()
+    context.commit('update', { key: 'blockNumber', value: blockNumber })
+    return blockNumber
   }
 }

@@ -88,7 +88,6 @@
 <script>
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
-import { getProvider } from '@/api/contract/ethers'
 // import gql from 'graphql-tag'
 
 export default {
@@ -112,7 +111,6 @@ __typename: (...)
   data () {
     return {
       loading: false,
-      blockNumber: 0,
       list: [],
       query: {
         page: 1,
@@ -148,6 +146,9 @@ __typename: (...)
   //   }
   // },
   computed: mapState({
+    blockNumber (state) {
+      return state.blockNumber
+    },
     skip () {
       return (this.query.page - 1) * this.query.limit
     },
@@ -161,13 +162,10 @@ __typename: (...)
       return state.detailCache
     }
   }),
-  async created () {
+  created () {
     console.log('StreamList mounted')
     this.getList()
-
-    const provider = await getProvider()
-    const blockNumber = await provider.getBlockNumber()
-    this.blockNumber = blockNumber
+    this.$store.dispatch('refreshLatestBlockNumber')
   },
   methods: {
     async getList () {

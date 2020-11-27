@@ -119,19 +119,20 @@
 <script>
 import { STREAM_FUNDS_BY_STREAMID } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
-import { getProvider } from '@/api/contract/ethers'
 
 export default {
   name: 'Detail',
   data () {
     return {
       id: 0,
-      blockNumber: 0,
       detail: {}
     }
   },
   computed: {
     ...mapState({
+      blockNumber (state) {
+        return state.blockNumber
+      },
       detailCache (state) {
         return state.detailCache
       },
@@ -155,21 +156,16 @@ export default {
       return yes
     }
   },
-  async mounted () {
+  mounted () {
     console.log('Home mounted', this.$route)
     const id = this.$route.query && this.$route.query.id
     this.id = id
     this.detail = this.detailCache[id]
     // this.getData()
     console.log(this.detail)
-    this.blockNumber = await this.getBlockNumber()
+    this.$store.dispatch('refreshLatestBlockNumber')
   },
   methods: {
-    async getBlockNumber () {
-      const provider = await getProvider()
-      const blockNumber = await provider.getBlockNumber()
-      return blockNumber
-    },
     async getData () {
       const ret = await this.$apollo.query({ query: STREAM_FUNDS_BY_STREAMID })
       console.log('getStreamStats', ret)
