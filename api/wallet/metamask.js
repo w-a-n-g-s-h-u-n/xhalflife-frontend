@@ -16,10 +16,14 @@ export const goToInstallMetaMask = () => {
 export const connectMetaMask = async () => {
   try {
     const { ethereum } = window
-    const newAccounts = await ethereum.request({
-      method: 'eth_requestAccounts'
-    })
-    return newAccounts
+    if (ethereum.request) {
+      const newAccounts = await ethereum.request({
+        method: 'eth_requestAccounts'
+      })
+      return newAccounts
+    } else {
+      return await ethereum.enable()
+    }
   } catch (error) {
     console.error('Error when connectMetaMask', error)
     return []
@@ -29,10 +33,14 @@ export const connectMetaMask = async () => {
 export const getAccountsByMetaMask = async () => {
   try {
     const { ethereum } = window
-    const accounts = await ethereum.request({
-      method: 'eth_accounts'
-    })
-    return accounts
+    if (ethereum.request) {
+      const accounts = await ethereum.request({
+        method: 'eth_accounts'
+      })
+      return accounts
+    } else {
+      return await ethereum.enable()
+    }
   } catch (error) {
     console.error('Error when getAccountsByMetaMask', error)
     return []
