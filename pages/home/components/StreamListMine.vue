@@ -181,6 +181,7 @@
 <script>
 import { STREAM_LIST_BY_SENDER, STREAM_LIST_BY_RECIPIENT } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
+import { ethers } from 'ethers'
 
 export default {
   name: 'StreamListMine',
@@ -229,6 +230,13 @@ export default {
 
   },
   mounted () {
+    if (!ethers.utils.isAddress(this.account)) {
+      this.$message({
+        message: 'Please connect to metemask account first',
+        type: 'warning'
+      })
+      return
+    }
     console.log('StreamList mounted', this.current)
     this.current === 'send' ? this.getListBySender() : this.getListByRecipient()
     this.$store.dispatch('refreshLatestBlockNumber')
@@ -236,6 +244,13 @@ export default {
   methods: {
     change (v) {
       console.log('change', v)
+      if (!ethers.utils.isAddress(this.account)) {
+        this.$message({
+          message: 'Please connect to metemask account first',
+          type: 'warning'
+        })
+        return
+      }
       this.current = v
       this.current === 'sent'
         ? this.getListBySender('refresh')
