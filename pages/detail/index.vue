@@ -192,7 +192,9 @@
 </template>
 
 <script>
-import { STREAM_FUNDS_BY_STREAMID } from '@/api/apollo/queries'
+import { STREAM_DETAIL } from '@/api/apollo/queries'
+import { XHalfLifeContract } from '@/api/contract'
+
 import { mapState } from 'vuex'
 
 export default {
@@ -234,6 +236,11 @@ export default {
       return yes
     }
   },
+  watch: {
+    detailCache () {
+      this.detail = { ...this.detail, ...this.detailCache[this.id] }
+    }
+  },
   mounted () {
     console.log('Home mounted', this.$route)
     const id = this.$route.query && this.$route.query.id
@@ -242,13 +249,34 @@ export default {
     // this.getData()
     console.log(this.detail)
     this.$store.dispatch('refreshLatestBlockNumber')
+
+    // 请求最新
+    if (id) {
+      this.getDetail(id)
+      this.getStreamBalance(id)
+    }
   },
   methods: {
-    async getData () {
-      const ret = await this.$apollo.query({ query: STREAM_FUNDS_BY_STREAMID })
-      console.log('getStreamStats', ret)
-      const stats = (ret.data && ret.data.streamTotalDatas && ret.data.streamTotalDatas[0]) || {}
-      this.stats = stats
+    // async getData () {
+    //   const ret = await this.$apollo.query({ query: STREAM_FUNDS_BY_STREAMID })
+    //   console.log('getStreamStats', ret)
+    //   const stats = (ret.data && ret.data.streamTotalDatas && ret.data.streamTotalDatas[0]) || {}
+    //   this.stats = stats
+    // },
+    async getDetail (id) {
+      const ret = await this.$apollo.query({ query: STREAM_DETAIL, variables: { id: Number(id) } })
+      console.log('getDetail', ret)
+      this.$store.commit('updateSteamDetail', ret.data.streams && ret.data.streams[0])
+    },
+    async getStreamBalance (id) {
+      console.log('getStreamBalance', id)
+      try {
+        const ret = await XHalfLifeContract.balanceOf(id)
+        console.log('getStreamBalance', id, ret)
+        this.$store.commit('updateBalanceByStreamId', { key: id, value: ret })
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
 }

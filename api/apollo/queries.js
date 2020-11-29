@@ -24,6 +24,29 @@ export const STREAM_LIST = gql`
   }
  `
 
+export const STREAM_DETAIL = gql`
+  query streams($id: Int!) {
+    streams(where: {id: $id}) {
+        id
+        sender
+        recipient
+        depositAmount
+        startBlock
+        kBlock
+        unlockRatio
+        timestamp
+        txs(first: $first, orderBy: timestamp, orderDirection: desc) {
+          block
+          event
+          from
+          timestamp
+          to
+          txhash
+        }
+      }
+  }
+ `
+
 export const STREAM_GET_TOTAL_DATA = gql`{
   streamTotalDatas(first: 1) {
     id
