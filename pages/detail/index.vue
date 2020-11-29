@@ -23,13 +23,13 @@
         </div>
 
         <div class="actions">
-          <el-button v-if="canFund" type="primary" class="action-fund">
+          <el-button v-if="canFund" type="primary" class="action-fund" @click="fundDialogVisible =true">
             Fund
           </el-button>
-          <el-button v-if="canWithDraw" type="primary" class="action-withdraw">
+          <el-button v-if="canWithDraw" type="primary" class="action-withdraw" @click="withdrawDialogVisible=true">
             WithDraw
           </el-button>
-          <el-button v-if="canCancel" type="success" class="action-cancel">
+          <el-button v-if="canCancel" type="success" class="action-cancel" @click="cancelDialogVisible=true">
             Cancel
           </el-button>
         </div>
@@ -152,6 +152,42 @@
         </div>
       </div>
     </div>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="withdrawDialogVisible"
+      width="30%"
+      center
+    >
+      <span>需要注意的是内容是默认不居中的</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="withdrawDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="fundDialogVisible"
+      width="30%"
+      center
+    >
+      <span>需要注意的是内容是默认不居中的</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="fundDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="cancelDialogVisible"
+      width="30%"
+      center
+    >
+      <span>需要注意的是内容是默认不居中的</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="cancelDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -164,7 +200,10 @@ export default {
   data () {
     return {
       id: 0,
-      detail: {}
+      detail: {},
+      withdrawDialogVisible: false,
+      fundDialogVisible: false,
+      cancelDialogVisible: false
     }
   },
   computed: {
