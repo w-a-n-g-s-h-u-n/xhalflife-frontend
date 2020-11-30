@@ -154,38 +154,53 @@
     </div>
 
     <el-dialog
-      title="提示"
+      title="提款"
       :visible.sync="withdrawDialogVisible"
       width="30%"
       center
     >
-      <span>需要注意的是内容是默认不居中的</span>
+      <div class="dialog-content">
+        <div style="padding: 10px;" >
+          TOTAL: {{ detail.withdrawable | precision18 }} XDEX
+        </div>
+        <el-input placeholder="" v-model="formWithdraw.amount">
+          <template slot="append">MAX</template>
+        </el-input>
+      </div>
+
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="withdrawDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="doWithdraw">确 定</el-button>
       </span>
     </el-dialog>
 
     <el-dialog
-      title="提示"
+      title="存款"
       :visible.sync="fundDialogVisible"
       width="30%"
       center
     >
-      <span>需要注意的是内容是默认不居中的</span>
+      <div class="dialog-content">
+        <div style="padding: 10px;" >
+          TOTAL: {{ detail.withdrawable | precision18 }} XDEX
+        </div>
+        <el-input placeholder="" v-model="formFund.amount">
+          <template slot="append">MAX</template>
+        </el-input>
+      </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="fundDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="doFund">确 定</el-button>
       </span>
     </el-dialog>
 
     <el-dialog
-      title="提示"
+      title="取消"
       :visible.sync="cancelDialogVisible"
       width="30%"
       center
     >
-      <span>需要注意的是内容是默认不居中的</span>
+      <!--<span>需要注意的是内容是默认不居中的</span>-->
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="cancelDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="doCancel">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -194,6 +209,12 @@
 <script>
 import { STREAM_DETAIL } from '@/api/apollo/queries'
 import { XHalfLifeContract } from '@/api/contract'
+import { getProvider } from '@/api/contract/ethers'
+import metamask from '@/api/wallet/metamask'
+
+import { ethers } from 'ethers'
+import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
+import XDEX_ABI from '@/api/contract/abis/XDEX'
 
 import { mapState } from 'vuex'
 
@@ -205,7 +226,13 @@ export default {
       detail: {},
       withdrawDialogVisible: false,
       fundDialogVisible: false,
-      cancelDialogVisible: false
+      cancelDialogVisible: false,
+      formWithdraw: {
+        amount: 0
+      },
+      formFund: {
+        amount: 0
+      }
     }
   },
   computed: {
@@ -277,6 +304,120 @@ export default {
       } catch (e) {
         console.error(e)
       }
+    },
+    async doWithdraw () {
+      // TODO
+      if (!this.formWithdraw.amount > 0) {
+        this.$message({
+          message: '数值太小',
+          type: 'warning'
+        })
+        return
+      }
+      if (!this.formWithdraw.amount > this.detail.withdrawable) {
+        this.$message({
+          message: '数值太大',
+          type: 'warning'
+        })
+        return
+      }
+
+      try {
+        // 获得provider
+        const provider = await getProvider()
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
+        // const contractXDEX = new ethers.Contract(process.env.XDEX_TOKEN_ADDRESS, XDEX_ABI, signer)
+
+        // 表单数据
+        this.formWithdraw.streamId = this.id
+        this.formWithdraw.amount = ethers.utils.parseUnits(this.formWithdraw.amount, 18).toString()
+        console.log(this.formWithdraw)
+        const { streamId, amount } = this.formWithdraw
+
+        // 提交
+        const tx = await contract.withdrawFromStream(streamId, amount)
+        const txResult = await tx.wait()
+
+        console.log('doWithdraw ret', txResult)
+      } catch (e) {
+        this.$message({
+          message: e.message,
+          type: 'warning'
+        })
+      }
+    },
+    async doFund () {
+      // TODO
+      if (!this.formFund.amount > 0) {
+        this.$message({
+          message: '数值太小',
+          type: 'warning'
+        })
+        return
+      }
+      if (!this.formFund.amount > this.detail.withdrawable) {
+        this.$message({
+          message: '数值太大',
+          type: 'warning'
+        })
+        return
+      }
+
+      try {
+        // 获得provider
+        const provider = await getProvider()
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
+        const contractXDEX = new ethers.Contract(process.env.XDEX_TOKEN_ADDRESS, XDEX_ABI, signer)
+
+        const accounts = await metamask.connectMetaMask()
+        if (!accounts.length) {
+          this.$message({
+            message: 'Need connect to metemask account first',
+            type: 'warning'
+          })
+          return
+        }
+
+        // 表单数据
+        this.formFund.streamId = this.id
+        this.formFund.amount = ethers.utils.parseUnits(this.formFund.amount, 18).toString()
+        console.log(this.formFund)
+        const { streamId, amount } = this.formFund
+
+        // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则出发approve流程
+        const allowance = await contractXDEX.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
+        console.log('allowance', allowance, accounts[0])
+
+        const depositAmountBig = ethers.BigNumber.from(amount)
+        if (depositAmountBig.lte(allowance)) {
+          console.log('allowance is enough', allowance.toString(), depositAmountBig.toString())
+        } else {
+          console.log('allowance is not enough', allowance.toString(), depositAmountBig.toString())
+          // approve
+          const approveValue = depositAmountBig.sub(allowance)
+          console.log('Need approve', approveValue)
+          const approveTx = await contractXDEX.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
+          const approveResult = await approveTx.wait()
+          console.log('approveResult', approveResult)
+          // this.$message('Please wait MetaMast to approve')
+        }
+
+        // 提交
+        const tx = await contract.fundStream(streamId, amount.toString())
+        const txResult = await tx.wait()
+
+        console.log('doFund ret', txResult)
+      } catch (e) {
+        this.$message({
+          message: e.message,
+          type: 'warning'
+        })
+      }
+    },
+    async doCancel () {
+
     }
   }
 }
