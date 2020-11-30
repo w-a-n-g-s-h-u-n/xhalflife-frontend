@@ -72,22 +72,22 @@
         </template>
       </el-table-column>
     </el-table>
-<!--    <el-pagination-->
-<!--      class="pagination"-->
-<!--      :current-page.sync="page"-->
-<!--      :page-size="100"-->
-<!--      layout="prev, pager, next, jumper"-->
-<!--      :total="1000"-->
-<!--      @size-change="handleSizeChange"-->
-<!--      @current-change="handleCurrentChange"-->
-<!--    />-->
+    <el-pagination
+      v-if="total>0"
+      class="pagination"
+      :current-page.sync="query.page"
+      :page-size="query.limit"
+      layout="prev, pager, next, jumper"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
   </div>
 </template>
 
 <script>
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
-import { getProvider } from '@/api/contract/ethers'
 // import gql from 'graphql-tag'
 
 export default {
@@ -110,10 +110,12 @@ __typename: (...)
   * */
   data () {
     return {
-      page: 1,
       loading: false,
-      blockNumber: 0,
-      list: []
+      list: [],
+      query: {
+        page: 1,
+        limit: 10
+      }
     }
   },
   // apollo: {
@@ -144,6 +146,15 @@ __typename: (...)
   //   }
   // },
   computed: mapState({
+    blockNumber (state) {
+      return state.blockNumber
+    },
+    skip () {
+      return (this.query.page - 1) * this.query.limit
+    },
+    total (state) {
+      return Number(state.stats.totalCount) || 0
+    },
     homeList (state) {
       return state.homeList
     },
@@ -151,18 +162,15 @@ __typename: (...)
       return state.detailCache
     }
   }),
-  async created () {
+  created () {
     console.log('StreamList mounted')
     this.getList()
-
-    const provider = await getProvider()
-    const blockNumber = await provider.getBlockNumber()
-    this.blockNumber = blockNumber
+    this.$store.dispatch('refreshLatestBlockNumber')
   },
   methods: {
     async getList () {
       this.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: 100 } })
+      const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
       console.log('StreamList ret', ret)
       this.$store.commit('updateSteamList', { key: 'homeList', value: ret.data.streams })
       this.loading = false
@@ -173,6 +181,7 @@ __typename: (...)
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+      this.getList()
     },
     cellStyle (obj) {
       return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'

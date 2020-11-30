@@ -82,15 +82,15 @@
           </template>
         </el-table-column>
       </el-table>
-<!--      <el-pagination-->
-<!--        class="pagination"-->
-<!--        :current-page.sync="currentPage"-->
-<!--        :page-size="100"-->
-<!--        layout="prev, pager, next, jumper"-->
-<!--        :total="1000"-->
-<!--        @size-change="handleSizeChange"-->
-<!--        @current-change="handleCurrentChange"-->
-<!--      />-->
+      <!--      <el-pagination-->
+      <!--        class="pagination"-->
+      <!--        :current-page.sync="currentPage"-->
+      <!--        :page-size="100"-->
+      <!--        layout="prev, pager, next, jumper"-->
+      <!--        :total="1000"-->
+      <!--        @size-change="handleSizeChange"-->
+      <!--        @current-change="handleCurrentChange"-->
+      <!--      />-->
     </div>
     <div v-else>
       <el-table
@@ -165,15 +165,15 @@
           </template>
         </el-table-column>
       </el-table>
-<!--      <el-pagination-->
-<!--        class="pagination"-->
-<!--        :current-page.sync="currentPage"-->
-<!--        :page-size="100"-->
-<!--        layout="prev, pager, next, jumper"-->
-<!--        :total="1000"-->
-<!--        @size-change="handleSizeChange"-->
-<!--        @current-change="handleCurrentChange"-->
-<!--      />-->
+      <!--      <el-pagination-->
+      <!--        class="pagination"-->
+      <!--        :current-page.sync="currentPage"-->
+      <!--        :page-size="100"-->
+      <!--        layout="prev, pager, next, jumper"-->
+      <!--        :total="1000"-->
+      <!--        @size-change="handleSizeChange"-->
+      <!--        @current-change="handleCurrentChange"-->
+      <!--      />-->
     </div>
   </div>
 </template>
@@ -214,7 +214,11 @@ export default {
       },
       account (state) {
         return state.metamask && state.metamask.account
+      },
+      blockNumber (state) {
+        return state.blockNumber
       }
+
     }),
     curTableData () {
       return this.current === 'sent' ? this.MySentList : this.myReceivedList
@@ -227,6 +231,7 @@ export default {
   mounted () {
     console.log('StreamList mounted', this.current)
     this.current === 'send' ? this.getListBySender() : this.getListByRecipient()
+    this.$store.dispatch('refreshLatestBlockNumber')
   },
   methods: {
     change (v) {
