@@ -117,39 +117,53 @@
           Last Activity
         </div>
         <div class="content">
-          <div class="part part1">
-            <div class="item item1">
-              Date
-            </div>
-            <div class="item item2">
-              08 Jan 2019
-            </div>
-          </div>
-          <div class="part part2">
-            <div class="item item1">
-              Amount
-            </div>
-            <div class="item item2">
-              1.5901 USDT
-            </div>
-          </div>
-          <div class="part part3">
-            <div class="item item1">
-              Receiver
-            </div>
-            <div class="item item2">
-              0xd0A1...029C
-            </div>
-          </div>
-          <div class="part part4">
-            <div class="item item1">
-              TRX ID
-            </div>
-            <div class="item item2">
-              0xd0A1...029C
-            </div>
-          </div>
+          <el-row >
+            <el-col :span="6" class="part part1">
+              <div class="item item1">
+                Date
+              </div>
+            </el-col>
+            <el-col :span="6" class="part part2">
+              <div class="item item1">
+                Amount
+              </div>
+            </el-col>
+            <el-col :span="6" class="part part3">
+              <div class="item item1">
+                Receiver
+              </div>
+            </el-col>
+            <el-col :span="6" class="part part4">
+              <div class="item item1">
+                TRX ID
+              </div>
+            </el-col>
+          </el-row>
+          <el-row v-for="item in (detail.txs || [])" :key="item.timestamp">
+            <el-col :span="6" class="part part1">
+              <div class="item item2">
+                {{item.timestamp | date}}
+              </div>
+            </el-col>
+            <el-col :span="6" class="part part2">
+              <div class="item item2">
+                {{item.from | addr}}
+              </div>
+            </el-col>
+            <el-col :span="6" class="part part3">
+              <div class="item item2">
+                {{item.to | addr}}
+
+              </div>
+            </el-col>
+            <el-col :span="6" class="part part4">
+              <div class="item item2">
+                {{item.to | addr}}
+              </div>
+            </el-col>
+          </el-row>
         </div>
+
       </div>
     </div>
 

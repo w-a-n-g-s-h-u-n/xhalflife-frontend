@@ -166,20 +166,22 @@
 
   }
   .content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    //display: flex;
+    //justify-content: space-between;
+    //align-items: center;
     background: #272958;
     border-radius: 12px;
     padding-left: 30px;
     padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 30px;
 
     .part {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 207px;
+      height: 50px;
 
       &.part1 .item1 {
         color: #3efc82;
