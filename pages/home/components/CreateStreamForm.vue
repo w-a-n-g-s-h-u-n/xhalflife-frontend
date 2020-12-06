@@ -175,7 +175,7 @@ export default {
           // this.$message('Please wait MetaMast to create the stream')
           console.log('createStreamResult', createStreamResult)
           this.$message({
-            message: 'Create stream successful',
+            message: 'Create stream successfully',
             type: 'success'
           })
         } catch (e) {

@@ -340,11 +340,17 @@ export default {
         const txResult = await tx.wait()
 
         console.log('doWithdraw ret', txResult)
+        this.$message({
+          message: 'Withdraw successfully',
+          type: 'success'
+        })
+        this.withdrawDialogVisible = false
       } catch (e) {
         this.$message({
           message: e.message,
           type: 'warning'
         })
+        this.withdrawDialogVisible = false
       }
     },
     async doFund () {
@@ -409,15 +415,52 @@ export default {
         const txResult = await tx.wait()
 
         console.log('doFund ret', txResult)
+        this.$message({
+          message: 'Fund successfully',
+          type: 'success'
+        })
+        this.fundDialogVisible = false
       } catch (e) {
         this.$message({
           message: e.message,
           type: 'warning'
         })
+        this.fundDialogVisible = false
       }
     },
     async doCancel () {
+      try {
+        // 获得provider
+        const provider = await getProvider()
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
 
+        const streamId = this.id
+        if (!streamId) {
+          this.$message({
+            message: 'Missing streamId ',
+            type: 'warning'
+          })
+          return
+        }
+
+        // 提交
+        const tx = await contract.cancelStream(streamId)
+        const txResult = await tx.wait()
+        console.log('doCancel result', txResult)
+
+        this.$message({
+          message: 'Cancel successfully',
+          type: 'success'
+        })
+        this.cancelDialogVisible = false
+      } catch (e) {
+        this.$message({
+          message: e.message,
+          type: 'warning'
+        })
+        this.cancelDialogVisible = false
+      }
     }
   }
 }
