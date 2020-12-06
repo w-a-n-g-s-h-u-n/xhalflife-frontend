@@ -117,6 +117,13 @@
           Last Activity
         </div>
         <div class="content">
+          <!--block: 21538074-->
+          <!--event: "WithdrawFromStream"-->
+          <!--from: "0x93be566bae0f7c21aab1662879f55767dd4c594b"-->
+          <!--timestamp: "1602747020"-->
+          <!--to: "0x97721b4c8bf7aedf936af11d18e2f1ef5af4836b"-->
+          <!--txhash: "0xb3a71fcfd1af6e75ac211cc9428e8d123d16cb37ef5915b3e4b3a6003ebcf89f"-->
+          <!--__typename: "StreamTransaction"-->
           <el-row >
             <el-col :span="6" class="part part1">
               <div class="item item1">
@@ -125,12 +132,12 @@
             </el-col>
             <el-col :span="6" class="part part2">
               <div class="item item1">
-                Amount
+                From
               </div>
             </el-col>
             <el-col :span="6" class="part part3">
               <div class="item item1">
-                Receiver
+                To
               </div>
             </el-col>
             <el-col :span="6" class="part part4">
@@ -158,7 +165,7 @@
             </el-col>
             <el-col :span="6" class="part part4">
               <div class="item item2">
-                {{item.to | addr}}
+                {{item.txhash | addr}}
               </div>
             </el-col>
           </el-row>
