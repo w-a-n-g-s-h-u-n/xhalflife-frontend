@@ -44,12 +44,23 @@ export const mutations = {
     })
     state.detailCache = { ...state.detailCache }
   },
+  updateSteamDetail (state, item) {
+    if (item && item.id) {
+      if (state.detailCache[item.id]) {
+        state.detailCache[item.id] = { ...state.detailCache[item.id], ...item }
+      } else {
+        state.detailCache[item.id] = item
+      }
+      state.detailCache = { ...state.detailCache }
+    }
+  },
   updateBalanceByStreamId (state, { key, value }) {
     if (state.detailCache[key]) {
       state.detailCache[key] = { ...state.detailCache[key], ...value }
     } else {
       state.detailCache[key] = value
     }
+    state.detailCache = { ...state.detailCache }
   },
   updateAccounts (state, { accounts, source }) {
     // 目前仅支持 metamask
