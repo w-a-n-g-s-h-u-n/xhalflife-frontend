@@ -66,7 +66,6 @@
           <NuxtLink :to="`/detail?id=${scope.row.id}`">
             <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
               View Detail
-              <stream-balance :id="scope.row.id" :row="scope.row" />
             </el-button>
           </NuxtLink>
         </template>
@@ -89,25 +88,10 @@
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
 // import gql from 'graphql-tag'
-
+import mixin from './mixin'
 export default {
   name: 'StreamList',
-  // fetch () {
-  //   this.getList()
-  // },
-  /*
-  * depositAmount: (...)
-id: (...)
-kBlock: (...)
-recipient: (...)
-sender: (...)
-startBlock: (...)
-timestamp: (...)
-txs: (...)
-unlockRatio: (...)
-__typename: (...)
-  *
-  * */
+  mixins: [mixin],
   data () {
     return {
       loading: false,
@@ -118,33 +102,6 @@ __typename: (...)
       }
     }
   },
-  // apollo: {
-  //   list: {
-  //     query: () => {
-  //       return gql`
-  //       query streams($first: Int!) {
-  //           streams(first: $first){
-  //            id
-  //             timestamp
-  //             txs(first: $first, orderBy: timestamp, orderDirection: desc) {
-  //               to
-  //               txhash
-  //             }
-  //           }
-  //       } `
-  //     },
-  //     update: (data) => {
-  //       console.log('apollo data', data)
-  //       return data.streams
-  //     },
-  //     variables () {
-  //       // Use vue reactive properties here
-  //       return {
-  //         first: 3
-  //       }
-  //     }
-  //   }
-  // },
   computed: mapState({
     blockNumber (state) {
       return state.blockNumber
@@ -173,6 +130,10 @@ __typename: (...)
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
       console.log('StreamList ret', ret)
       this.$store.commit('updateSteamList', { key: 'homeList', value: ret.data.streams })
+
+      const ids = ret.data.streams.map(item => item.id)
+      this.refreshBalanceOfStreams(ids)
+
       this.loading = false
       return ret
     },
