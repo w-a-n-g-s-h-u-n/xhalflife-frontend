@@ -11,6 +11,7 @@ export default {
     async refreshBalanceOfStreams (ids) {
       if (ids && ids.length) {
         this.streamIdQueue = ids // 初始化
+        this.reqCount = {}
       }
       if (!this.streamIdQueue.length) {
         return
