@@ -1,18 +1,5 @@
 <template>
-  <div class="container">
-    <div class="header">
-      <div class="content">
-        <img class="logo" src="~/assets/logo.png" alt="">
-        <span class="nav-item active">
-          <span class="text">xHalfLife</span>
-          <span class="indicator" />
-        </span>
-        <Login style="float: right;" />
-        <div style="clear: both;" />
-      </div>
-    </div>
-
-    <div class="main">
+  <div class="main">
       <div class="module crumb">
         Home
       </div>
@@ -89,13 +76,6 @@
         <div style="clear: both;" />
       </div>
     </div>
-
-    <!--    <div class="footer">-->
-    <!--      <div class="module">-->
-    <!--        Footer-->
-    <!--      </div>-->
-    <!--    </div>-->
-  </div>
 </template>
 
 <script>
