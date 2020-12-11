@@ -3,7 +3,7 @@
     <div class="content">
       <img class="logo" src="~/assets/logo.png" alt="">
       <span class="nav-item active">
-        <span class="text">xHalfLife</span>
+        <NuxtLink to="/"><span class="text">xHalfLife</span></NuxtLink>
         <span class="indicator" />
       </span>
       <Login style="float: right;" />
