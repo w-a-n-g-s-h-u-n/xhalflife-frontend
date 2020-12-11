@@ -22,7 +22,7 @@
           prop="id"
           label="ID"
         />
-        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="100">
+        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="120">
           <template slot-scope="scope">
             <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
           </template>
@@ -105,7 +105,7 @@
           prop="id"
           label="ID"
         />
-        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="100">
+        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="120">
           <template slot-scope="scope">
             <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
           </template>
