@@ -1,5 +1,6 @@
 <template>
-  <div style="width: 100%; height: 100%;">
+  <div id="app">
+    <Header />
     <el-alert
       v-if="$nuxt.isOffline"
       title="您可能未连接到互联网, 请连接网络后重试~"
@@ -7,20 +8,17 @@
       effect="dark"
       style="z-index: 999; max-width: 340px; position: fixed; top: 20px; right: 20px;"
     />
-    <Nuxt />
+    <Nuxt/>
+    <Footer />
   </div>
 </template>
 
 <style>
-html,
-body,
-#__nuxt,
-#__layout,
-.container {
-  height: 100%;
-}
-
 html {
+  padding-bottom: 130px;
+  background-color: #1f2049;
+  color: #90a4ae;
+  height: 100%;
   font-family:
     'PingFangSC-Semibold'
     'Source Sans Pro',
@@ -38,6 +36,20 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
+}
+
+body,
+#__nuxt,
+#__layout,
+#app,
+.container {
+  background-color: #1f2049;
+  color: #90a4ae;
+  height: 100%;
+}
+
+.overflow-hidden {
+  overflow: hidden !important;
 }
 
 *,

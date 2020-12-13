@@ -4,17 +4,25 @@ import { getAccountsByMetaMask } from '@/api/wallet/metamask'
 export default function ({ app, store }) {
   utils.extend(app, {
     async mounted () {
+      const { ethereum } = window
       const accounts = await getAccountsByMetaMask()
       console.log('Hooray, Nuxt.js app mounted.', accounts)
 
-      store.commit('updateAccounts', { accounts, source: 'MetaMask' })
+      const chainId = ethereum.chainId
+      store.commit('updateAccounts', { accounts, chainId, source: 'MetaMask' })
 
-      const { ethereum } = window
       if (ethereum) {
         ethereum.on('accountsChanged', function (accounts) {
           // Time to reload your interface with accounts[0]!
           console.log('accountsChanged', accounts)
-          store.commit('updateAccounts', { accounts, source: 'MetaMask' })
+          const chainId = ethereum.chainId
+          store.commit('updateAccounts', { accounts, chainId, source: 'MetaMask' })
+        })
+
+        ethereum.on('chainChanged', function (chainId) {
+          // Time to reload your interface with accounts[0]!
+          console.log('chainChanged', chainId)
+          store.commit('updateChainId', { chainId, source: 'MetaMask' })
         })
       }
     }

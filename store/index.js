@@ -2,6 +2,7 @@ import { getProvider } from '@/api/contract/ethers'
 
 export const state = () => ({
   network: process.env.DEFAULT_ETHEREUM_NETWORK,
+  chainId: process.env.DEFAULT_CHAIN_ID,
   provider: null,
 
   // 整体统计
@@ -62,11 +63,22 @@ export const mutations = {
     }
     state.detailCache = { ...state.detailCache }
   },
-  updateAccounts (state, { accounts, source }) {
+  // accounts, chainId, source
+  updateAccounts (state, payload) {
+    const { accounts } = payload
     // 目前仅支持 metamask
+    state.metamask = state.metamask || {}
     state.metamask = {
-      accounts,
+      ...state.metamask,
+      ...payload,
       account: accounts && accounts.length && accounts[0]
+    }
+  },
+  updateChainId (state, { chainId, source }) {
+    state.metamask = state.metamask || {}
+    state.metamask = {
+      ...state.metamask,
+      chainId
     }
   },
   updateBalanceInfo (state, { streamId, info }) {
@@ -81,6 +93,11 @@ export const getters = {
   isMetaMaskConnected: (state) => {
     console.log('getters', state)
     return !!state.metamask.account
+  },
+  isMetaMaskNetworkRight: (state) => {
+    console.log('getters', state)
+    console.log('isMetaMaskNetworkRight', state.metamask.chainId, state.chainId)
+    return state.metamask.chainId === state.chainId
   }
 }
 

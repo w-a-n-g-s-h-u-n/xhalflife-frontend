@@ -22,7 +22,7 @@
           prop="id"
           label="ID"
         />
-        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="100">
+        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="120">
           <template slot-scope="scope">
             <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
           </template>
@@ -105,7 +105,7 @@
           prop="id"
           label="ID"
         />
-        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="100">
+        <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="120">
           <template slot-scope="scope">
             <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
           </template>
@@ -159,7 +159,6 @@
             <NuxtLink :to="`/detail?id=${scope.row.id}`">
               <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
                 View Detail
-                <stream-balance :id="scope.row.id" :row="scope.row" />
               </el-button>
             </NuxtLink>
           </template>
@@ -182,9 +181,11 @@
 import { STREAM_LIST_BY_SENDER, STREAM_LIST_BY_RECIPIENT } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
 import { ethers } from 'ethers'
+import mixin from './mixin'
 
 export default {
   name: 'StreamListMine',
+  mixins: [mixin],
   data () {
     return {
       current: 'received',
@@ -262,8 +263,13 @@ export default {
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: { first: 100, sender: this.account } })
       console.log('StreamList send', ret)
       // this.sendInfo.list = ret.data.streams
+
       this.$store.commit('updateSteamList', { key: 'MySentList', value: ret.data.streams })
       this.sendInfo.loading = false
+
+      const ids = ret.data.streams.map(item => item.id)
+      this.refreshBalanceOfStreams(ids)
+
       return ret
     },
     // 我收到的
@@ -273,8 +279,10 @@ export default {
       console.log('StreamList receive', ret)
       // this.receiveInfo.list = ret.data.streams
       this.$store.commit('updateSteamList', { key: 'myReceivedList', value: ret.data.streams })
-
       this.receiveInfo.loading = false
+
+      const ids = ret.data.streams.map(item => item.id)
+      this.refreshBalanceOfStreams(ids)
 
       return ret
     },

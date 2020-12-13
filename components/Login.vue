@@ -1,10 +1,17 @@
 <template>
-  <el-button v-if="isMetaMaskConnected" class="connected" size="mini" type="success">
-    MetaMask Connected
+
+  <div v-if="isMetaMaskNetworkRight" class="btn">
+    <el-button v-if="isMetaMaskConnected"  round type="success">
+      {{ metamask.account | addr }}
+    </el-button>
+    <el-button v-else round @click="onClick">
+      Connect MetaMask
+    </el-button>
+  </div>
+  <el-button v-else round type="danger" class="btn">
+    Wrong network
   </el-button>
-  <el-button v-else round @click="onClick">
-    Connect MetaMask
-  </el-button>
+
 <!--  <el-button v-else :class="{'connected':isMetaMaskConnected}" round @click="onClick">-->
 <!--    {{ isMetaMaskConnected?'MetaMask Connected':'Connect MetaMask' }}-->
 <!--  </el-button>-->
@@ -12,7 +19,7 @@
 
 <script>
 import metamask from '@/api/wallet/metamask'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'Login',
@@ -20,8 +27,10 @@ export default {
     return {}
   },
   computed: {
+    ...mapState(['metamask']),
     ...mapGetters([
-      'isMetaMaskConnected'
+      'isMetaMaskConnected',
+      'isMetaMaskNetworkRight'
     ])
   },
   mounted () {
@@ -42,8 +51,7 @@ export default {
 </script>
 
 <style scoped>
-  .connected {
-    color: green;
+  .btn {
     margin-top: 15px;
   }
 </style>

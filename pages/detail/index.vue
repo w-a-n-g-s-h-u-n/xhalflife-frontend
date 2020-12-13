@@ -1,18 +1,5 @@
 <template>
-  <div class="container">
-    <div class="header">
-      <div class="content">
-        <NuxtLink to="/">
-          <img class="logo" src="~/assets/logo.png" alt="">
-        </NuxtLink>
-        <span class="nav-item active">
-          <span class="text">xHalfLife</span>
-          <span class="indicator" />
-        </span>
-        <Login style="float: right;" />
-        <div style="clear: both;" />
-      </div>
-    </div>
+  <div class="main">
     <div class="module">
       <div class="breadcrumb">
         xHalfLife <span><i class="el-icon-right" /></span> Detail
@@ -173,7 +160,6 @@
 
       </div>
     </div>
-
     <el-dialog
       title="提款"
       :visible.sync="withdrawDialogVisible"
@@ -193,7 +179,6 @@
         <el-button type="primary" @click="doWithdraw">确 定</el-button>
       </span>
     </el-dialog>
-
     <el-dialog
       title="存款"
       :visible.sync="fundDialogVisible"
@@ -212,7 +197,6 @@
         <el-button type="primary" @click="doFund">确 定</el-button>
       </span>
     </el-dialog>
-
     <el-dialog
       title="取消"
       :visible.sync="cancelDialogVisible"
