@@ -87,4 +87,9 @@ body,
   color: #fff;
   background-color: #35495e;
 }
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
 </style>

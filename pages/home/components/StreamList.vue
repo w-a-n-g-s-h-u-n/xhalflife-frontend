@@ -8,7 +8,7 @@
       :header-cell-style="cellStyle"
     >
       <el-table-column
-        width="80"
+        width="50"
         prop="id"
         label="ID"
       />
@@ -18,7 +18,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Deposited">
+      <el-table-column align="center" label="Deposited" min-width="120">
         <template slot-scope="scope">
           <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
         </template>
@@ -146,11 +146,6 @@ export default {
     },
     cellStyle (obj) {
       return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // if (obj.columnIndex === 8) {
-      //   return 'background-color:#1e2049;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // } else {
-      //   return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // }
     }
   }
 }
@@ -177,14 +172,16 @@ export default {
   }
 
   .view-detail-btn {
-    //font-family: PingFang-SC-Bold;
-    background-image: linear-gradient(136deg, #2bf7dd 0%, #3a8ff7 51%, #da37fa 100%);
+    background: transparent;
+    display: flex;
+    align-items: center;
     border-radius: 20px;
     width: 98px;
-    height: 27.7px;
+    height: 28px;
     font-size: 13px;
-    color: #fff;
+    color: #fced3e;
     letter-spacing: 0;
     text-align: center;
+    border: 1px solid #fced3e;
   }
 </style>

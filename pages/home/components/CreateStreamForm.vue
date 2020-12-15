@@ -30,9 +30,9 @@
 
         <el-form-item label="Unlock Ratio" style="width: 25%;" prop="unlockRatio">>
           <el-select v-model="formData.unlockRatio" placeholder="">
-            <el-option label="0.1%" value="0.1" />
-            <el-option label="0.2%" value="0.2" />
-            <el-option label="0.3%" value="0.3" />
+            <el-option label="0.1%" value="0.001" />
+            <el-option label="0.2%" value="0.002" />
+            <el-option label="0.3%" value="0.003" />
           </el-select>
         </el-form-item>
       </div>
@@ -76,11 +76,11 @@ export default {
     return {
       formData: {
         token: 'XDEX',
-        recipient: '0xdBd15395D77eEd497657f935CcBE798C922A2d72',
+        recipient: '0x7B980310a885Cc3880E5357B4bbf7540E93f6D3d',
         depositAmount: undefined,
         startBlock: 0, // 22096060
         kBlock: '40',
-        unlockRatio: '1000000000000000' // '1000000000000000'
+        unlockRatio: '0.001' // '1000000000000000'
       },
       rules: {
         recipient: [
@@ -104,8 +104,7 @@ export default {
   async mounted () {
     const provider = await getProvider()
     const blockNumber = await provider.getBlockNumber()
-    console.log(blockNumber)
-    this.formData.startBlock = blockNumber + 1000
+    this.formData.startBlock = blockNumber + 10
   },
   methods: {
 
@@ -149,7 +148,7 @@ export default {
             return
           }
 
-          // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则出发approve流程
+          // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则触发approve流程
           const allowance = await contractXDEX.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
           console.log('allowance', allowance, accounts[0])
 
@@ -169,8 +168,9 @@ export default {
 
           // 提交
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
-          console.log('this.formData', { recipient, depositAmount, startBlock, kBlock, unlockRatio })
-          const tx = await contract.createStream(recipient, depositAmount, startBlock, kBlock, unlockRatio)
+          const decimalsAmount = ethers.utils.parseUnits(depositAmount, 18).toString()
+          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, 18).toString()
+          const tx = await contract.createStream(recipient, decimalsAmount, startBlock, kBlock, decimalsRatio)
           const createStreamResult = await tx.wait()
           // this.$message('Please wait MetaMast to create the stream')
           console.log('createStreamResult', createStreamResult)
