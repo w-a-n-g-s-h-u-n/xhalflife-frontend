@@ -9,7 +9,7 @@ export const extend = (app, mixin) => {
 }
 
 export const statusedList = (list) => {
-  return list.map(item => item.txs.some(x => x.event === 'CancelStream') ? { ...item, isCanceled: true } : { ...item, isCanceled: false })
+  return list.map(item => item.txs.some(x => x.event === 'CancelStream') ? { ...item, isCanceled: true, withdrawable: 0, remaining: 0 } : { ...item, isCanceled: false })
 }
 
 export const decimalsNumber = (value) => {

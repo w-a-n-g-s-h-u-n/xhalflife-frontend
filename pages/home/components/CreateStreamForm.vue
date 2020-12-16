@@ -8,7 +8,14 @@
       ref="createForm"
       class="form">
       <el-form-item label="Which Token" prop="token">
-        <el-input v-model="formData.token" />
+        <el-select v-model="formData.token" placeholder="请选择" style="width: 100%;">
+          <el-option
+            v-for="item in tokenOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="How Much To Start" prop="depositAmount">
         <el-input v-model="formData.depositAmount" />
@@ -17,25 +24,25 @@
         <el-input v-model="formData.recipient" />
       </el-form-item>
 
-      <div style="display: flex; justify-content: space-around; align-items: center;">
-        <el-form-item label="When Should Start" class="input-style-2" style="width: 25%;" prop="startBlock">
-          <el-input v-model="formData.startBlock" placeholder="" />
-        </el-form-item>
-        <el-form-item label="Unlock K Block" style="width: 25%;" prop="kBlock">>
-          <el-select v-model="formData.kBlock" placeholder="">
-            <el-option label="100" value="100" />
-            <el-option label="200" value="200" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="Unlock Ratio" style="width: 25%;" prop="unlockRatio">>
-          <el-select v-model="formData.unlockRatio" placeholder="">
-            <el-option label="0.1%" value="0.001" />
-            <el-option label="0.2%" value="0.002" />
-            <el-option label="0.3%" value="0.003" />
-          </el-select>
-        </el-form-item>
-      </div>
+      <el-row :gutter="15">
+        <el-col :span="8">
+          <el-form-item label="When Should Start" class="input-style-2" prop="startBlock">
+            <el-input v-model="formData.startBlock" placeholder="" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="Unlock K Block" prop="kBlock">
+            <el-input v-model="formData.kBlock" placeholder="" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="Unlock Ratio" prop="unlockRatio">
+            <el-input v-model="formData.unlockRatio" placeholder="">
+              <template slot='append'>‰</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <div class="actions">
       <el-button type="primary" round class="start-btn btn" @click="onSubmit">
@@ -74,13 +81,19 @@ export default {
   name: 'CreateStreamForm',
   data () {
     return {
+      tokenOptions: [
+        {
+          value: 'XDEX',
+          label: 'XDEX'
+        }
+      ],
       formData: {
         token: 'XDEX',
         recipient: '0x7B980310a885Cc3880E5357B4bbf7540E93f6D3d',
         depositAmount: undefined,
         startBlock: 0, // 22096060
         kBlock: '40',
-        unlockRatio: '0.001' // '1000000000000000'
+        unlockRatio: '1' // '1000000000000000'
       },
       rules: {
         recipient: [
@@ -169,7 +182,7 @@ export default {
           // 提交
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
           const decimalsAmount = ethers.utils.parseUnits(depositAmount, 18).toString()
-          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, 18).toString()
+          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, 15).toString()
           const tx = await contract.createStream(recipient, decimalsAmount, startBlock, kBlock, decimalsRatio)
           const createStreamResult = await tx.wait()
           // this.$message('Please wait MetaMast to create the stream')

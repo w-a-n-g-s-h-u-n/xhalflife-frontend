@@ -3,7 +3,7 @@
     <div class="content">
       <img class="logo" src="~/assets/xdefi.svg" alt="">
       <span class="nav-item active">
-        <NuxtLink to="/"><span class="text">xHalfLife</span></NuxtLink>
+        <NuxtLink to="/"><span class="text">HalfLife</span></NuxtLink>
         <span class="indicator" />
       </span>
       <Login style="float: right;" />
@@ -19,6 +19,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import "~/pages/home/index.scss";
+
   .header {
     background-color: #161638;
     color: #333;
@@ -26,7 +28,7 @@ export default {
     height: 60px;
     position: fixed;
     width: 100%;
-    z-index: 1000;
+    z-index: 66000;
 
     .content {
       width: 998px;

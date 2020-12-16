@@ -12,21 +12,24 @@
         prop="id"
         label="ID"
       />
+      <el-table-column align="center" label="Sender" min-width="120">
+        <template slot-scope="scope">
+          <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="120">
         <template slot-scope="scope">
           <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
         </template>
       </el-table-column>
-
       <el-table-column align="center" label="Deposited" min-width="120">
         <template slot-scope="scope">
           <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
         </template>
       </el-table-column>
-
       <el-table-column align="center" label="Withdrawable" min-width="120">
         <template slot-scope="scope">
-          <span :title="scope.row.withdrawable">{{ (detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable) | precision18 }}</span>
+          <span :title="scope.row.withdrawable">{{ detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable | precision18 }}</span>
         </template>
       </el-table-column>
 
@@ -35,7 +38,6 @@
           <span :title="scope.row.startBlock">#{{ scope.row.startBlock }}</span>
         </template>
       </el-table-column>
-
       <el-table-column align="center" label="Status" min-width="120">
         <template slot-scope="scope">
           <stream-status
@@ -46,12 +48,6 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Sender" min-width="100">
-        <template slot-scope="scope">
-          <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column label="Date" fixed="right" min-width="100">
         <template slot-scope="scope">
           <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
@@ -122,7 +118,7 @@ export default {
     }
   }),
   created () {
-    console.log('StreamList mounted')
+    console.log('StreamList mounted', this.homeList)
     this.getList()
     this.$store.dispatch('refreshLatestBlockNumber')
   },
@@ -131,9 +127,10 @@ export default {
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
       console.log('StreamList ret', ret)
-      this.$store.commit('updateSteamList', { key: 'homeList', value: statusedList(ret.data.streams) })
+      const statusList = statusedList(ret.data.streams)
+      this.$store.commit('updateSteamList', { key: 'homeList', value: statusList })
 
-      const ids = ret.data.streams.map(item => item.id)
+      const ids = statusList.map(item => item.id)
       this.refreshBalanceOfStreams(ids)
 
       this.loading = false
@@ -147,7 +144,7 @@ export default {
       this.getList()
     },
     cellStyle (obj) {
-      return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
+      return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;overflow:hidden;text-overflow: ellipsis;'
     }
   }
 }
@@ -165,6 +162,14 @@ export default {
     &::before {
       border: none;
     }
+  }
+
+  .el-pagination button:disabled {
+    background-color: transparent !important;
+  }
+
+  .el-pager li {
+    background: transparent !important;
   }
 
   .el-table--border::after,

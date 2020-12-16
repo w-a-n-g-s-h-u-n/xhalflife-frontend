@@ -12,7 +12,7 @@ export const STREAM_LIST = gql`
         kBlock
         unlockRatio
         timestamp
-        txs(first: $first, orderBy: timestamp, orderDirection: desc) {
+        txs(first: $first, orderBy: timestamp, orderDirection: asc) {
           block
           event
           from
@@ -67,7 +67,7 @@ export const STREAM_LIST_BY_RECIPIENT = gql`
       kBlock
       unlockRatio
       timestamp
-      txs(first: $first, orderBy: timestamp, orderDirection: desc) {
+      txs(first: $first, orderBy: timestamp, orderDirection: asc) {
         block
         event
         from
@@ -89,7 +89,7 @@ export const STREAM_LIST_BY_SENDER = gql`
       kBlock
       unlockRatio
       timestamp
-      txs(first: $first, orderBy: timestamp, orderDirection: desc) {
+      txs(first: $first, orderBy: timestamp, orderDirection: asc) {
         block
         event
         from
