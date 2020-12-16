@@ -126,13 +126,13 @@
           </el-table-column>
           <el-table-column label="Txhash" align="right">
             <template slot-scope="scope">
-              <span
-                ><a
+              <span>
+                <a
                   :title="scope.row.txhash"
                   :href="`https://kovan.etherscan.io/tx/${scope.row.txhash}`"
-                  style="color: inherit"
-                  >{{ scope.row.txhash | addr }}</a
-                ></span
+                  style="color: inherit;"
+                  >{{ scope.row.txhash | addr }}</a>
+              </span
               >
             </template>
           </el-table-column>
@@ -146,7 +146,7 @@
       center
     >
       <div class="dialog-content">
-        <div style="padding: 10px">
+        <div style="padding: 10px;">
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
@@ -165,7 +165,7 @@
       center
     >
       <div class="dialog-content">
-        <div style="padding: 10px">
+        <div style="padding: 10px;">
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formFund.amount">
@@ -278,11 +278,7 @@ export default {
     // },
     async getDetail (id) {
       const ret = await this.$apollo.query({ query: STREAM_DETAIL, variables: { id: Number(id) } })
-<<<<<<< HEAD
-      this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams))
-=======
       this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams)[0])
->>>>>>> ea10b2623a9b88b2db3784aff91ad16fd5f5e17d
     },
     async getStreamBalance (id) {
       console.log('getStreamBalance', id)
