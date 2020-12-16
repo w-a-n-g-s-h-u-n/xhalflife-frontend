@@ -181,6 +181,7 @@
 import { STREAM_LIST_BY_SENDER, STREAM_LIST_BY_RECIPIENT } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
 import { ethers } from 'ethers'
+import { statusedList } from '@/utils/index'
 import mixin from './mixin'
 
 export default {
@@ -264,7 +265,7 @@ export default {
       console.log('StreamList send', ret)
       // this.sendInfo.list = ret.data.streams
 
-      this.$store.commit('updateSteamList', { key: 'MySentList', value: ret.data.streams })
+      this.$store.commit('updateSteamList', { key: 'MySentList', value: statusedList(ret.data.streams) })
       this.sendInfo.loading = false
 
       const ids = ret.data.streams.map(item => item.id)
@@ -278,7 +279,7 @@ export default {
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: { first: 100, recipient: this.account } })
       console.log('StreamList receive', ret)
       // this.receiveInfo.list = ret.data.streams
-      this.$store.commit('updateSteamList', { key: 'myReceivedList', value: ret.data.streams })
+      this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(ret.data.streams) })
       this.receiveInfo.loading = false
 
       const ids = ret.data.streams.map(item => item.id)
@@ -345,13 +346,15 @@ export default {
   }
 
   .view-detail-btn {
-    //font-family: PingFang-SC-Bold;
-    background-image: linear-gradient(136deg, #2bf7dd 0%, #3a8ff7 51%, #da37fa 100%);
+    display: flex;
+    align-items: center;
     border-radius: 20px;
     width: 98px;
     height: 27.7px;
     font-size: 13px;
-    color: #fff;
+    background: transparent;
+    color: #fced3e;
+    border: 1px solid #fced3e;
     letter-spacing: 0;
     text-align: center;
   }

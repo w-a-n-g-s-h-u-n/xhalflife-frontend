@@ -30,12 +30,12 @@ export default {
 
         this.timer = setTimeout(function () {
           self.refreshBalanceOfStreams()
-        }, 100)
+        }, 1000)
       } catch (e) {
         this.streamIdQueue.push(id) // 重新入队
         this.timer = setTimeout(function () {
           self.refreshBalanceOfStreams()
-        }, 100)
+        }, 1000)
       }
     }
   }

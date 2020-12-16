@@ -1,5 +1,5 @@
 <template>
-  <div>{{ status }}</div>
+  <div class='section'><div :class="['status', status]"></div>{{ status.toUpperCase() }}</div>
 </template>
 <script>
 import { BigNumber } from 'ethers'
@@ -8,14 +8,18 @@ export default {
   props: {
     startBlock: [Number, Object, String],
     currentBlock: [Number, Object, String],
-    remaining: [Number, Object, String] // 可以是Bigumber对象 或string格式数字
+    remaining: [Number, Object, String], // 可以是Bigumber对象 或string格式数字
+    isCanceled: Boolean
   },
   data () {
     return {}
   },
   computed: {
     status () {
-      let value = 'LOADING'
+      let value = 'loading'
+      if (this.isCanceled) {
+        return 'canceled'
+      }
       console.log('startBlock, currentBlock, remaining', this.startBlock, this.currentBlock, this.remaining)
 
       if (this.startBlock && this.currentBlock && this.remaining) {
@@ -26,12 +30,12 @@ export default {
 
         if (startBlock.lte(currentBlock)) {
           if (remaining.lte(minRemaining)) {
-            value = 'ENDED'
+            value = 'ended'
           } else {
-            value = 'STREAMING'
+            value = 'streaming'
           }
         } else {
-          value = 'WAITING'
+          value = 'waiting'
         }
       }
       return value
@@ -42,7 +46,36 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+  .section {
+    display: flex;
+    align-items: center;
+  }
 
-<!--<style scoped>-->
+  .status {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 5px;
 
-<!--</style>-->
+    &.loading {
+      background-color: #dedede;
+    }
+
+    &.waiting {
+      background-color: #666;
+    }
+
+    &.streaming {
+      background-color: #7dff00;
+    }
+
+    &.canceled {
+      background-color: #fc3e74;
+    }
+
+    &.ended {
+      background-color: #135ca0;
+    }
+  }
+</style>

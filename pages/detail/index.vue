@@ -28,7 +28,7 @@
               Remaining
             </div>
             <div class="content">
-              {{ detail.remaining | precision18 }}XDEX
+              {{ detail.remaining | precision18 }} XDEX
             </div>
           </div>
           <div class="card" shadow="always">
@@ -50,6 +50,7 @@
                 :start-block="detail.startBlock"
                 :current-block="blockNumber"
                 :remaining="detail.remaining"
+                :isCanceled="detail.isCanceled"
               />
             </div>
           </div>
@@ -113,6 +114,11 @@
           <el-table-column label="Date" min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.timestamp">{{scope.row.timestamp | date}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="Event" min-width="120">
+            <template slot-scope="scope">
+              <span :title="scope.row.event">{{ scope.row.event }}</span>
             </template>
           </el-table-column>
           <el-table-column label="From" min-width="120">
@@ -195,6 +201,7 @@ import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import XDEX_ABI from '@/api/contract/abis/XDEX'
 
 import { mapState } from 'vuex'
+import { statusedList } from '@/utils/index'
 
 export default {
   name: 'Detail',
@@ -271,8 +278,7 @@ export default {
     // },
     async getDetail (id) {
       const ret = await this.$apollo.query({ query: STREAM_DETAIL, variables: { id: Number(id) } })
-      console.log('getDetail', ret)
-      this.$store.commit('updateSteamDetail', ret.data.streams && ret.data.streams[0])
+      this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams))
     },
     async getStreamBalance (id) {
       console.log('getStreamBalance', id)

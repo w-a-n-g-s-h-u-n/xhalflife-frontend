@@ -16,7 +16,7 @@ Vue.filter('date', function (v) {
 })
 
 Vue.filter('precision18', function (v) {
-  if (!v || isNaN(v)) { return '' }
+  if (!v || isNaN(v)) { return 0 }
   const n = ethers.BigNumber.from(v).toString()
   const value = BigNumber(n).shiftedBy(0 - 18).toNumber()
   if (value < 1) {
