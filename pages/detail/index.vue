@@ -28,7 +28,7 @@
               Remaining
             </div>
             <div class="content">
-              {{ detail.remaining | precision18 }}XDEX
+              {{ detail.remaining | precision18 }} XDEX
             </div>
           </div>
           <div class="card" shadow="always">
@@ -50,6 +50,7 @@
                 :start-block="detail.startBlock"
                 :current-block="blockNumber"
                 :remaining="detail.remaining"
+                :isCanceled="detail.isCanceled"
               />
             </div>
           </div>
@@ -115,6 +116,11 @@
               <span :title="scope.row.timestamp">{{scope.row.timestamp | date}}</span>
             </template>
           </el-table-column>
+          <el-table-column label="Event" min-width="120">
+            <template slot-scope="scope">
+              <span :title="scope.row.event">{{ scope.row.event }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="From" min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.from">{{ scope.row.from | addr }}</span>
@@ -144,7 +150,7 @@
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
-          <template slot="append">MAX</template>
+          <el-button slot="append" @click="maxWithdraw">MAX</el-button>
         </el-input>
       </div>
 
@@ -195,6 +201,7 @@ import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import XDEX_ABI from '@/api/contract/abis/XDEX'
 
 import { mapState } from 'vuex'
+import { statusedList, decimalsNumber } from '@/utils/index'
 
 export default {
   name: 'Detail',
@@ -271,8 +278,7 @@ export default {
     // },
     async getDetail (id) {
       const ret = await this.$apollo.query({ query: STREAM_DETAIL, variables: { id: Number(id) } })
-      console.log('getDetail', ret)
-      this.$store.commit('updateSteamDetail', ret.data.streams && ret.data.streams[0])
+      this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams)[0])
     },
     async getStreamBalance (id) {
       console.log('getStreamBalance', id)
@@ -440,6 +446,9 @@ export default {
         })
         this.cancelDialogVisible = false
       }
+    },
+    maxWithdraw () {
+      this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable)
     },
     cellStyle (obj) {
       return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'

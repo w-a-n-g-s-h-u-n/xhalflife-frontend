@@ -42,6 +42,7 @@
             :start-block="scope.row.startBlock"
             :current-block="blockNumber"
             :remaining="detailCache[scope.row.id] && detailCache[scope.row.id].remaining"
+            :isCanceled="scope.row.isCanceled"
           />
         </template>
       </el-table-column>
@@ -87,6 +88,7 @@
 <script>
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
+import { statusedList } from '@/utils/index'
 // import gql from 'graphql-tag'
 import mixin from './mixin'
 export default {
@@ -129,7 +131,7 @@ export default {
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
       console.log('StreamList ret', ret)
-      this.$store.commit('updateSteamList', { key: 'homeList', value: ret.data.streams })
+      this.$store.commit('updateSteamList', { key: 'homeList', value: statusedList(ret.data.streams) })
 
       const ids = ret.data.streams.map(item => item.id)
       this.refreshBalanceOfStreams(ids)
@@ -172,16 +174,16 @@ export default {
   }
 
   .view-detail-btn {
-    background: transparent;
     display: flex;
     align-items: center;
     border-radius: 20px;
     width: 98px;
     height: 28px;
     font-size: 13px;
+    background: transparent;
     color: #fced3e;
+    border: 1px solid #fced3e;
     letter-spacing: 0;
     text-align: center;
-    border: 1px solid #fced3e;
   }
 </style>
