@@ -8,7 +8,7 @@
       :header-cell-style="cellStyle"
     >
       <el-table-column
-        width="80"
+        width="50"
         prop="id"
         label="ID"
       />
@@ -18,7 +18,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Deposited">
+      <el-table-column align="center" label="Deposited" min-width="120">
         <template slot-scope="scope">
           <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
         </template>
@@ -42,6 +42,7 @@
             :start-block="scope.row.startBlock"
             :current-block="blockNumber"
             :remaining="detailCache[scope.row.id] && detailCache[scope.row.id].remaining"
+            :isCanceled="scope.row.isCanceled"
           />
         </template>
       </el-table-column>
@@ -87,6 +88,7 @@
 <script>
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
+import { statusedList } from '@/utils/index'
 // import gql from 'graphql-tag'
 import mixin from './mixin'
 export default {
@@ -129,7 +131,7 @@ export default {
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
       console.log('StreamList ret', ret)
-      this.$store.commit('updateSteamList', { key: 'homeList', value: ret.data.streams })
+      this.$store.commit('updateSteamList', { key: 'homeList', value: statusedList(ret.data.streams) })
 
       const ids = ret.data.streams.map(item => item.id)
       this.refreshBalanceOfStreams(ids)
@@ -146,11 +148,6 @@ export default {
     },
     cellStyle (obj) {
       return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // if (obj.columnIndex === 8) {
-      //   return 'background-color:#1e2049;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // } else {
-      //   return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // }
     }
   }
 }
@@ -177,13 +174,15 @@ export default {
   }
 
   .view-detail-btn {
-    //font-family: PingFang-SC-Bold;
-    background-image: linear-gradient(136deg, #2bf7dd 0%, #3a8ff7 51%, #da37fa 100%);
+    display: flex;
+    align-items: center;
     border-radius: 20px;
     width: 98px;
-    height: 27.7px;
+    height: 28px;
     font-size: 13px;
-    color: #fff;
+    background: transparent;
+    color: #fced3e;
+    border: 1px solid #fced3e;
     letter-spacing: 0;
     text-align: center;
   }

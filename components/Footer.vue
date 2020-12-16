@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-items-center footer">
     <a href="/">
-      <img src="~@/assets/xdefi.svg" alt="pebbles">
+      <img src="~@/assets/logo.png" alt="pebbles" height='30'>
     </a>
     <p>2020 xDefi</p>
     <div>

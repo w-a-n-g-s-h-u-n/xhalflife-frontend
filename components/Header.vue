@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div class="content">
-      <img class="logo" src="~/assets/logo.png" alt="">
+      <img class="logo" src="~/assets/xdefi.svg" alt="">
       <span class="nav-item active">
         <NuxtLink to="/"><span class="text">xHalfLife</span></NuxtLink>
         <span class="indicator" />

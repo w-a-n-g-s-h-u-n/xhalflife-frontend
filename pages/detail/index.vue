@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <div class="module">
+    <div class="module mainContainer">
       <div class="breadcrumb">
         xHalfLife <span><i class="el-icon-right" /></span> Detail
       </div>
@@ -10,13 +10,28 @@
         </div>
 
         <div class="actions">
-          <el-button v-if="canFund" type="primary" class="action-fund" @click="fundDialogVisible =true">
+          <el-button
+            v-if="canFund"
+            type="primary"
+            class="action-fund"
+            @click="fundDialogVisible = true"
+          >
             Fund
           </el-button>
-          <el-button v-if="canWithDraw" type="primary" class="action-withdraw" @click="withdrawDialogVisible=true">
+          <el-button
+            v-if="canWithDraw"
+            type="primary"
+            class="action-withdraw"
+            @click="withdrawDialogVisible = true"
+          >
             WithDraw
           </el-button>
-          <el-button v-if="canCancel" type="success" class="action-cancel" @click="cancelDialogVisible=true">
+          <el-button
+            v-if="canCancel"
+            type="success"
+            class="action-cancel"
+            @click="cancelDialogVisible = true"
+          >
             Cancel
           </el-button>
         </div>
@@ -24,17 +39,11 @@
       <div class="detail-cards">
         <div class="left">
           <div class="card" shadow="always">
-            <div class="header">
-              Remaining
-            </div>
-            <div class="content">
-              {{ detail.remaining | precision18 }}XDEX
-            </div>
+            <div class="header">Remaining</div>
+            <div class="content">{{ detail.remaining | precision18 }} XDEX</div>
           </div>
           <div class="card" shadow="always">
-            <div class="header">
-              Withdrawable
-            </div>
+            <div class="header">Withdrawable</div>
             <div class="content">
               {{ detail.withdrawable | precision18 }} XDEX
             </div>
@@ -42,56 +51,41 @@
         </div>
         <div class="right card">
           <div class="header">
-            <div class="title">
-              DATE
-            </div>
+            <div class="title">DATE</div>
             <div class="status">
               <stream-status
                 :start-block="detail.startBlock"
                 :current-block="blockNumber"
                 :remaining="detail.remaining"
+                :isCanceled="detail.isCanceled"
               />
             </div>
           </div>
           <div class="content">
             <div class="part1 block-info">
               <div class="item item1">
-                <div class="label">
-                  StartBlock
-                </div>
-                <div class="value">
-                  #{{ detail.startBlock }}
-                </div>
+                <div class="label">StartBlock</div>
+                <div class="value">#{{ detail.startBlock }}</div>
               </div>
               <div class="item item2">
-                <div class="label">
-                  Unlock Ratio
-                </div>
-                <div class="value">
-                  {{ detail.unlockRatio| precision18 }}%
-                </div>
+                <div class="label">Unlock Ratio</div>
+                <div class="value">{{ detail.unlockRatio | precision18 }}%</div>
               </div>
               <div class="item item3">
-                <div class="label">
-                  Unlock K
-                </div>
+                <div class="label">Unlock K</div>
                 <div class="value">
                   {{ detail.kBlock }}
                 </div>
               </div>
             </div>
             <div class="part2 sender item">
-              <div class="label">
-                Sender
-              </div>
+              <div class="label">Sender</div>
               <div class="value">
                 {{ detail.sender }}
               </div>
             </div>
-            <div class=" part3 recipent item">
-              <div class="label">
-                Recipent
-              </div>
+            <div class="part3 recipent item">
+              <div class="label">Recipent</div>
               <div class="value">
                 {{ detail.recipient }}
               </div>
@@ -100,64 +94,49 @@
         </div>
       </div>
       <div class="card last-activity">
-        <div class="header">
-          Last Activity
-        </div>
-        <div class="content">
-          <!--block: 21538074-->
-          <!--event: "WithdrawFromStream"-->
-          <!--from: "0x93be566bae0f7c21aab1662879f55767dd4c594b"-->
-          <!--timestamp: "1602747020"-->
-          <!--to: "0x97721b4c8bf7aedf936af11d18e2f1ef5af4836b"-->
-          <!--txhash: "0xb3a71fcfd1af6e75ac211cc9428e8d123d16cb37ef5915b3e4b3a6003ebcf89f"-->
-          <!--__typename: "StreamTransaction"-->
-          <el-row >
-            <el-col :span="6" class="part part1">
-              <div class="item item1">
-                Date
-              </div>
-            </el-col>
-            <el-col :span="6" class="part part2">
-              <div class="item item1">
-                From
-              </div>
-            </el-col>
-            <el-col :span="6" class="part part3">
-              <div class="item item1">
-                To
-              </div>
-            </el-col>
-            <el-col :span="6" class="part part4">
-              <div class="item item1">
-                TRX ID
-              </div>
-            </el-col>
-          </el-row>
-          <el-row v-for="item in (detail.txs || [])" :key="item.timestamp">
-            <el-col :span="6" class="part part1">
-              <div class="item item2">
-                {{item.timestamp | date}}
-              </div>
-            </el-col>
-            <el-col :span="6" class="part part2">
-              <div class="item item2">
-                {{item.from | addr}}
-              </div>
-            </el-col>
-            <el-col :span="6" class="part part3">
-              <div class="item item2">
-                {{item.to | addr}}
-
-              </div>
-            </el-col>
-            <el-col :span="6" class="part part4">
-              <div class="item item2">
-                {{item.txhash | addr}}
-              </div>
-            </el-col>
-          </el-row>
-        </div>
-
+        <div class="header">Last Activity</div>
+        <el-table
+          v-loading="loading"
+          :data="detail.txs"
+          class="table"
+          :cell-style="cellStyle"
+          :header-cell-style="cellStyle"
+        >
+          <el-table-column label="Date" min-width="120">
+            <template slot-scope="scope">
+              <span :title="scope.row.timestamp">{{
+                scope.row.timestamp | date
+              }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="Event" min-width="120">
+            <template slot-scope="scope">
+              <span :title="scope.row.event">{{ scope.row.event }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="From" min-width="120">
+            <template slot-scope="scope">
+              <span :title="scope.row.from">{{ scope.row.from | addr }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="To" min-width="120">
+            <template slot-scope="scope">
+              <span :title="scope.row.to">{{ scope.row.to | addr }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="Txhash" align="right">
+            <template slot-scope="scope">
+              <span
+                ><a
+                  :title="scope.row.txhash"
+                  :href="`https://kovan.etherscan.io/tx/${scope.row.txhash}`"
+                  style="color: inherit"
+                  >{{ scope.row.txhash | addr }}</a
+                ></span
+              >
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
     </div>
     <el-dialog
@@ -167,11 +146,11 @@
       center
     >
       <div class="dialog-content">
-        <div style="padding: 10px;" >
+        <div style="padding: 10px">
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
-          <template slot="append">MAX</template>
+          <el-button slot="append" @click="maxWithdraw">MAX</el-button>
         </el-input>
       </div>
 
@@ -186,7 +165,7 @@
       center
     >
       <div class="dialog-content">
-        <div style="padding: 10px;" >
+        <div style="padding: 10px">
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formFund.amount">
@@ -222,6 +201,7 @@ import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import XDEX_ABI from '@/api/contract/abis/XDEX'
 
 import { mapState } from 'vuex'
+import { statusedList, decimalsNumber } from '@/utils/index'
 
 export default {
   name: 'Detail',
@@ -232,6 +212,7 @@ export default {
       withdrawDialogVisible: false,
       fundDialogVisible: false,
       cancelDialogVisible: false,
+      loading: false,
       formWithdraw: {
         amount: 0
       },
@@ -297,8 +278,11 @@ export default {
     // },
     async getDetail (id) {
       const ret = await this.$apollo.query({ query: STREAM_DETAIL, variables: { id: Number(id) } })
-      console.log('getDetail', ret)
-      this.$store.commit('updateSteamDetail', ret.data.streams && ret.data.streams[0])
+<<<<<<< HEAD
+      this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams))
+=======
+      this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams)[0])
+>>>>>>> ea10b2623a9b88b2db3784aff91ad16fd5f5e17d
     },
     async getStreamBalance (id) {
       console.log('getStreamBalance', id)
@@ -466,12 +450,18 @@ export default {
         })
         this.cancelDialogVisible = false
       }
+    },
+    maxWithdraw () {
+      this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable)
+    },
+    cellStyle (obj) {
+      return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-  @import "~/pages/home/index.scss";
-  @import "./index.scss";
+@import "~/pages/home/index.scss";
+@import "./index.scss";
 </style>
