@@ -12,6 +12,7 @@
             type="primary"
             class="action-fund"
             @click="fundDialogVisible = true"
+            :size="isMobile ? 'small' : 'medium'"
           >
             Fund
           </el-button>
@@ -20,6 +21,7 @@
             type="primary"
             class="action-withdraw"
             @click="withdrawDialogVisible = true"
+            :size="isMobile ? 'small' : 'medium'"
           >
             WithDraw
           </el-button>
@@ -28,6 +30,7 @@
             type="success"
             class="action-cancel"
             @click="cancelDialogVisible = true"
+            :size="isMobile ? 'small' : 'medium'"
           >
             Cancel
           </el-button>
@@ -36,13 +39,13 @@
       <div class="detail-cards">
         <div class="left">
           <div class="card" shadow="always">
-            <div class="header">Remaining</div>
-            <div class="content">{{ detail.remaining | precision18 }} XDEX</div>
+            <div class="header">Remaining（XDEX）</div>
+            <div class="content">{{ detail.remaining | precision18 }}</div>
           </div>
           <div class="card" shadow="always">
-            <div class="header">Withdrawable</div>
+            <div class="header">Withdrawable（XDEX）</div>
             <div class="content">
-              {{ detail.withdrawable | precision18 }} XDEX
+              {{ detail.withdrawable | precision18 }}
             </div>
           </div>
         </div>
@@ -170,19 +173,19 @@
       title="取消"
       :visible.sync="cancelDialogVisible"
     >
-      <!--<span>需要注意的是内容是默认不居中的</span>-->
+      <span>确定取消</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="doCancel">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
-
 <script>
 import { STREAM_DETAIL } from '@/api/apollo/queries'
 import { XHalfLifeContract } from '@/api/contract'
 import { getProvider } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
+import { isMobile } from '@/utils/index'
 
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
@@ -204,6 +207,7 @@ export default {
       formWithdraw: {
         amount: 0
       },
+      isMobile: isMobile(),
       formFund: {
         amount: 0
       }

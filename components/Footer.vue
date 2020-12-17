@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-items-center footer">
+  <el-footer class="d-flex flex-items-center footer">
     <a href="/">
       <img src="~@/assets/logo.png" alt="pebbles" height='30'>
     </a>
@@ -51,7 +51,7 @@
         >
       </router-link>
     </div>
-  </div>
+  </el-footer>
 </template>
 <style scoped lang="scss">
   .d-flex {

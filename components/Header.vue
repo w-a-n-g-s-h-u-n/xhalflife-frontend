@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <el-header class="header">
     <div class="content">
       <div class="navContent">
         <img class="logo" src="~/assets/xdefi.svg" alt="">
@@ -10,7 +10,7 @@
       </div>
       <Login/>
     </div>
-  </div>
+  </el-header>
 </template>
 
 <script>
@@ -27,9 +27,8 @@ export default {
     color: #333;
     text-align: center;
     height: 60px;
-    position: fixed;
     width: 100%;
-    z-index: 6000;
+    padding: 0;
 
     .content {
       width: 1000px;
@@ -80,8 +79,10 @@ export default {
 
       @media (max-width: 768px) {
         width: 100%;
+        padding: 0 0.5rem;
 
         .logo {
+          width: auto;
           position: relative;
           left: 0.5rem;
           height: 1.5rem;

@@ -30,13 +30,13 @@
       <div class="module module-tabs">
         <div class="navs">
           <div class="nav" :class="{'active':activeTab=='a'}" @click="onSwitchTab('a')">
-            全部
+            Streams
           </div>
           <div class="nav" :class="{'active':activeTab=='b'}" @click="onSwitchTab('b')">
-            我的
+            Mine
           </div>
           <div class="nav" :class="{'active':activeTab=='c'}" @click="onSwitchTab('c')">
-            新建
+            New
           </div>
         </div>
         <div class="content">

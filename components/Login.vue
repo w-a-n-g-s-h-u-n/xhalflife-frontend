@@ -4,14 +4,14 @@
       <el-button v-if="isMetaMaskConnected"  round type="success" @click="accountDialog = true">
         {{ metamask.account | addr }}
       </el-button>
-      <el-button v-else type='primary' round @click="accountDialog = true">
+      <el-button v-else type='primary' round @click="accountDialog = true" :size="isMobile ? 'small' : 'medium'">
         Connect Wallet
       </el-button>
     </div>
     <el-dialog
       title="Account"
       :visible.sync="accountDialog"
-      width="25%"
+      :width="isMobile ? '80%' : '25%' "
       class="userManage"
     >
       <el-button v-if="!isMetaMaskConnected" @click="onClick" class='wallet'>METAMASK</el-button>
@@ -23,12 +23,14 @@
 <script>
 import metamask from '@/api/wallet/metamask'
 import { mapGetters, mapState } from 'vuex'
+import { isMobile } from '@/utils/index'
 
 export default {
   name: 'Login',
   data () {
     return {
-      accountDialog: false
+      accountDialog: false,
+      isMobile: isMobile()
     }
   },
   computed: {
@@ -62,8 +64,6 @@ export default {
 
 <style scoped lang="scss">
   .userManage {
-    z-index: 6000;
-
     .wallet {
       width: 100%;
       height: 40px;
