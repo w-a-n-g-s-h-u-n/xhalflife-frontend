@@ -1,4 +1,5 @@
 import { getProvider } from '@/api/contract/ethers'
+import { decimalsNumber } from '@/utils/index'
 
 export const state = () => ({
   network: process.env.DEFAULT_ETHEREUM_NETWORK,
@@ -71,13 +72,14 @@ export const mutations = {
   },
   // accounts, chainId, source
   updateAccounts (state, payload) {
-    const { accounts } = payload
+    const { accounts, balances } = payload
     // 目前仅支持 metamask
     state.metamask = state.metamask || {}
     state.metamask = {
       ...state.metamask,
       ...payload,
-      account: accounts && accounts.length && accounts[0]
+      account: accounts && accounts.length && accounts[0],
+      balances: decimalsNumber(balances)
     }
   },
   updateChainId (state, { chainId, source }) {

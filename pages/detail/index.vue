@@ -145,7 +145,7 @@
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
-          <el-button slot="append" @click="maxWithdraw">MAX</el-button>
+          <el-button slot="append" @click="maxAmount('withdraw')">MAX</el-button>
         </el-input>
       </div>
 
@@ -159,10 +159,10 @@
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          TOTAL: {{ detail.withdrawable | precision18 }} XDEX
+          TOTAL: {{ xdexBalance }} XDEX
         </div>
         <el-input placeholder="" v-model="formFund.amount">
-          <template slot="append">MAX</template>
+          <el-button slot="append" @click="maxAmount('fund')">MAX</el-button>
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -223,6 +223,9 @@ export default {
       },
       account (state) {
         return state.metamask && state.metamask.account
+      },
+      xdexBalance (state) {
+        return state.metamask && state.metamask.balances
       }
     }),
     canWithDraw () {
@@ -438,8 +441,12 @@ export default {
         this.cancelDialogVisible = false
       }
     },
-    maxWithdraw () {
-      this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable)
+    maxAmount (type) {
+      if (type === 'fund') {
+        this.formFund.amount = this.xdexBalance
+      } else if (type === 'withdraw') {
+        this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable)
+      }
     },
     cellStyle (obj) {
       return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'

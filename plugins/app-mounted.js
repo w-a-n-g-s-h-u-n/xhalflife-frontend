@@ -1,5 +1,5 @@
 import utils from '@/utils'
-import { getAccountsByMetaMask } from '@/api/wallet/metamask'
+import { getAccountsByMetaMask, getAccountBalances } from '@/api/wallet/metamask'
 
 export default function ({ app, store }) {
   utils.extend(app, {
@@ -8,8 +8,9 @@ export default function ({ app, store }) {
       const accounts = await getAccountsByMetaMask()
       console.log('Hooray, Nuxt.js app mounted.', accounts)
 
+      const balances = await getAccountBalances()
       const chainId = ethereum.chainId
-      store.commit('updateAccounts', { accounts, chainId, source: 'MetaMask' })
+      store.commit('updateAccounts', { accounts, balances, chainId, source: 'MetaMask' })
 
       if (ethereum) {
         ethereum.on('accountsChanged', function (accounts) {
