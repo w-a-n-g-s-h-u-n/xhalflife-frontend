@@ -136,8 +136,6 @@
     <el-dialog
       title="提款"
       :visible.sync="withdrawDialogVisible"
-      width="30%"
-      center
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
@@ -155,8 +153,6 @@
     <el-dialog
       title="存款"
       :visible.sync="fundDialogVisible"
-      width="30%"
-      center
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
@@ -173,8 +169,6 @@
     <el-dialog
       title="取消"
       :visible.sync="cancelDialogVisible"
-      width="30%"
-      center
     >
       <!--<span>需要注意的是内容是默认不居中的</span>-->
       <span slot="footer" class="dialog-footer">

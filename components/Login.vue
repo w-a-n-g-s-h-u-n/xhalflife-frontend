@@ -11,7 +11,8 @@
     <el-dialog
       title="Account"
       :visible.sync="accountDialog"
-      width="20%"
+      width="25%"
+      class="userManage"
     >
       <el-button v-if="!isMetaMaskConnected" @click="onClick" class='wallet'>METAMASK</el-button>
       <el-button v-else type="primary" @click="logout" class='wallet'>logout</el-button>
@@ -59,17 +60,23 @@ export default {
 }
 </script>
 
-<style scoped>
-  .btn {
-    margin-top: 15px;
+<style scoped lang="scss">
+  .userManage {
+    z-index: 6000;
+
+    .wallet {
+      width: 100%;
+      height: 40px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+      margin-left: 0;
+    }
   }
 
-  .wallet {
-    width: 100%;
-    height: 40px;
-    border-radius: 20px;
-    text-align: center;
-    margin-bottom: 10px;
-    margin-left: 0;
+  @media (max-width: 768px) {
+    .userManage {
+      width: 100%;
+    }
   }
 </style>

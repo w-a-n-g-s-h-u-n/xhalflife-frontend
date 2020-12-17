@@ -1,13 +1,14 @@
 <template>
   <div class="header">
     <div class="content">
-      <img class="logo" src="~/assets/xdefi.svg" alt="">
-      <span class="nav-item active">
-        <NuxtLink to="/"><span class="text">HalfLife</span></NuxtLink>
-        <span class="indicator" />
-      </span>
-      <Login style="float: right;" />
-      <div style="clear: both;" />
+      <div class="navContent">
+        <img class="logo" src="~/assets/xdefi.svg" alt="">
+        <span class="nav-item active">
+          <NuxtLink to="/"><span class="text">HalfLife</span></NuxtLink>
+          <span class="indicator" />
+        </span>
+      </div>
+      <Login/>
     </div>
   </div>
 </template>
@@ -28,30 +29,35 @@ export default {
     height: 60px;
     position: fixed;
     width: 100%;
-    z-index: 66000;
+    z-index: 6000;
 
     .content {
-      width: 998px;
+      width: 1000px;
       position: relative;
       margin: 0 auto;
       height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .navContent {
+        flex: 1 1 70%;
+        display: flex;
+      }
 
       .logo {
         width: 110px;
         height: 30px;
         position: absolute;
         left: -110px;
-        top: 15px;
       }
 
       .nav-item.active {
-        float: left;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
         height: 33px;
-        margin-top: 18px;
         margin-left: 50px;
         width: 80px;
 
@@ -69,6 +75,20 @@ export default {
           width: 20px;
           height: 4px;
           margin-top: 7px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+
+        .logo {
+          position: relative;
+          left: 0.5rem;
+          height: 1.5rem;
+        }
+
+        .nav-item.active {
+          margin-left: 1rem;
         }
       }
     }

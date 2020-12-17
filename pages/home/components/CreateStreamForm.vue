@@ -25,17 +25,17 @@
       </el-form-item>
 
       <el-row :gutter="15">
-        <el-col :span="8">
+        <el-col :span="isMobile ? 24 : 8" >
           <el-form-item label="When Should Start" class="input-style-2" prop="startBlock">
             <el-input v-model="formData.startBlock" placeholder="" />
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="isMobile ? 24 : 8">
           <el-form-item label="Unlock K Block" prop="kBlock">
             <el-input v-model="formData.kBlock" placeholder="" />
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="isMobile ? 24 : 8">
           <el-form-item label="Unlock Ratio" prop="unlockRatio">
             <el-input v-model="formData.unlockRatio" placeholder="">
               <template slot='append'>‰</template>
@@ -73,6 +73,7 @@ import metamask from '@/api/wallet/metamask'
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import XDEX_ABI from '@/api/contract/abis/XDEX'
+import { isMobile } from '@/utils/index'
 
 // import { ABI, KOVAN_ADDRESS } from '@/api/contract/abis/TEST'
 // import { ABI as XHALFLIFEMYTESTABI, KOVAN_ADDRESS as XHALFLIFEMYTESTKOVAN_ADDRESS } from '@/api/contract/abis/XHalfLifeMyTest'
@@ -95,6 +96,7 @@ export default {
         kBlock: '40',
         unlockRatio: '1' // '1000000000000000'
       },
+      isMobile: isMobile(),
       rules: {
         recipient: [
           { required: true, message: 'recipient is required', trigger: 'change' }
@@ -207,6 +209,12 @@ export default {
 <style scoped lang="scss">
   .wrap {
     text-align: left;
+    width: 500px;
+    margin: 0 auto;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
 
     .el-form-item__label {
       color: #fff !important;
