@@ -6,6 +6,17 @@ import metamask from '@/api/wallet/metamask'
 // TODO 申请 infura key
 // 节点固定为InfuraProvider
 
+const projectIds = [
+  '84842078b09946638c03157f83405213',
+  '32d3935c7ba0400d97a7d8f983753a34',
+  '6ef50f1b07374973bd3b878dfc35f103',
+  '216346fd497b46cbaee6fc32d942d577'
+]
+
+const getProjectId = () => projectIds[Math.floor(Math.random() * projectIds.length)]
+
+const ETHEREUM_NODE_URL = 'https://kovan.infura.io/v3/32d3935c7ba0400d97a7d8f983753a34'
+
 const App = {}
 
 export const getProvider = async (network) => {
@@ -15,9 +26,11 @@ export const getProvider = async (network) => {
   if (App.provider) { return App.provider }
 
   // let isMetaMaskInstalled = true
-  const ETHEREUM_NODE_URL = 'https://kovan.infura.io/v3/32d3935c7ba0400d97a7d8f983753a34'
+
   if (window.ethereum) {
+    console.log('instance', window.ethereum)
     App.web3Provider = window.ethereum
+    // App.provider = new ethers.providers.JsonRpcProvider(atob(ETHEREUM_NODE_URL))
     try {
       // Request account access
       // await window.ethereum.enable()
@@ -31,7 +44,6 @@ export const getProvider = async (network) => {
     App.provider = new ethers.providers.Web3Provider(window.web3.currentProvider)
   } else {
     // If no injected web3 instance is detected, fall back to backup node
-
     App.provider = new ethers.providers.JsonRpcProvider(atob(ETHEREUM_NODE_URL))
     // isMetaMaskInstalled = false
     // _print("You don't have MetaMask installed! Falling back to backup node...\n (will likely to fail. Please install MetaMask extension).\n")
@@ -43,4 +55,4 @@ export const getProvider = async (network) => {
 
 // 加载此文件即初始化provider，自带延迟加载功能
 // export const provider = getProvider()
-export const provider = new ethers.providers.InfuraProvider(process.env.DEFAULT_ETHEREUM_NETWORK)
+export const provider = new ethers.providers.InfuraProvider(process.env.DEFAULT_ETHEREUM_NETWORK, getProjectId())

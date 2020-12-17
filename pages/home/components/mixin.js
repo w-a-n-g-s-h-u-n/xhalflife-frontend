@@ -23,19 +23,19 @@ export default {
         this.reqCount[id] = this.reqCount[id] ? ++this.reqCount[id] : 1 // 记录请求次数
 
         if (this.reqCount[id] < 4) { // 最多请求三次
-          console.log('refreshBalanceOfStreams', id)
           const ret = await XHalfLifeContract.balanceOf(id)
+          console.log('refreshBalanceOfStreams', id, ret)
           this.$store.commit('updateBalanceByStreamId', { key: id, value: ret })
         }
 
         this.timer = setTimeout(function () {
           self.refreshBalanceOfStreams()
-        }, 1000)
+        }, 100)
       } catch (e) {
         this.streamIdQueue.push(id) // 重新入队
         this.timer = setTimeout(function () {
           self.refreshBalanceOfStreams()
-        }, 1000)
+        }, 100)
       }
     }
   }

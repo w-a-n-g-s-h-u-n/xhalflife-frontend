@@ -1,9 +1,6 @@
 <template>
   <div class="main">
     <div class="module mainContainer">
-      <div class="breadcrumb">
-        xHalfLife <span><i class="el-icon-right" /></span> Detail
-      </div>
       <div class="actions-wrap">
         <div class="detail-id">
           <span>ID：{{ id }}</span>
@@ -51,7 +48,9 @@
         </div>
         <div class="right card">
           <div class="header">
-            <div class="title">DATE</div>
+            <div class="title">
+              Detail
+            </div>
             <div class="status">
               <stream-status
                 :start-block="detail.startBlock"
@@ -94,7 +93,9 @@
         </div>
       </div>
       <div class="card last-activity">
-        <div class="header">Last Activity</div>
+        <div class="header">
+          Lastest Activity
+        </div>
         <el-table
           v-loading="loading"
           :data="detail.txs"
@@ -109,31 +110,24 @@
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Event" min-width="120">
+          <el-table-column label="Event" align='center' min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.event">{{ scope.row.event }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="From" min-width="120">
+          <el-table-column label="From" align='center' min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.from">{{ scope.row.from | addr }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="To" min-width="120">
+          <el-table-column label="To" align='center' min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.to">{{ scope.row.to | addr }}</span>
             </template>
           </el-table-column>
           <el-table-column label="Txhash" align="right">
             <template slot-scope="scope">
-              <span
-                ><a
-                  :title="scope.row.txhash"
-                  :href="`https://kovan.etherscan.io/tx/${scope.row.txhash}`"
-                  style="color: inherit"
-                  >{{ scope.row.txhash | addr }}</a
-                ></span
-              >
+              <span><a :title="scope.row.txhash" target="_blank" :href="`https://kovan.etherscan.io/tx/${scope.row.txhash}`" style='color: inherit;'>{{ scope.row.txhash | addr }}</a></span>
             </template>
           </el-table-column>
         </el-table>
@@ -146,7 +140,7 @@
       center
     >
       <div class="dialog-content">
-        <div style="padding: 10px">
+        <div style="padding: 10px;">
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
@@ -165,7 +159,7 @@
       center
     >
       <div class="dialog-content">
-        <div style="padding: 10px">
+        <div style="padding: 10px;">
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formFund.amount">
@@ -278,11 +272,7 @@ export default {
     // },
     async getDetail (id) {
       const ret = await this.$apollo.query({ query: STREAM_DETAIL, variables: { id: Number(id) } })
-<<<<<<< HEAD
-      this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams))
-=======
       this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams)[0])
->>>>>>> ea10b2623a9b88b2db3784aff91ad16fd5f5e17d
     },
     async getStreamBalance (id) {
       console.log('getStreamBalance', id)
@@ -320,12 +310,11 @@ export default {
 
         // 表单数据
         this.formWithdraw.streamId = this.id
-        this.formWithdraw.amount = ethers.utils.parseUnits(this.formWithdraw.amount, 18).toString()
-        console.log(this.formWithdraw)
-        const { streamId, amount } = this.formWithdraw
+        const { streamId } = this.formWithdraw
+        const decimaledAmount = ethers.utils.parseUnits(this.formWithdraw.amount, 18).toString()
 
         // 提交
-        const tx = await contract.withdrawFromStream(streamId, amount)
+        const tx = await contract.withdrawFromStream(streamId, decimaledAmount)
         const txResult = await tx.wait()
 
         console.log('doWithdraw ret', txResult)

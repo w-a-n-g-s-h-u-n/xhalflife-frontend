@@ -1253,13 +1253,14 @@
 
 .el-pagination button:disabled {
   color: #C0C4CC;
-  background-color: #FFF;
+  background-color: #2E3167;
   cursor: not-allowed
 }
 
 .el-pagination .btn-next, .el-pagination .btn-prev {
-  background: center center no-repeat #FFF;
+  background: center center no-repeat #2E3167;
   background-size: 16px;
+  border-radius: 5px;
   cursor: pointer;
   margin: 0;
   color: #7E7F9C
@@ -1269,14 +1270,6 @@
   display: block;
   font-size: 12px;
   font-weight: 700
-}
-
-.el-pagination .btn-prev {
-  padding-right: 12px
-}
-
-.el-pagination .btn-next {
-  padding-left: 12px
 }
 
 .el-pagination .el-pager li.disabled {
@@ -1374,7 +1367,7 @@
 
 .el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li {
   margin: 0 5px;
-  background-color: #f4f4f5;
+  background-color: transparent;
   color: #606266;
   min-width: 30px;
   border-radius: 2px
@@ -1398,6 +1391,10 @@
   -webkit-box-sizing: border-box
 }
 
+.el-dialog {
+  background: #1F2049;
+}
+
 .el-pagination.is-background.el-pagination--small .btn-next, .el-pagination.is-background.el-pagination--small .btn-prev, .el-pagination.is-background.el-pagination--small .el-pager li {
   margin: 0 3px;
   min-width: 22px
@@ -1416,7 +1413,6 @@
   user-select: none;
   list-style: none;
   font-size: 0;
-  background-color: #7E7F9C;
 
 }
 
@@ -1430,6 +1426,9 @@
 }
 
 .el-pager li {
+  border-radius: 5px;
+  margin: 0 5px;
+  background: #2E3167;
   padding: 0 4px;
   font-size: 13px;
   min-width: 35.5px;
@@ -1457,11 +1456,12 @@
 }
 
 .el-pager li:hover {
-  color: #409EFF
+  color: #fced3e;
 }
 
 .el-pager li.active {
-  color: #409EFF;
+  background: #fced3e;
+  color: #000;
   cursor: default
 }
 
@@ -1532,7 +1532,7 @@
 .el-dialog__title {
   line-height: 24px;
   font-size: 18px;
-  color: #303133
+  color: #fff
 }
 
 .el-dialog__body {
@@ -2433,9 +2433,9 @@
 .el-select-dropdown {
   position: absolute;
   z-index: 1001;
-  border: 1px solid #E4E7ED;
+  border: 1px solid #4C4F8A;
   border-radius: 4px;
-  background-color: #FFF;
+  background-color: #272958;
   -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
   -webkit-box-sizing: border-box;
@@ -2445,11 +2445,10 @@
 
 .el-select-dropdown.is-multiple .el-select-dropdown__item.selected {
   color: #409EFF;
-  background-color: #FFF
 }
 
 .el-select-dropdown.is-multiple .el-select-dropdown__item.selected.hover {
-  background-color: #F5F7FA
+  background-color: transparent;
 }
 
 .el-select-dropdown.is-multiple .el-select-dropdown__item.selected::after {
@@ -2508,11 +2507,11 @@
 }
 
 .el-select-dropdown__item.is-disabled:hover {
-  background-color: #FFF
+  background-color: transparent
 }
 
 .el-select-dropdown__item.hover, .el-select-dropdown__item:hover {
-  background-color: #F5F7FA
+  background-color: transparent
 }
 
 .el-select-dropdown__item.selected {
@@ -2703,7 +2702,7 @@
 }
 
 .el-table, .el-table__expanded-cell {
-  background-color: #FFF
+  background-color: #272958
 }
 
 .el-select .el-tag__close.el-icon-close::before {
@@ -11187,14 +11186,13 @@
   left: 50%;
   margin-right: 3px;
   border-top-width: 0;
-  border-bottom-color: #EBEEF5
+  border-bottom-color: transparent
 }
 
 .el-popper[x-placement^=bottom] .popper__arrow::after {
   top: 1px;
   margin-left: -6px;
   border-top-width: 0;
-  border-bottom-color: #FFF
 }
 
 .el-popper[x-placement^=right] {
@@ -12344,13 +12342,13 @@
 
 .el-input__inner {
   -webkit-appearance: none;
-  background-color: #FFF;
+  background-color: transparent;
   background-image: none;
-  border-radius: 4px;
-  border: 1px solid #DCDFE6;
+  border-radius: 20px;
+  border: 1px solid #4c4f8a;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  color: #606266;
+  color: #fff;
   display: inline-block;
   font-size: inherit;
   height: 40px;
@@ -12531,13 +12529,13 @@
 }
 
 .el-input-group__append, .el-input-group__prepend {
-  background-color: #F5F7FA;
+  background-color: transparent;
   color: #909399;
   vertical-align: middle;
   display: table-cell;
   position: relative;
-  border: 1px solid #DCDFE6;
-  border-radius: 4px;
+  border: 1px solid #4C4F8A;
+  border-radius: 20px;
   padding: 0 20px;
   width: 1px;
   white-space: nowrap

@@ -30,6 +30,12 @@ export const state = () => ({
 })
 
 export const mutations = {
+  logout (state) {
+    state.metamask = {
+      account: null,
+      accounts: []
+    }
+  },
   update (state, { key, value }) {
     state[key] = value
   },

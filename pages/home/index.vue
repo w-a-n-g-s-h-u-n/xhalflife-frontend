@@ -1,8 +1,5 @@
 <template>
   <div class="main">
-      <div class="module crumb">
-        Home
-      </div>
       <div class="module module-stat">
         <div class="card card-1">
           <div class="label">

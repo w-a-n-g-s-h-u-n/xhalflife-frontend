@@ -105,13 +105,17 @@
           prop="id"
           label="ID"
         />
+        <el-table-column align="center" label="Sender" min-width="120">
+          <template slot-scope="scope">
+            <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="120">
           <template slot-scope="scope">
             <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
           </template>
         </el-table-column>
-
-        <el-table-column align="center" label="Deposited">
+        <el-table-column align="center" label="Deposited" min-width="120">
           <template slot-scope="scope">
             <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
           </template>
@@ -138,12 +142,6 @@
             />
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Sender" min-width="100">
-          <template slot-scope="scope">
-            <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
-          </template>
-        </el-table-column>
-
         <el-table-column label="Date" fixed="right" min-width="100">
           <template slot-scope="scope">
             <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>

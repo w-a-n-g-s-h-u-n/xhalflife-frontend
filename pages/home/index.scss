@@ -38,9 +38,12 @@ body > .container {
   }
 
   & > .module-stat {
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
     .card {
       float: left;
-      width: 322px;
+      flex: 0 0 33.3%;
       height: 105px;
       padding-left: 25px;
       padding-top: 25px;
@@ -123,7 +126,6 @@ body > .container {
     }
 
     .content {
-      //background: bisque;
       flex: 1;
       position: relative;
       float: left;
