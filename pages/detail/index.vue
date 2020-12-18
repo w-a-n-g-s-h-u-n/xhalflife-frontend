@@ -71,7 +71,7 @@
               </div>
               <div class="item item2">
                 <div class="label">Unlock Ratio</div>
-                <div class="value">{{ detail.unlockRatio | precision18 }}%</div>
+                <div class="value">{{ detail.unlockRatio | decimaledRatio(1000) }}‰</div>
               </div>
               <div class="item item3">
                 <div class="label">Unlock K</div>
@@ -254,8 +254,6 @@ export default {
     const id = this.$route.query && this.$route.query.id
     this.id = id
     this.detail = { ...this.detail, ...this.detailCache[id] }
-    // this.getData()
-    console.log(this.detail)
     this.$store.dispatch('refreshLatestBlockNumber')
 
     // 请求最新

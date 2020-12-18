@@ -19,9 +19,12 @@ Vue.filter('precision18', function (v) {
   if (!v || isNaN(v)) { return '' }
   const n = ethers.BigNumber.from(v).toString()
   const value = BigNumber(n).shiftedBy(0 - 18).toNumber()
-  if (value < 1) {
-    return value.toFixed(3)
-  }
-
   return value.toFixed(2)
+})
+
+Vue.filter('decimaledRatio', function (v, percent) {
+  if (!v || isNaN(v)) { return '' }
+  const n = ethers.BigNumber.from(v).toString()
+  const value = BigNumber(n).shiftedBy(0 - 18).toNumber()
+  return value * percent
 })

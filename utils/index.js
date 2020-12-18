@@ -36,5 +36,8 @@ export const isMobile = () => {
 }
 
 export default {
-  extend
+  extend,
+  statusedList,
+  decimalsNumber,
+  isMobile
 }
