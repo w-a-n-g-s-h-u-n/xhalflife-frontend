@@ -45,6 +45,7 @@ body,
   background-color: #1f2049;
   color: #90a4ae;
   height: 100%;
+  position: relative;
 }
 
 .overflow-hidden {

@@ -15141,7 +15141,7 @@
 .el-drawer {
   position: absolute;
   box-sizing: border-box;
-  background-color: #FFF;
+  background-color: #1F2049;
   display: flex;
   -ms-flex-direction: column;
   flex-direction: column;
