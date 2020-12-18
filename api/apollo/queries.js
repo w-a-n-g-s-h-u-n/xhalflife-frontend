@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 // TODO 参数化、分页
 export const STREAM_LIST = gql`
   query streams($first: Int!, $skip:Int!) {
-    streams(first: $first, skip: $skip, orderBy: id, orderDirection: asc) {
+    streams(first: $first, skip: $skip, orderBy: timestamp, orderDirection: desc) {
         id
         sender
         recipient
@@ -12,7 +12,7 @@ export const STREAM_LIST = gql`
         kBlock
         unlockRatio
         timestamp
-        txs(first: $first, orderBy: timestamp, orderDirection: asc) {
+        txs(first: $first, orderBy: timestamp, orderDirection: desc) {
           block
           event
           from
@@ -58,7 +58,7 @@ export const STREAM_GET_TOTAL_DATA = gql`{
 
 export const STREAM_LIST_BY_RECIPIENT = gql`
   query streams($first: Int!, $recipient:Bytes!) {
-    streams(first: $first, where: {recipient: $recipient}, orderBy: id, orderDirection: asc) {
+    streams(first: $first, where: {recipient: $recipient}, orderBy: timestamp, orderDirection: desc) {
       id
       sender
       recipient
@@ -67,7 +67,7 @@ export const STREAM_LIST_BY_RECIPIENT = gql`
       kBlock
       unlockRatio
       timestamp
-      txs(first: $first, orderBy: timestamp, orderDirection: asc) {
+      txs(first: $first, orderBy: timestamp, orderDirection: desc) {
         block
         event
         from
@@ -80,7 +80,7 @@ export const STREAM_LIST_BY_RECIPIENT = gql`
 
 export const STREAM_LIST_BY_SENDER = gql`
   query streams($first: Int!, $sender:Bytes!) {
-    streams(first: $first, where: {sender: $sender}, orderBy: id, orderDirection: asc) {
+    streams(first: $first, where: {sender: $sender}, orderBy: timestamp, orderDirection: desc) {
       id
       sender
       recipient
@@ -89,7 +89,7 @@ export const STREAM_LIST_BY_SENDER = gql`
       kBlock
       unlockRatio
       timestamp
-      txs(first: $first, orderBy: timestamp, orderDirection: asc) {
+      txs(first: $first, orderBy: timestamp, orderDirection: desc) {
         block
         event
         from

@@ -1,4 +1,5 @@
 import MetaMaskOnboarding from '@metamask/onboarding'
+import { XDEXTokenContract } from '@/api/contract'
 
 export const isMetaMaskInstalled = () => {
   // Have to check the ethereum binding on the window object to see if it's installed
@@ -26,6 +27,22 @@ export const connectMetaMask = async () => {
     }
   } catch (error) {
     console.error('Error when connectMetaMask', error)
+    return []
+  }
+}
+
+export const getAccountBalances = async () => {
+  try {
+    const { ethereum } = window
+    if (ethereum.request) {
+      const accounts = await getAccountsByMetaMask()
+      const balances = await XDEXTokenContract.balanceOf(accounts[0])
+      return balances
+    } else {
+      return await ethereum.enable()
+    }
+  } catch (error) {
+    console.error('Error when getAccountsByMetaMask', error)
     return []
   }
 }

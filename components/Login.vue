@@ -4,14 +4,15 @@
       <el-button v-if="isMetaMaskConnected"  round type="success" @click="accountDialog = true">
         {{ metamask.account | addr }}
       </el-button>
-      <el-button v-else type='primary' round @click="accountDialog = true">
+      <el-button v-else type='primary' round @click="accountDialog = true" :size="isMobile ? 'small' : 'medium'">
         Connect Wallet
       </el-button>
     </div>
     <el-dialog
       title="Account"
       :visible.sync="accountDialog"
-      width="20%"
+      :width="isMobile ? '80%' : '25%' "
+      class="userManage"
     >
       <el-button v-if="!isMetaMaskConnected" @click="onClick" class='wallet'>METAMASK</el-button>
       <el-button v-else type="primary" @click="logout" class='wallet'>logout</el-button>
@@ -22,12 +23,14 @@
 <script>
 import metamask from '@/api/wallet/metamask'
 import { mapGetters, mapState } from 'vuex'
+import { isMobile } from '@/utils/index'
 
 export default {
   name: 'Login',
   data () {
     return {
-      accountDialog: false
+      accountDialog: false,
+      isMobile: isMobile()
     }
   },
   computed: {
@@ -59,17 +62,21 @@ export default {
 }
 </script>
 
-<style scoped>
-  .btn {
-    margin-top: 15px;
+<style scoped lang="scss">
+  .userManage {
+    .wallet {
+      width: 100%;
+      height: 40px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+      margin-left: 0;
+    }
   }
 
-  .wallet {
-    width: 100%;
-    height: 40px;
-    border-radius: 20px;
-    text-align: center;
-    margin-bottom: 10px;
-    margin-left: 0;
+  @media (max-width: 768px) {
+    .userManage {
+      width: 100%;
+    }
   }
 </style>

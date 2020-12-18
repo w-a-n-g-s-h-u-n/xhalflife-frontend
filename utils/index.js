@@ -22,6 +22,22 @@ export const decimalsNumber = (value) => {
   return decimalsNumber.toFixed(2)
 }
 
+export const isMobile = () => {
+  const userAgentInfo = navigator.userAgent
+  const Agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPod']
+  let flag = false
+  for (let v = 0; v < Agents.length; v++) {
+    if (userAgentInfo.indexOf(Agents[v]) > 0) {
+      flag = true
+      break
+    }
+  }
+  return flag
+}
+
 export default {
-  extend
+  extend,
+  statusedList,
+  decimalsNumber,
+  isMobile
 }

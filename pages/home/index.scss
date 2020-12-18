@@ -30,7 +30,6 @@ body > .container {
     padding-top: 20px;
     background: transparent;
     text-align: left;
-    //font-family: PingFangSC-Semibold ;
     font-size: 16px;
     color: #fff;
     letter-spacing: 0;
@@ -38,12 +37,11 @@ body > .container {
   }
 
   & > .module-stat {
-    margin-top: 80px;
+    margin-top: 20px;
     display: flex;
     justify-content: space-between;
     .card {
-      float: left;
-      flex: 0 0 33.3%;
+      flex: 0 0 30%;
       height: 105px;
       padding-left: 25px;
       padding-top: 25px;
@@ -73,13 +71,11 @@ body > .container {
     .card-2 {
       background-image: linear-gradient(270deg, #e877ae 0%, #7f73f1 100%);
       border-radius: 12px;
-      margin-left: 16px;
     }
 
     .card-3 {
       background-image: linear-gradient(270deg, #2a6ffa 0%, #6617cd 100%);
       border-radius: 12px;
-      margin-left: 16px;
     }
   }
 
@@ -87,48 +83,36 @@ body > .container {
     margin-top: 30px;
     position: relative;
     display: flex;
-    flex-direction: row;
+    justify-content: flex-start;
+
+    .content {
+      width: 100%;
+      position: relative;
+      flex: 1 1 calc(100% - 100px);
+      min-width: calc(100% - 100px);
+    }
 
     .navs {
-      width: 62px;
-      background: #242653;
       border-radius: 12px 0 0 12px;
-      text-align: center;
-
-      &::before {
-        display: table;
-        content: "";
-      }
-
-      &::after {
-        display: table;
-        content: "";
-        clear: both;
-      }
+      flex-grow: 0;
+      max-width: 100px;
 
       .nav {
-        width: 62px;
         height: 50px;
+        padding: 0 1rem;
         line-height: 50px;
         font-size: 14px;
         color: #72739a;
         letter-spacing: 0.39px;
-        float: left;
+        text-align: center;
+        background: #242653;
 
         &.active {
-          background: #fced3e;
           border-radius: 12px 0 0 12px;
-          width: 62px;
+          background: #fced3e;
           height: 50px;
-          margin-bottom: 12px;
         }
       }
-    }
-
-    .content {
-      flex: 1;
-      position: relative;
-      float: left;
     }
   }
 }
@@ -142,5 +126,44 @@ body > .container {
 
   .module {
     background: transparent;
+  }
+}
+
+@media (max-width: 768px) {
+  .module {
+    width: 100%;
+  }
+ 
+  .main {
+    padding-bottom: 1.5rem;
+    & > .module-stat {
+      flex-direction: column;
+      padding: 0 1rem;
+
+      .card{
+        flex: 1 1 100%;
+        margin-bottom: 1rem;
+      }
+    }
+
+    & > .module-tabs {
+      padding: 0 1rem;
+      display: block;
+      .navs {
+        width: 100%;
+        display: flex;
+        .nav {
+          width: auto;
+          padding: 0 1rem;
+          &.active {
+            border-radius: 12px;
+          }
+        }
+      }
+      .content {
+        width: 100%;
+        margin-top: 1rem;
+      }
+    }
   }
 }

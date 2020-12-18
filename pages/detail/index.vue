@@ -12,6 +12,7 @@
             type="primary"
             class="action-fund"
             @click="fundDialogVisible = true"
+            :size="isMobile ? 'small' : 'medium'"
           >
             Fund
           </el-button>
@@ -20,6 +21,7 @@
             type="primary"
             class="action-withdraw"
             @click="withdrawDialogVisible = true"
+            :size="isMobile ? 'small' : 'medium'"
           >
             WithDraw
           </el-button>
@@ -28,6 +30,7 @@
             type="success"
             class="action-cancel"
             @click="cancelDialogVisible = true"
+            :size="isMobile ? 'small' : 'medium'"
           >
             Cancel
           </el-button>
@@ -36,13 +39,13 @@
       <div class="detail-cards">
         <div class="left">
           <div class="card" shadow="always">
-            <div class="header">Remaining</div>
-            <div class="content">{{ detail.remaining | precision18 }} XDEX</div>
+            <div class="header">Remaining（XDEX）</div>
+            <div class="content">{{ detail.remaining | precision18 }}</div>
           </div>
           <div class="card" shadow="always">
-            <div class="header">Withdrawable</div>
+            <div class="header">Withdrawable（XDEX）</div>
             <div class="content">
-              {{ detail.withdrawable | precision18 }} XDEX
+              {{ detail.withdrawable | precision18 }}
             </div>
           </div>
         </div>
@@ -68,7 +71,7 @@
               </div>
               <div class="item item2">
                 <div class="label">Unlock Ratio</div>
-                <div class="value">{{ detail.unlockRatio | precision18 }}%</div>
+                <div class="value">{{ detail.unlockRatio | decimaledRatio(1000) }}‰</div>
               </div>
               <div class="item item3">
                 <div class="label">Unlock K</div>
@@ -136,15 +139,13 @@
     <el-dialog
       title="提款"
       :visible.sync="withdrawDialogVisible"
-      width="30%"
-      center
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
           TOTAL: {{ detail.withdrawable | precision18 }} XDEX
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
-          <el-button slot="append" @click="maxWithdraw">MAX</el-button>
+          <el-button slot="append" @click="maxAmount('withdraw')">MAX</el-button>
         </el-input>
       </div>
 
@@ -155,15 +156,13 @@
     <el-dialog
       title="存款"
       :visible.sync="fundDialogVisible"
-      width="30%"
-      center
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          TOTAL: {{ detail.withdrawable | precision18 }} XDEX
+          TOTAL: {{ xdexBalance }} XDEX
         </div>
         <el-input placeholder="" v-model="formFund.amount">
-          <template slot="append">MAX</template>
+          <el-button slot="append" @click="maxAmount('fund')">MAX</el-button>
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -173,22 +172,20 @@
     <el-dialog
       title="取消"
       :visible.sync="cancelDialogVisible"
-      width="30%"
-      center
     >
-      <!--<span>需要注意的是内容是默认不居中的</span>-->
+      <span>确定取消</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="doCancel">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
-
 <script>
 import { STREAM_DETAIL } from '@/api/apollo/queries'
 import { XHalfLifeContract } from '@/api/contract'
 import { getProvider } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
+import { isMobile } from '@/utils/index'
 
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
@@ -210,6 +207,7 @@ export default {
       formWithdraw: {
         amount: 0
       },
+      isMobile: isMobile(),
       formFund: {
         amount: 0
       }
@@ -225,6 +223,9 @@ export default {
       },
       account (state) {
         return state.metamask && state.metamask.account
+      },
+      xdexBalance (state) {
+        return state.metamask && state.metamask.xdexBalance
       }
     }),
     canWithDraw () {
@@ -253,8 +254,6 @@ export default {
     const id = this.$route.query && this.$route.query.id
     this.id = id
     this.detail = { ...this.detail, ...this.detailCache[id] }
-    // this.getData()
-    console.log(this.detail)
     this.$store.dispatch('refreshLatestBlockNumber')
 
     // 请求最新
@@ -440,8 +439,12 @@ export default {
         this.cancelDialogVisible = false
       }
     },
-    maxWithdraw () {
-      this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable)
+    maxAmount (type) {
+      if (type === 'fund') {
+        this.formFund.amount = this.xdexBalance
+      } else if (type === 'withdraw') {
+        this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable)
+      }
     },
     cellStyle (obj) {
       return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'

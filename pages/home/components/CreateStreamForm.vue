@@ -17,25 +17,28 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="How Much To Start" prop="depositAmount">
-        <el-input v-model="formData.depositAmount" />
+      <el-form-item :label="`How Much To Start (available: ${xdexBalance} XDEX)`" prop="depositAmount">
+        <el-input v-model="formData.depositAmount">
+          <span slot='suffix' class="symbol">XDEX</span>
+          <el-button slot='append' @click="maxAmount" class="maxButton">MAX</el-button>
+        </el-input>
       </el-form-item>
       <el-form-item label="The Recipent Address" prop="recipient">
         <el-input v-model="formData.recipient" />
       </el-form-item>
 
       <el-row :gutter="15">
-        <el-col :span="8">
+        <el-col :span="isMobile ? 24 : 8" >
           <el-form-item label="When Should Start" class="input-style-2" prop="startBlock">
             <el-input v-model="formData.startBlock" placeholder="" />
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="isMobile ? 24 : 8">
           <el-form-item label="Unlock K Block" prop="kBlock">
             <el-input v-model="formData.kBlock" placeholder="" />
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="isMobile ? 24 : 8">
           <el-form-item label="Unlock Ratio" prop="unlockRatio">
             <el-input v-model="formData.unlockRatio" placeholder="">
               <template slot='append'>‰</template>
@@ -73,6 +76,8 @@ import metamask from '@/api/wallet/metamask'
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import XDEX_ABI from '@/api/contract/abis/XDEX'
+import { isMobile } from '@/utils/index'
+import { mapState } from 'vuex'
 
 // import { ABI, KOVAN_ADDRESS } from '@/api/contract/abis/TEST'
 // import { ABI as XHALFLIFEMYTESTABI, KOVAN_ADDRESS as XHALFLIFEMYTESTKOVAN_ADDRESS } from '@/api/contract/abis/XHalfLifeMyTest'
@@ -95,6 +100,7 @@ export default {
         kBlock: '40',
         unlockRatio: '1' // '1000000000000000'
       },
+      isMobile: isMobile(),
       rules: {
         recipient: [
           { required: true, message: 'recipient is required', trigger: 'change' }
@@ -119,8 +125,17 @@ export default {
     const blockNumber = await provider.getBlockNumber()
     this.formData.startBlock = blockNumber + 10
   },
+  computed: {
+    ...mapState({
+      xdexBalance (state) {
+        return state.metamask && state.metamask.xdexBalance
+      }
+    })
+  },
   methods: {
-
+    maxAmount () {
+      this.formData.depositAmount = this.xdexBalance
+    },
     onSubmit () {
       this.$refs.createForm.validate(async (valid) => {
         console.log('onSubmit validate', valid, this.formData)
@@ -182,7 +197,7 @@ export default {
           // 提交
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
           const decimalsAmount = ethers.utils.parseUnits(depositAmount, 18).toString()
-          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, 15).toString()
+          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, 18).toString()
           const tx = await contract.createStream(recipient, decimalsAmount, startBlock, kBlock, decimalsRatio)
           const createStreamResult = await tx.wait()
           // this.$message('Please wait MetaMast to create the stream')
@@ -207,6 +222,22 @@ export default {
 <style scoped lang="scss">
   .wrap {
     text-align: left;
+    width: 500px;
+    margin: 0 auto;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+
+    .maxButton {
+      color: #fced3e;
+      padding: 0 15px;
+    }
+
+    .symbol {
+      line-height: 40px;
+      margin-right: 10px;
+    }
 
     .el-form-item__label {
       color: #fff !important;

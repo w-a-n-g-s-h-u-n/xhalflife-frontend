@@ -1486,6 +1486,11 @@
   box-sizing: border-box;
   width: 50%
 }
+@media (max-width: 768px){
+  .el-dialog {
+    width: 80%;
+  }
+}
 
 .el-dialog.is-fullscreen {
   width: 100%;
@@ -1537,7 +1542,7 @@
 
 .el-dialog__body {
   padding: 30px 20px;
-  color: #606266;
+  color: #fff;
   font-size: 14px;
   word-break: break-all
 }

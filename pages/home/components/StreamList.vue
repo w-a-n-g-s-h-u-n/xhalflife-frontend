@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%;">
+  <div>
     <el-table
       v-loading="loading"
       :data="homeList"
@@ -38,7 +38,7 @@
           <span :title="scope.row.startBlock">#{{ scope.row.startBlock }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Status" min-width="120">
+      <el-table-column align="center" fixed='right' label="Status" min-width="120">
         <template slot-scope="scope">
           <stream-status
             :start-block="scope.row.startBlock"
@@ -48,7 +48,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="Date" fixed="right" min-width="100">
+      <el-table-column label="Date"  min-width="100">
         <template slot-scope="scope">
           <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
         </template>
@@ -57,12 +57,11 @@
       <el-table-column
         fixed="right"
         label=""
-        width="110"
       >
         <template slot-scope="scope">
           <NuxtLink :to="`/detail?id=${scope.row.id}`">
             <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
-              View Detail
+              Detail
             </el-button>
           </NuxtLink>
         </template>
@@ -152,16 +151,12 @@ export default {
 
 <style scoped lang="scss">
   .pagination {
-    width: 938px;
+    width: 100%;
     margin-top: 20px;
   }
 
   .table {
     width: 100%;
-
-    &::before {
-      border: none;
-    }
   }
 
   .el-pagination button:disabled {
@@ -182,8 +177,6 @@ export default {
     display: flex;
     align-items: center;
     border-radius: 20px;
-    width: 98px;
-    height: 28px;
     font-size: 13px;
     background: transparent;
     color: #fced3e;

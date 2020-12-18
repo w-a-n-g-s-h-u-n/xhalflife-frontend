@@ -2,7 +2,7 @@
   <div>
     <div class="tabs">
       <div class="tab" :class="{'active':current=='sent'}" @click="change('sent')">
-        My sent
+        My Sent
       </div>
       <div class="tab" :class="{'active':current=='received'}" @click="change('received')">
         My Received
@@ -28,7 +28,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="center" label="Deposited">
+        <el-table-column align="center" label="Deposited" min-width="120">
           <template slot-scope="scope">
             <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
           </template>
@@ -46,7 +46,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="center" label="Status" min-width="120">
+        <el-table-column align="center" label="Status" fixed="right" min-width="120">
           <template slot-scope="scope">
             <stream-status
               :start-block="scope.row.startBlock"
@@ -55,13 +55,13 @@
             />
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Sender" min-width="100">
+        <el-table-column align="center" label="Sender" min-width="120">
           <template slot-scope="scope">
             <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="Date" fixed="right" min-width="100">
+        <el-table-column label="Date" min-width="100">
           <template slot-scope="scope">
             <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
           </template>
@@ -70,12 +70,11 @@
         <el-table-column
           fixed="right"
           label=""
-          width="110"
         >
           <template slot-scope="scope">
             <NuxtLink :to="`/detail?id=${scope.row.id}`">
               <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
-                View Detail
+                Detail
                 <stream-balance :id="scope.row.id" :row="scope.row" />
               </el-button>
             </NuxtLink>
@@ -101,7 +100,7 @@
         :header-cell-style="cellStyle"
       >
         <el-table-column
-          width="80"
+          width="50"
           prop="id"
           label="ID"
         />
@@ -133,7 +132,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="center" label="Status" min-width="120">
+        <el-table-column align="center" fixed="right" label="Status" min-width="120">
           <template slot-scope="scope">
             <stream-status
               :start-block="scope.row.startBlock"
@@ -142,7 +141,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="Date" fixed="right" min-width="100">
+        <el-table-column label="Date" min-width="100">
           <template slot-scope="scope">
             <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
           </template>
@@ -151,12 +150,11 @@
         <el-table-column
           fixed="right"
           label=""
-          width="110"
         >
           <template slot-scope="scope">
             <NuxtLink :to="`/detail?id=${scope.row.id}`">
               <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
-                View Detail
+                Detail
               </el-button>
             </NuxtLink>
           </template>
@@ -312,6 +310,10 @@ export default {
     text-align: left;
     padding-left: 10px;
 
+    @media (max-width: 768px) {
+      padding-left: 0;
+    }
+
     .tab {
       height: 36px;
       padding-left: 29.5px;
@@ -347,8 +349,6 @@ export default {
     display: flex;
     align-items: center;
     border-radius: 20px;
-    width: 98px;
-    height: 27.7px;
     font-size: 13px;
     background: transparent;
     color: #fced3e;
