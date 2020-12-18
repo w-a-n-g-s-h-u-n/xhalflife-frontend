@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="account">
     <div class="btn">
       <el-button v-if="isMetaMaskConnected"  round type="success" @click="accountDialog = true">
         {{ metamask.account | addr }}
