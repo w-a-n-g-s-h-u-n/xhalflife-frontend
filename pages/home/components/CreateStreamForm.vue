@@ -17,8 +17,11 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="How Much To Start" prop="depositAmount">
-        <el-input v-model="formData.depositAmount" />
+      <el-form-item :label="`How Much To Start (available: ${xdexBalance} XDEX)`" prop="depositAmount">
+        <el-input v-model="formData.depositAmount">
+          <span slot='suffix' class="symbol">XDEX</span>
+          <el-button slot='append' @click="maxAmount" class="maxButton">MAX</el-button>
+        </el-input>
       </el-form-item>
       <el-form-item label="The Recipent Address" prop="recipient">
         <el-input v-model="formData.recipient" />
@@ -74,6 +77,7 @@ import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import XDEX_ABI from '@/api/contract/abis/XDEX'
 import { isMobile } from '@/utils/index'
+import { mapState } from 'vuex'
 
 // import { ABI, KOVAN_ADDRESS } from '@/api/contract/abis/TEST'
 // import { ABI as XHALFLIFEMYTESTABI, KOVAN_ADDRESS as XHALFLIFEMYTESTKOVAN_ADDRESS } from '@/api/contract/abis/XHalfLifeMyTest'
@@ -121,8 +125,17 @@ export default {
     const blockNumber = await provider.getBlockNumber()
     this.formData.startBlock = blockNumber + 10
   },
+  computed: {
+    ...mapState({
+      xdexBalance (state) {
+        return state.metamask && state.metamask.xdexBalance
+      }
+    })
+  },
   methods: {
-
+    maxAmount () {
+      this.formData.depositAmount = this.xdexBalance
+    },
     onSubmit () {
       this.$refs.createForm.validate(async (valid) => {
         console.log('onSubmit validate', valid, this.formData)
@@ -214,6 +227,16 @@ export default {
 
     @media (max-width: 768px) {
       width: 100%;
+    }
+
+    .maxButton {
+      color: #fced3e;
+      padding: 0 15px;
+    }
+
+    .symbol {
+      line-height: 40px;
+      margin-right: 10px;
     }
 
     .el-form-item__label {

@@ -1,6 +1,12 @@
 import { getProvider } from '@/api/contract/ethers'
 import { decimalsNumber } from '@/utils/index'
 
+const initialMetamask = {
+  account: null,
+  accounts: [],
+  xdexBalance: 0
+}
+
 export const state = () => ({
   network: process.env.DEFAULT_ETHEREUM_NETWORK,
   chainId: process.env.DEFAULT_CHAIN_ID,
@@ -13,10 +19,7 @@ export const state = () => ({
     xdexWithdrawed: ''
   },
   // 支持不同钱包
-  metamask: {
-    account: null,
-    accounts: []
-  },
+  metamask: initialMetamask,
   balanceInfo: {
     // [streamId]: { a, b }
   },
@@ -32,10 +35,7 @@ export const state = () => ({
 
 export const mutations = {
   logout (state) {
-    state.metamask = {
-      account: null,
-      accounts: []
-    }
+    state.metamask = initialMetamask
   },
   update (state, { key, value }) {
     state[key] = value
@@ -79,7 +79,7 @@ export const mutations = {
       ...state.metamask,
       ...payload,
       account: accounts && accounts.length && accounts[0],
-      balances: decimalsNumber(balances)
+      xdexBalance: decimalsNumber(balances)
     }
   },
   updateChainId (state, { chainId, source }) {

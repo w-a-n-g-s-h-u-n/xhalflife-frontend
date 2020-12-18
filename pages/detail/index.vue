@@ -225,7 +225,7 @@ export default {
         return state.metamask && state.metamask.account
       },
       xdexBalance (state) {
-        return state.metamask && state.metamask.balances
+        return state.metamask && state.metamask.xdexBalance
       }
     }),
     canWithDraw () {
