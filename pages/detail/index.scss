@@ -5,13 +5,17 @@
 
 .breadcrumb {
   font-size: 16px;
-  color: #7e7f9c;
+  color: #fff;
   letter-spacing: 0;
   height: 60px;
   text-align: left;
   width: 997px;
   margin: 0 auto;
   line-height: 60px;
+
+  a {
+    color: #7e7f9c;
+  }
 }
 .mainContainer {
   margin-top: 20px;
@@ -58,7 +62,6 @@
   .content {
     font-size: 28px;
     color: #ffffff;
-    text-align: center;
     justify-content: center;
     align-items: center;
     background: #272958;
@@ -116,6 +119,21 @@
         font-family: PingFangSC-Regular;
         color: #8284C1;
         letter-spacing: 0;
+        &.block {
+          color: #35b072;
+        }
+        &.ratio {
+          color: #bbb245;
+        }
+        &.lockNumber {
+          color: #b5366a;
+        }
+        &.sender {
+          color: #8955cd;
+        }
+        &.recipent {
+          color: #3d3eff;
+        }
       }
 
       .value {

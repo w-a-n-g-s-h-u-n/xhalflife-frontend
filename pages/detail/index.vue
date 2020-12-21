@@ -1,6 +1,9 @@
 <template>
   <div class="main">
     <div class="module mainContainer">
+      <div class="breadcrumb">
+        <NuxtLink to="/" class="breadcrumbLink">HalfLife</NuxtLink> <span><i class="el-icon-right" /></span> Detail
+      </div>
       <div class="actions-wrap">
         <div class="detail-id">
           <span>ID：{{ id }}</span>
@@ -66,28 +69,28 @@
           <div class="content">
             <div class="part1 block-info">
               <div class="item item1">
-                <div class="label">StartBlock</div>
+                <div class="label block">StartBlock</div>
                 <div class="value">#{{ detail.startBlock }}</div>
               </div>
               <div class="item item2">
-                <div class="label">Unlock Ratio</div>
+                <div class="label ratio">Unlock Ratio</div>
                 <div class="value">{{ detail.unlockRatio | decimaledRatio(1000) }}‰</div>
               </div>
               <div class="item item3">
-                <div class="label">Unlock K</div>
+                <div class="label lockNumber">Unlock K</div>
                 <div class="value">
                   {{ detail.kBlock }}
                 </div>
               </div>
             </div>
             <div class="part2 sender item">
-              <div class="label">Sender</div>
+              <div class="label sender">Sender</div>
               <div class="value">
                 {{ detail.sender }}
               </div>
             </div>
             <div class="part3 recipent item">
-              <div class="label">Recipent</div>
+              <div class="label recipent">Recipent</div>
               <div class="value">
                 {{ detail.recipient }}
               </div>
@@ -139,6 +142,7 @@
     <el-dialog
       title="提款"
       :visible.sync="withdrawDialogVisible"
+      :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
@@ -156,6 +160,7 @@
     <el-dialog
       title="存款"
       :visible.sync="fundDialogVisible"
+      :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
@@ -172,6 +177,7 @@
     <el-dialog
       title="取消"
       :visible.sync="cancelDialogVisible"
+      :width="isMobile ? '80%' : '30%'"
     >
       <span>确定取消</span>
       <span slot="footer" class="dialog-footer">
