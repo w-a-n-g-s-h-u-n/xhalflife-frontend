@@ -371,15 +371,15 @@ export default {
 
         // 表单数据
         this.formFund.streamId = this.id
-        this.formFund.amount = ethers.utils.parseUnits(this.formFund.amount, 18).toString()
         console.log(this.formFund)
-        const { streamId, amount } = this.formFund
+        const { streamId } = this.formFund
+        const decimaledAmount = ethers.utils.parseUnits(this.formFund.amount, 18).toString()
 
         // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则出发approve流程
         const allowance = await contractXDEX.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
         console.log('allowance', allowance, accounts[0])
 
-        const depositAmountBig = ethers.BigNumber.from(amount)
+        const depositAmountBig = ethers.BigNumber.from(decimaledAmount)
         if (depositAmountBig.lte(allowance)) {
           console.log('allowance is enough', allowance.toString(), depositAmountBig.toString())
         } else {
@@ -394,7 +394,7 @@ export default {
         }
 
         // 提交
-        const tx = await contract.fundStream(streamId, amount.toString())
+        const tx = await contract.fundStream(streamId, decimaledAmount.toString())
         const txResult = await tx.wait()
 
         console.log('doFund ret', txResult)
