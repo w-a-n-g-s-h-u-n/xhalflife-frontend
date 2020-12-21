@@ -17,13 +17,14 @@ body > .container {
   position: relative;
   margin: 0 auto;
   width: 998px;
+  
 }
 
 .main {
   background-color: #1e2049;
   color: #333;
-  height: 100%;
-  overflow-y: scroll;
+  margin-bottom: 2rem;
+  min-height: calc(100% - 156px);
 
   >.crumb {
     height: 60px;
@@ -41,7 +42,7 @@ body > .container {
     display: flex;
     justify-content: space-between;
     .card {
-      flex: 0 0 30%;
+      flex: 0 0 32.2%;
       height: 105px;
       padding-left: 25px;
       padding-top: 25px;
@@ -84,12 +85,15 @@ body > .container {
     position: relative;
     display: flex;
     justify-content: flex-start;
+    background: #242653;
+    border-radius: 12px;
 
     .content {
       width: 100%;
       position: relative;
       flex: 1 1 calc(100% - 100px);
       min-width: calc(100% - 100px);
+      background: #272958;
     }
 
     .navs {
@@ -111,6 +115,7 @@ body > .container {
           border-radius: 12px 0 0 12px;
           background: #fced3e;
           height: 50px;
+          color: #1f2049;
         }
       }
     }
@@ -135,7 +140,7 @@ body > .container {
   }
  
   .main {
-    padding-bottom: 1.5rem;
+    padding-bottom: 7rem;
     & > .module-stat {
       flex-direction: column;
       padding: 0 1rem;
@@ -149,6 +154,7 @@ body > .container {
     & > .module-tabs {
       padding: 0 1rem;
       display: block;
+      background: transparent;
       .navs {
         width: 100%;
         display: flex;
@@ -163,6 +169,7 @@ body > .container {
       .content {
         width: 100%;
         margin-top: 1rem;
+        background: transparent
       }
     }
   }

@@ -69,13 +69,9 @@ export default {
 
 <style scoped lang="scss">
   .footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
     justify-content: center;
     background: #161638;
     width: 100%;
-    z-index: 3001;
     display: flex;
     align-items: center;
 
@@ -102,6 +98,11 @@ export default {
 
   @media (max-width: 768px) {
     .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 3001;
+
       .footerContent {
         display: none !important;
       }

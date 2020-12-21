@@ -8,7 +8,7 @@
       :header-cell-style="cellStyle"
     >
       <el-table-column
-        width="50"
+        width="40"
         prop="id"
         label="ID"
       />
@@ -22,12 +22,12 @@
           <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Deposited" min-width="120">
+      <el-table-column align="center" label="Deposited" min-width="100">
         <template slot-scope="scope">
           <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Withdrawable" min-width="120">
+      <el-table-column align="center" label="Withdrawable" min-width="110">
         <template slot-scope="scope">
           <span :title="scope.row.withdrawable">{{ detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable | precision18 }}</span>
         </template>
@@ -48,7 +48,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="Date"  min-width="100">
+      <el-table-column label="Date"  width="90">
         <template slot-scope="scope">
           <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
         </template>

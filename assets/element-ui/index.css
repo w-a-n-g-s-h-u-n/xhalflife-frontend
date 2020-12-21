@@ -2726,7 +2726,7 @@
   flex: 1;
   width: 100%;
   max-width: 100%;
-  font-size: 14px;
+  font-size: 13px;
   color: #606266
 }
 
@@ -2934,7 +2934,7 @@
   white-space: normal;
   word-break: break-all;
   line-height: 23px;
-  padding-right: 10px
+  padding-right: 5px;
 }
 
 .el-table .cell.el-tooltip {
@@ -4710,7 +4710,6 @@
   float: none;
   display: inline-block;
   text-align: left;
-  padding: 0 0 10px
 }
 
 .el-form--inline .el-form-item {
@@ -4734,7 +4733,7 @@
 }
 
 .el-form-item {
-  margin-bottom: 22px
+  margin-bottom: 28px
 }
 
 .el-form-item::after, .el-form-item::before {
@@ -4794,7 +4793,7 @@
   font-size: 14px;
   color: #fff;
   line-height: 40px;
-  padding: 0 12px 0 0;
+  padding: 0px 12px 0 0;
   -webkit-box-sizing: border-box;
   box-sizing: border-box
 }

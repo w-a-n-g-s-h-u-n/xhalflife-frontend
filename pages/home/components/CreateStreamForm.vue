@@ -223,11 +223,7 @@ export default {
   .wrap {
     text-align: left;
     width: 500px;
-    margin: 0 auto;
-
-    @media (max-width: 768px) {
-      width: 100%;
-    }
+    margin: 4rem auto;
 
     .maxButton {
       color: #fced3e;
@@ -269,6 +265,19 @@ export default {
     .input-style-2 {
       border: 0 solid #4c4f8a;
       border-radius: 22px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .wrap {
+      width: 100%;
+
+      .actions {
+        .btn {
+          width: 100%;
+          margin-top: 1rem;
+        }
+      }
     }
   }
 
