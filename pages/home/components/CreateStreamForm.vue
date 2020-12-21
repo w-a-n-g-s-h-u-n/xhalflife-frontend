@@ -11,15 +11,16 @@
         <el-select v-model="formData.token" placeholder="请选择" style="width: 100%;">
           <el-option
             v-for="item in tokenOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item.name"
+            :label="`${item.symbol}`"
+            :value="item.symbol">
+            <span>{{item.symbol}} ({{item.name}})</span>
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item :label="`How Much To Start (available: ${xdexBalance} XDEX)`" prop="depositAmount">
+      <el-form-item :label="`How Much To Start (available: ${xdexBalance} ${this.formData.token})`" prop="depositAmount">
         <el-input v-model="formData.depositAmount">
-          <span slot='suffix' class="symbol">XDEX</span>
+          <span slot='suffix' class="symbol">{{formData.token}}</span>
           <el-button slot='append' @click="maxAmount" class="maxButton">MAX</el-button>
         </el-input>
       </el-form-item>
@@ -78,6 +79,7 @@ import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import XDEX_ABI from '@/api/contract/abis/XDEX'
 import { isMobile } from '@/utils/index'
 import { mapState } from 'vuex'
+import tokens, { selectDecimalByName, selectAddressByName } from '@/api/tokens'
 
 // import { ABI, KOVAN_ADDRESS } from '@/api/contract/abis/TEST'
 // import { ABI as XHALFLIFEMYTESTABI, KOVAN_ADDRESS as XHALFLIFEMYTESTKOVAN_ADDRESS } from '@/api/contract/abis/XHalfLifeMyTest'
@@ -86,12 +88,7 @@ export default {
   name: 'CreateStreamForm',
   data () {
     return {
-      tokenOptions: [
-        {
-          value: 'XDEX',
-          label: 'XDEX'
-        }
-      ],
+      tokenOptions: tokens,
       formData: {
         token: 'XDEX',
         recipient: '0x7B980310a885Cc3880E5357B4bbf7540E93f6D3d',
@@ -101,6 +98,7 @@ export default {
         unlockRatio: '1' // '1000000000000000'
       },
       isMobile: isMobile(),
+      balances: [],
       rules: {
         recipient: [
           { required: true, message: 'recipient is required', trigger: 'change' }
@@ -124,6 +122,11 @@ export default {
     const provider = await getProvider()
     const blockNumber = await provider.getBlockNumber()
     this.formData.startBlock = blockNumber + 10
+  },
+  watch: {
+    'formData.token' (newVal, oldVal) {
+      console.log('token', selectAddressByName(this.formData.token))
+    }
   },
   computed: {
     ...mapState({
@@ -149,7 +152,7 @@ export default {
         try {
           const formData = { ...this.formData }
           // 数据转换
-          formData.depositAmount = ethers.utils.parseUnits(this.formData.depositAmount, 18).toString()
+          formData.depositAmount = ethers.utils.parseUnits(this.formData.depositAmount, selectDecimalByName(this.formData.token)).toString()
 
           console.log('onSubmit', formData)
           if (!formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
@@ -164,7 +167,7 @@ export default {
           const provider = await getProvider()
           const signer = provider.getSigner()
           const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
-          const contractXDEX = new ethers.Contract(process.env.XDEX_TOKEN_ADDRESS, XDEX_ABI, signer)
+          const contractXDEX = new ethers.Contract(selectAddressByName(this.formData.token), XDEX_ABI, signer)
 
           //
           const accounts = await metamask.connectMetaMask()
@@ -196,8 +199,8 @@ export default {
 
           // 提交
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
-          const decimalsAmount = ethers.utils.parseUnits(depositAmount, 18).toString()
-          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, 18).toString()
+          const decimalsAmount = ethers.utils.parseUnits(depositAmount, selectDecimalByName(this.formData.token)).toString()
+          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, selectDecimalByName(this.formData.token)).toString()
           const tx = await contract.createStream(recipient, decimalsAmount, startBlock, kBlock, decimalsRatio)
           const createStreamResult = await tx.wait()
           // this.$message('Please wait MetaMast to create the stream')
