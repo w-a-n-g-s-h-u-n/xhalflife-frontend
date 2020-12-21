@@ -154,7 +154,7 @@
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doWithdraw">确 定</el-button>
+        <el-button type="primary" @click="doWithdraw" :disabled="withdrawing" :loading="withdrawing">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -171,7 +171,7 @@
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doFund">确 定</el-button>
+        <el-button type="primary" @click="doFund" :disabled="funding" :loading="funding">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -181,7 +181,7 @@
     >
       <span>确定取消</span>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCancel">确 定</el-button>
+        <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -210,6 +210,9 @@ export default {
       fundDialogVisible: false,
       cancelDialogVisible: false,
       loading: false,
+      withdrawing: false,
+      funding: false,
+      cancelling: false,
       formWithdraw: {
         amount: 0
       },
@@ -305,6 +308,7 @@ export default {
         })
         return
       }
+      this.withdrawing = true
 
       try {
         // 获得provider
@@ -327,12 +331,14 @@ export default {
           message: 'Withdraw successfully',
           type: 'success'
         })
+        this.withdrawing = false
         this.withdrawDialogVisible = false
       } catch (e) {
         this.$message({
           message: e.message,
           type: 'warning'
         })
+        this.withdrawing = false
         this.withdrawDialogVisible = false
       }
     },
@@ -352,6 +358,8 @@ export default {
         })
         return
       }
+
+      this.funding = true
 
       try {
         // 获得provider
@@ -402,16 +410,19 @@ export default {
           message: 'Fund successfully',
           type: 'success'
         })
+        this.funding = false
         this.fundDialogVisible = false
       } catch (e) {
         this.$message({
           message: e.message,
           type: 'warning'
         })
+        this.funding = false
         this.fundDialogVisible = false
       }
     },
     async doCancel () {
+      this.cancelling = true
       try {
         // 获得provider
         const provider = await getProvider()
@@ -436,12 +447,14 @@ export default {
           message: 'Cancel successfully',
           type: 'success'
         })
+        this.cancelling = false
         this.cancelDialogVisible = false
       } catch (e) {
         this.$message({
           message: e.message,
           type: 'warning'
         })
+        this.cancelling = false
         this.cancelDialogVisible = false
       }
     },
