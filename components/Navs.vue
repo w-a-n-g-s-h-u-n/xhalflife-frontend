@@ -1,9 +1,5 @@
 <template>
   <div class="navs">
-    <span class="nav-item active">
-      <NuxtLink to="/"><span class="text">HalfLife</span></NuxtLink>
-      <span class="indicator" />
-    </span>
     <a
       href="https://swap.kovan.xdefi.com/"
       class="d-inline d-flex nav-item"
@@ -23,28 +19,32 @@
       class="d-inline d-flex nav-item"
       target="_blank"
     >
-      Framing
+      Fram
+    </a>
+    <span class="nav-item active">
+      <NuxtLink to="/"><span class="text">HalfLife</span></NuxtLink>
+      <span class="indicator" />
+    </span>
+    <a
+      href="https://stat.kovan.xdefi.com/"
+      class="d-inline d-flex nav-item"
+      target="_blank"
+    >
+      Stat
     </a>
     <a
       href="https://vote.kovan.xdefi.com/"
       class="d-inline d-flex nav-item"
       target="_blank"
     >
-      DAO
-    </a>
-    <a
-      href="https://stat.kovan.xdefi.com/"
-      class="d-inline d-flex nav-item"
-      target="_blank"
-    >
-      Statistics
+      Vote
     </a>
     <a
       href="https://community.kovan.xdefi.com/"
       class="d-inline d-flex nav-item"
       target="_blank"
     >
-      Community
+      Forum
     </a>
   </div>
 </template>
