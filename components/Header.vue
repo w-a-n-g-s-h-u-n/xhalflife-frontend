@@ -9,7 +9,7 @@
         </span>
         <Navs />
       </div>
-      <i class="el-icon-s-fold navIcon" @click="drawer=true"/>
+      <i class="el-icon-s-fold navIcon" @click="drawer=true" />
       <el-drawer
         :visible.sync="drawer"
         :show-close="false"

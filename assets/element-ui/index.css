@@ -4331,9 +4331,9 @@
 
 .el-popover {
   position: absolute;
-  background: #FFF;
+  background:#1e2049;
   min-width: 150px;
-  border: 1px solid #EBEEF5;
+  border: 1px solid #1e2049;
   padding: 12px;
   z-index: 2000;
   color: #606266;
@@ -11170,14 +11170,14 @@
   bottom: -6px;
   left: 50%;
   margin-right: 3px;
-  border-top-color: #EBEEF5;
+  border-top-color: #1e2049;
   border-bottom-width: 0
 }
 
 .el-popper[x-placement^=top] .popper__arrow::after {
   bottom: 1px;
   margin-left: -6px;
-  border-top-color: #FFF;
+  border-top-color: #1e2049;
   border-bottom-width: 0
 }
 
@@ -11227,7 +11227,7 @@
   right: -6px;
   margin-bottom: 3px;
   border-right-width: 0;
-  border-left-color: #EBEEF5
+  border-left-color: #1e2049;
 }
 
 .el-popper[x-placement^=left] .popper__arrow::after {
@@ -11235,7 +11235,7 @@
   bottom: -6px;
   margin-left: -6px;
   border-right-width: 0;
-  border-left-color: #FFF
+  border-left-color: #1e2049
 }
 
 .el-tag {

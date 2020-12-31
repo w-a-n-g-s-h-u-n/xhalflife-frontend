@@ -4,7 +4,7 @@ export default {
   ssr: false,
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    title: 'HalfLife',
+    title: 'xDefi HalfLife',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover' },
@@ -19,12 +19,17 @@ export default {
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: [
     // 'element-ui/lib/theme-chalk/index.css'
-    '@/assets/element-ui/index.css'
+    '@/assets/element-ui/index.css',
+    '@fortawesome/fontawesome-svg-core/styles.css',
   ],
+  purgeCSS: {
+    whitelistPatterns: [/svg.*/, /fa.*/]
+  },
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
     '@/plugins/element-ui',
+    '@/plugins/fontawesome.js',
     '@/plugins/apollo',
     '@/plugins/app-mounted.js',
     '@/plugins/vue-filters.js'
