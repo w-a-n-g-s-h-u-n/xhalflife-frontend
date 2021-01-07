@@ -1,57 +1,28 @@
 <template>
   <div class="navs">
     <a
-      href="https://swap.kovan.xdefi.com/"
-      class="d-inline d-flex nav-item"
-      target="_blank"
+      v-for='nav in navs'
+      :key='nav.name'
+      :href="nav.name !== 'halfLife' ? nav.href : '/'"
+      :class="['d-inline', 'd-flex', 'nav-item', nav.name === 'halfLife' ? 'active' : '' ]"
+      :target="nav.name !== 'halfLife' ? '_blank' : '' "
     >
-      Swap
-    </a>
-    <a
-      href="https://pool.kovan.xdefi.com/"
-      class="d-inline d-flex nav-item"
-      target="_blank"
-    >
-      Pool
-    </a>
-    <a
-      href="https://farm.kovan.xdefi.com/"
-      class="d-inline d-flex nav-item"
-      target="_blank"
-    >
-      Fram
-    </a>
-    <span class="nav-item active">
-      <NuxtLink to="/"><span class="text">HalfLife</span></NuxtLink>
+      <span class="text">{{nav.name}}</span>
       <span class="indicator" />
-    </span>
-    <a
-      href="https://stat.kovan.xdefi.com/"
-      class="d-inline d-flex nav-item"
-      target="_blank"
-    >
-      Stat
-    </a>
-    <a
-      href="https://vote.kovan.xdefi.com/"
-      class="d-inline d-flex nav-item"
-      target="_blank"
-    >
-      Vote
-    </a>
-    <a
-      href="https://community.kovan.xdefi.com/"
-      class="d-inline d-flex nav-item"
-      target="_blank"
-    >
-      Forum
     </a>
   </div>
 </template>
 
 <script>
+import navs from 'xdefi-assets/ui/navs.json'
+
 export default {
-  name: 'Navs'
+  name: 'Navs',
+  data () {
+    return {
+      navs
+    }
+  }
 }
 </script>
 
@@ -59,8 +30,12 @@ export default {
 @import './header.scss';
 
 .navs {
-  .nav-item.active {
-    display: none !important;
+  .nav-item {
+    text-transform: capitalize;
+
+    &.active {
+      display: none !important;
+    }
   }
 }
 
@@ -75,6 +50,7 @@ export default {
         width: 100%;
         padding: 10px 0;
         text-align: left;
+        text-transform: capitalize;
 
         &.active {
           margin-left: 0 !important;

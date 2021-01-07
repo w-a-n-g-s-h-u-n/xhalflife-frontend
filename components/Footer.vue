@@ -8,25 +8,15 @@
         <a class='iconContent' href="ttps://www.chainnews.com/u/895866208677.htm" target="_blank">
           <div class='chainNews'></div>
         </a>
-        <a class='iconContent' href="https://xdefilab.medium.com/" target="_blank">
-          <font-awesome-icon :icon="['fab', 'medium-m']" size="lg"/>
-        </a>
-        <a class='iconContent' href="https://twitter.com/xdefilab" target="_blank">
-          <font-awesome-icon :icon="['fab', 'twitter']" size="lg"/>
-        </a>
-        <a class='iconContent' href="https://github.com/xdefilab" target="_blank">
-          <font-awesome-icon :icon="['fab', 'github']" size="lg"/>
-        </a>
-        <a class='iconContent' href="https://discord.gg/SuXhDHbAN3" target="_blank">
-          <font-awesome-icon :icon="['fab', 'discord']" size="lg"/>
-        </a>
-        <a class='iconContent' href="https://t.me/xdeficn" target="_blank">
-          <font-awesome-icon :icon="['fab', 'telegram-plane']" size="lg"/>
-          <span class='lang'>中</span>
-        </a>
-        <a class='iconContent' href="https://t.me/xdefilab" target="_blank">
-          <font-awesome-icon :icon="['fab', 'telegram-plane']" size="lg"/>
-          <span class='lang'>EN</span>
+        <a
+          v-for="contact in contacts"
+          :key="contact.name"
+          class="iconContent"
+          :href="contact.href"
+          target="_blank"
+        >
+          <font-awesome-icon :icon="contact.iconClass" size="lg"/>
+          <span class='lang' v-if="contact.name.includes('telegram')">{{contact.name === 'telegramCn' ? '中' : 'EN'}}</span>
         </a>
         <el-popover
           placement="top"
@@ -46,11 +36,21 @@
 </template>
 
 <script>
+import contacts from 'xdefi-assets/ui/footer.json'
 import Login from './Login'
+
 export default {
   name: 'Footer',
   components: {
     Login
+  },
+  data () {
+    return {
+      contacts
+    }
+  },
+  created () {
+    console.log('contacts', contacts)
   }
 }
 </script>
