@@ -198,7 +198,7 @@ export default {
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
           const decimalsAmount = ethers.utils.parseUnits(depositAmount, 18).toString()
           const decimalsRatio = ethers.utils.parseUnits(unlockRatio, 18).toString()
-          const tx = await contract.createStream(process.env.XDEX_TOKEN_ADDRESS, recipient, decimalsAmount, startBlock, kBlock, decimalsRatio)
+          const tx = await contract.createStream(recipient, decimalsAmount, startBlock, kBlock, decimalsRatio)
           const createStreamResult = await tx.wait()
           // this.$message('Please wait MetaMast to create the stream')
           console.log('createStreamResult', createStreamResult)
