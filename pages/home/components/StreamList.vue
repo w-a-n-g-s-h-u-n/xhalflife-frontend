@@ -12,6 +12,11 @@
         prop="id"
         label="ID"
       />
+      <el-table-column align="center" label="Token" min-width="90">
+        <template slot-scope="scope">
+          <span :title="scope.row.sender">{{ scope.row.token.symbol}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Sender" min-width="120">
         <template slot-scope="scope">
           <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>

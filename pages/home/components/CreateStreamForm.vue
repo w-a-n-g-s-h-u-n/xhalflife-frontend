@@ -91,7 +91,7 @@ export default {
       tokenOptions: tokens,
       formData: {
         token: 'XDEX',
-        recipient: '0x7B980310a885Cc3880E5357B4bbf7540E93f6D3d',
+        recipient: '',
         depositAmount: undefined,
         startBlock: 0, // 22096060
         kBlock: '40',

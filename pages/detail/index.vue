@@ -42,11 +42,11 @@
       <div class="detail-cards">
         <div class="left">
           <div class="card" shadow="always">
-            <div class="header">Remaining（XDEX）</div>
+            <div class="header">Remaining（{{detail.token.symbol}}）</div>
             <div class="content">{{ detail.remaining | precision18 }}</div>
           </div>
           <div class="card" shadow="always">
-            <div class="header">Withdrawable（XDEX）</div>
+            <div class="header">Withdrawable（{{detail.token.symbol}}）</div>
             <div class="content">
               {{ detail.withdrawable | precision18 }}
             </div>
@@ -205,7 +205,11 @@ export default {
   data () {
     return {
       id: 0,
-      detail: {},
+      detail: {
+        token: {
+          symbol: ''
+        }
+      },
       withdrawDialogVisible: false,
       fundDialogVisible: false,
       cancelDialogVisible: false,

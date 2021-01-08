@@ -20,6 +20,12 @@ export const STREAM_LIST = gql`
           to
           txhash
         }
+        token {
+          id
+          decimals
+          name
+          symbol
+        }
       }
   }
  `
@@ -43,17 +49,27 @@ export const STREAM_DETAIL = gql`
           to
           txhash
         }
+        token {
+          symbol
+        }
       }
   }
  `
 
-export const STREAM_GET_TOTAL_DATA = gql`{
-  streamTotalDatas(first: 1) {
-    id
-    totalCount
-    xdexLocked
-    xdexWithdrawed
-  }
+export const STREAM_GET_TOTAL_DATA = gql`
+  query streams($id: Bytes!) {
+    streamTotalDatas(where: {id: $id}) {
+      id
+      count
+      locked
+      withdrawed
+      token {
+        id
+        decimals
+        name
+        symbol
+      }
+    }
 }`
 
 export const STREAM_LIST_BY_RECIPIENT = gql`
@@ -74,6 +90,12 @@ export const STREAM_LIST_BY_RECIPIENT = gql`
         timestamp
         to
         txhash
+      }
+      token {
+        id
+        decimals
+        name
+        symbol
       }
     }
   }`
@@ -96,6 +118,12 @@ export const STREAM_LIST_BY_SENDER = gql`
         timestamp
         to
         txhash
+      }
+      token {
+        id
+        decimals
+        name
+        symbol
       }
     }
   }`

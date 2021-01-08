@@ -28,3 +28,8 @@ Vue.filter('decimaledRatio', function (v, percent) {
   const value = BigNumber(n).shiftedBy(0 - 18).toNumber()
   return value * percent
 })
+
+Vue.filter('toFixed', function (value, percision = 3) {
+  const number = BigNumber(value).toFixed(percision)
+  return number
+})
