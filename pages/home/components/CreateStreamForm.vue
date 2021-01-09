@@ -18,7 +18,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item :label="`How Much To Start (available: ${xdexBalance} ${this.formData.token})`" prop="depositAmount">
+      <el-form-item :label="`How Much To Start (available: ${currentTokenAmount} ${this.formData.token})`" prop="depositAmount">
         <el-input v-model="formData.depositAmount">
           <span slot='suffix' class="symbol">{{formData.token}}</span>
           <el-button slot='append' @click="maxAmount" class="maxButton">MAX</el-button>
@@ -52,13 +52,6 @@
       <el-button type="primary" round class="start-btn btn" @click="onSubmit">
         Start
       </el-button>
-
-      <!--      <el-button type="primary" round class="start-btn btn" @click="testStreamMine">-->
-      <!--        Start Mine-->
-      <!--      </el-button>-->
-      <!--      <el-button round class="cancel-btn btn" @click="test">-->
-      <!--        TEST-->
-      <!--      </el-button>-->
     </div>
   </div>
 </template>
@@ -73,13 +66,13 @@ import {
   // , provider
 } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
-
+import { SUPPORT_TOKENS } from '@/api/apollo/queries'
 import { ethers } from 'ethers'
-import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
-import XDEX_ABI from '@/api/contract/abis/XDEX'
+import XHalfLifeABI from '@/api/contract/abis/XHalfLife.json'
 import { isMobile } from '@/utils/index'
 import { mapState } from 'vuex'
-import tokens, { selectDecimalByName, selectAddressByName } from '@/api/tokens'
+import { selectAbi } from '@/api/contract'
+import { decimalsNumber } from '@/utils'
 
 // import { ABI, KOVAN_ADDRESS } from '@/api/contract/abis/TEST'
 // import { ABI as XHALFLIFEMYTESTABI, KOVAN_ADDRESS as XHALFLIFEMYTESTKOVAN_ADDRESS } from '@/api/contract/abis/XHalfLifeMyTest'
@@ -88,9 +81,10 @@ export default {
   name: 'CreateStreamForm',
   data () {
     return {
-      tokenOptions: tokens,
+      tokenOptions: [],
+      currentTokenAmount: 0,
       formData: {
-        token: 'XDEX',
+        token: '',
         recipient: '',
         depositAmount: undefined,
         startBlock: 0, // 22096060
@@ -123,21 +117,48 @@ export default {
     const blockNumber = await provider.getBlockNumber()
     this.formData.startBlock = blockNumber + 10
   },
-  watch: {
-    'formData.token' (newVal, oldVal) {
-      console.log('token', selectAddressByName(this.formData.token))
-    }
-  },
   computed: {
     ...mapState({
       xdexBalance (state) {
         return state.metamask && state.metamask.xdexBalance
+      },
+      selectCurrentAccount (state) {
+        return state.metamask.account
       }
     })
   },
+  watch: {
+    async 'formData.token' (newVal, oldVal) {
+      const tokenAddress = this.selectAddressByName(this.formData.token)
+      const provider = await getProvider()
+      const signer = provider.getSigner()
+      if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+        const balance = await signer.getBalance()
+        this.currentTokenAmount = ethers.utils.formatEther(balance)
+      } else {
+        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(this.formData.token.toLowerCase()), signer)
+        const balanceOf = await tokenContract.balanceOf(this.selectCurrentAccount)
+        this.currentTokenAmount = decimalsNumber(balanceOf, this.selectDecimalsByName(this.formData.token))
+      }
+    }
+  },
+  created () {
+    this.fetchSupportToken()
+  },
   methods: {
     maxAmount () {
-      this.formData.depositAmount = this.xdexBalance
+      this.formData.depositAmount = this.currentTokenAmount
+    },
+    async fetchSupportToken () {
+      const tokens = await this.$apollo.query({ query: SUPPORT_TOKENS })
+      this.tokenOptions = tokens.data.tokens
+      this.formData.token = this.tokenOptions[0].symbol
+    },
+    selectAddressByName (name) {
+      return this.tokenOptions.find(token => token.symbol === name).id
+    },
+    selectDecimalsByName (name) {
+      return this.tokenOptions.find(token => token.symbol === name).decimals
     },
     onSubmit () {
       this.$refs.createForm.validate(async (valid) => {
@@ -151,11 +172,10 @@ export default {
         }
         try {
           const formData = { ...this.formData }
-          // 数据转换
-          formData.depositAmount = ethers.utils.parseUnits(this.formData.depositAmount, selectDecimalByName(this.formData.token)).toString()
+          const tokenDecimals = this.selectDecimalsByName(formData.token)
+          const tokenAddress = this.selectAddressByName(formData.token)
 
-          console.log('onSubmit', formData)
-          if (!formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
+          if (!formData.token || !formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
             this.$message({
               message: 'Please check input fields',
               type: 'warning'
@@ -163,13 +183,6 @@ export default {
             return
           }
 
-          // 获得provider
-          const provider = await getProvider()
-          const signer = provider.getSigner()
-          const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
-          const contractXDEX = new ethers.Contract(selectAddressByName(this.formData.token), XDEX_ABI, signer)
-
-          //
           const accounts = await metamask.connectMetaMask()
           if (!accounts.length) {
             this.$message({
@@ -179,29 +192,42 @@ export default {
             return
           }
 
-          // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则触发approve流程
-          const allowance = await contractXDEX.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-          console.log('allowance', allowance, accounts[0])
+          // deal form data to api
+          const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
+          const decimalsAmount = ethers.utils.parseUnits(depositAmount, tokenDecimals)
+          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, Number(tokenDecimals) - 3).toString()
 
-          const depositAmountBig = ethers.BigNumber.from(formData.depositAmount)
-          if (depositAmountBig.lte(allowance)) {
-            console.log('allowance is enough', allowance.toString(), depositAmountBig.toString())
+          // 获得provider
+          const provider = await getProvider()
+          const signer = provider.getSigner()
+          const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
+
+          let tx
+          if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+            tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, { value: decimalsAmount })
           } else {
-            console.log('allowance is not enough', allowance.toString(), depositAmountBig.toString())
-            // approve
-            const approveValue = depositAmountBig.sub(allowance)
-            console.log('Need approve', approveValue)
-            const approveTx = await contractXDEX.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
-            const approveResult = await approveTx.wait()
-            console.log('approveResult', approveResult)
-            // this.$message('Please wait MetaMast to approve')
+            const tokenContract = new ethers.Contract(tokenAddress, selectAbi(formData.token.toLowerCase()), signer)
+            // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则触发approve流程
+            const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
+            console.log(allowance)
+
+            if (decimalsAmount.lte(allowance)) {
+              console.log('allowance is enough', allowance.toString(), decimalsAmount.toString())
+            } else {
+              console.log('allowance is not enough', allowance.toString(), decimalsAmount.toString())
+              // approve
+              const approveValue = decimalsAmount.sub(allowance)
+              console.log('Need approve', approveValue)
+              const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
+              const approveResult = await approveTx.wait()
+              console.log('approveResult', approveResult)
+              // this.$message('Please wait MetaMast to approve')
+            }
+
+            console.log(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
+            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
           }
 
-          // 提交
-          const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
-          const decimalsAmount = ethers.utils.parseUnits(depositAmount, 18).toString()
-          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, 18).toString()
-          const tx = await contract.createStream(process.env.XDEX_TOKEN_ADDRESS, recipient, decimalsAmount, startBlock, kBlock, decimalsRatio)
           const createStreamResult = await tx.wait()
           // this.$message('Please wait MetaMast to create the stream')
           console.log('createStreamResult', createStreamResult)

@@ -1,7 +1,5 @@
 import tokens from 'xdefi-assets/tokens/kovan.json'
 
-console.log('tokens', tokens)
-
 export const selectSymbolByName = (name) => {
   return tokens.find(token => token.name === name).symbol
 }

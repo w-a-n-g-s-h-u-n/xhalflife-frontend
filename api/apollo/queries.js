@@ -1,5 +1,15 @@
 import gql from 'graphql-tag'
 
+export const SUPPORT_TOKENS = gql`{
+  tokens(first: 10) {
+    id
+    decimals
+    name
+    symbol
+  }
+}
+`
+
 // TODO 参数化、分页
 export const STREAM_LIST = gql`
   query streams($first: Int!, $skip:Int!) {

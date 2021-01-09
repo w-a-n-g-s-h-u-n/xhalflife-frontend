@@ -43,12 +43,12 @@
         <div class="left">
           <div class="card" shadow="always">
             <div class="header">Remaining（{{detail.token.symbol}}）</div>
-            <div class="content">{{ detail.remaining | precision18 }}</div>
+            <div class="content">{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
           </div>
           <div class="card" shadow="always">
             <div class="header">Withdrawable（{{detail.token.symbol}}）</div>
             <div class="content">
-              {{ detail.withdrawable | precision18 }}
+              {{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
             </div>
           </div>
         </div>
@@ -74,7 +74,7 @@
               </div>
               <div class="item item2">
                 <div class="label ratio">Unlock Ratio</div>
-                <div class="value">{{ detail.unlockRatio | decimaledRatio(1000) }}‰</div>
+                <div class="value">{{ detail.unlockRatio | decimaledRatio(1000, detail.token.decimals) }}‰</div>
               </div>
               <div class="item item3">
                 <div class="label lockNumber">Unlock K</div>

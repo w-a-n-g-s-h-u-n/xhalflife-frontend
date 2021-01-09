@@ -12,13 +12,10 @@ export const statusedList = (list) => {
   return list.map(item => item.txs.some(x => x.event === 'CancelStream') ? { ...item, isCanceled: true, withdrawable: 0, remaining: 0 } : { ...item, isCanceled: false })
 }
 
-export const decimalsNumber = (value) => {
+export const decimalsNumber = (value, decimal = 18) => {
   if (!value || isNaN(value)) { return 0 }
   const n = ethers.BigNumber.from(value).toString()
-  const decimalsNumber = BigNumber(n).shiftedBy(0 - 18).toNumber()
-  if (decimalsNumber < 1) {
-    return decimalsNumber.toFixed(3)
-  }
+  const decimalsNumber = BigNumber(n).shiftedBy(0 - decimal).toNumber()
   return decimalsNumber.toFixed(2)
 }
 
