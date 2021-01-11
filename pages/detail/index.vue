@@ -336,7 +336,7 @@ export default {
         // 表单数据
         this.formWithdraw.streamId = this.id
         const { streamId } = this.formWithdraw
-        const decimaledAmount = ethers.utils.parseUnits(this.formWithdraw.amount, this.detail.token.decimals).toString()
+        const decimaledAmount = await ethers.utils.parseUnits(this.formWithdraw.amount, this.detail.token.decimals).toString()
 
         // 提交
         const tx = await contract.withdrawFromStream(streamId, decimaledAmount)
@@ -349,6 +349,8 @@ export default {
         })
         this.withdrawing = false
         this.withdrawDialogVisible = false
+        this.getDetail(streamId)
+        this.getStreamBalance(streamId)
       } catch (e) {
         this.$message({
           message: e.message,
@@ -479,7 +481,7 @@ export default {
       if (type === 'fund') {
         this.formFund.amount = this.currentTokenAmount
       } else if (type === 'withdraw') {
-        this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable)
+        this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable, this.detail.token.decimals)
       }
     },
     cellStyle (obj) {
