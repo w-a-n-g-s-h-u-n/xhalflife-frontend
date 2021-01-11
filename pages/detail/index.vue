@@ -140,13 +140,13 @@
       </div>
     </div>
     <el-dialog
-      title="提款"
+      title="Withdraw"
       :visible.sync="withdrawDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          TOTAL: {{ detail.withdrawable | decimaledAmount(detail.token.decimals) }} {{detail.token.symbol}}
+          TOTAL: {{ withdrawable }} {{detail.token.symbol}}
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
           <el-button slot="append" @click="maxAmount('withdraw')">MAX</el-button>
@@ -154,11 +154,11 @@
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doWithdraw" :disabled="withdrawing" :loading="withdrawing">确 定</el-button>
+        <el-button type="primary" @click="doWithdraw" :disabled="withdrawing" :loading="withdrawing">Confirm</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="存款"
+      title="Fund"
       :visible.sync="fundDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
@@ -171,17 +171,17 @@
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doFund" :disabled="funding" :loading="funding">确 定</el-button>
+        <el-button type="primary" @click="doFund" :disabled="funding" :loading="funding">Confirm</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="取消"
+      title="Cancel"
       :visible.sync="cancelDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
-      <span>确定取消</span>
+      <span>Confirm do cancel ?</span>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">确 定</el-button>
+        <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">Confirm</el-button>
       </span>
     </el-dialog>
   </div>
@@ -209,6 +209,7 @@ export default {
           decimals: ''
         }
       },
+      withdrawable: 0,
       currentTokenAmount: 0,
       withdrawDialogVisible: false,
       fundDialogVisible: false,
@@ -303,6 +304,7 @@ export default {
       try {
         const ret = await XHalfLifeContract.balanceOf(id)
         console.log('getStreamBalance', id, ret)
+        this.withdrawable = ethers.utils.formatUnits(ret.withdrawable, this.detail.token.decimals)
         this.$store.commit('updateBalanceByStreamId', { key: id, value: ret })
       } catch (e) {
         console.error(e)
@@ -312,14 +314,14 @@ export default {
       // TODO
       if (!this.formWithdraw.amount > 0) {
         this.$message({
-          message: '数值太小',
+          message: 'Invalid number',
           type: 'warning'
         })
         return
       }
       if (!this.formWithdraw.amount > this.detail.withdrawable) {
         this.$message({
-          message: '数值太大',
+          message: 'Invalid Number',
           type: 'warning'
         })
         return
@@ -331,7 +333,6 @@ export default {
         const provider = await getProvider()
         const signer = provider.getSigner()
         const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
-        // const tokenContract = new ethers.Contract(process.env.XDEX_TOKEN_ADDRESS, XDEX_ABI, signer)
 
         // 表单数据
         this.formWithdraw.streamId = this.id
@@ -481,7 +482,7 @@ export default {
       if (type === 'fund') {
         this.formFund.amount = this.currentTokenAmount
       } else if (type === 'withdraw') {
-        this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable, this.detail.token.decimals)
+        this.formWithdraw.amount = ethers.utils.formatUnits(this.detail.withdrawable, this.detail.token.decimals)
       }
     },
     cellStyle (obj) {

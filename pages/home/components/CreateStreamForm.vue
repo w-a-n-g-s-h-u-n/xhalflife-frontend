@@ -65,14 +65,7 @@
 </template>
 
 <script>
-// import {
-// // XHalfLifeContract,
-//   getXHalfLifeContractWithSigner
-// } from '@/api/contract'
-import {
-  getProvider
-  // , provider
-} from '@/api/contract/ethers'
+import { getProvider } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
 import { SUPPORT_TOKENS } from '@/api/apollo/queries'
 import { ethers } from 'ethers'
@@ -81,9 +74,6 @@ import { isMobile } from '@/utils/index'
 import { mapState } from 'vuex'
 import { selectAbi } from '@/api/contract'
 import { decimalsNumber } from '@/utils'
-
-// import { ABI, KOVAN_ADDRESS } from '@/api/contract/abis/TEST'
-// import { ABI as XHALFLIFEMYTESTABI, KOVAN_ADDRESS as XHALFLIFEMYTESTKOVAN_ADDRESS } from '@/api/contract/abis/XHalfLifeMyTest'
 
 export default {
   name: 'CreateStreamForm',
@@ -277,15 +267,12 @@ export default {
               const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
               const approveResult = await approveTx.wait()
               console.log('approveResult', approveResult)
-              // this.$message('Please wait MetaMast to approve')
             }
 
-            console.log(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
             tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
           }
 
           const createStreamResult = await tx.wait()
-          // this.$message('Please wait MetaMast to create the stream')
           console.log('createStreamResult', createStreamResult)
           this.$message({
             message: 'Create stream successfully',

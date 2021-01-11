@@ -30,10 +30,9 @@ Vue.filter('decimaledRatio', function (v, percent, decimal = 18) {
 })
 
 Vue.filter('decimaledAmount', function (v, decimal = 18) {
-  if (!v || isNaN(v)) { return '' }
-  const n = ethers.BigNumber.from(v).toString()
-  const value = BigNumber(n).shiftedBy(0 - decimal).toNumber()
-  return value.toFixed(2)
+  if (!v || isNaN(v) || !decimal) { return '' }
+  const [int, float] = ethers.utils.formatUnits(v, decimal).split('.')
+  return `${int}.${float.slice(0, 3)}`
 })
 
 Vue.filter('toFixed', function (value, percision = 3) {
