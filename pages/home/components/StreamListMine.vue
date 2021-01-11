@@ -89,7 +89,7 @@
       <el-pagination
         class="pagination"
         :page-size="sendInfo.pageSize"
-        layout="prev, pager, next, jumper"
+        layout="prev, pager, next"
         :total="sendInfo.total"
         @current-change="handleCurrentChange"
       />
@@ -172,7 +172,7 @@
         class="pagination"
         :current-page.sync="receiveInfo.page"
         :page-size="receiveInfo.pageSize"
-        layout="prev, pager, next, jumper"
+        layout="prev, pager, next"
         :total="receiveInfo.total"
         @current-change="handleCurrentChange"
       />
