@@ -8,7 +8,15 @@
       ref="createForm"
       class="form">
       <el-form-item label="Which Token" prop="token">
-        <el-select v-model="formData.token" placeholder="请选择" style="width: 100%;">
+        <el-autocomplete
+          size="medium"
+          v-model="formData.token"
+          :fetch-suggestions="querySearch"
+          placeholder="请输入内容"
+          @select="handleSelect"
+          style="width: 100%;"
+        ></el-autocomplete>
+        <!-- <el-select v-model="formData.token" placeholder="请选择" style="width: 100%;">
           <el-option
             v-for="item in tokenOptions"
             :key="item.name"
@@ -16,11 +24,11 @@
             :value="item.symbol">
             <span>{{item.symbol}} ({{item.name}})</span>
           </el-option>
-        </el-select>
+        </el-select> -->
       </el-form-item>
-      <el-form-item :label="`How Much To Start (available: ${currentTokenAmount} ${this.formData.token})`" prop="depositAmount">
+      <el-form-item :label="`How Much To Start (available: ${currentTokenAmount} ${currentToken})`" prop="depositAmount">
         <el-input v-model="formData.depositAmount">
-          <span slot='suffix' class="symbol">{{formData.token}}</span>
+          <span slot='suffix' class="symbol">{{currentToken}}</span>
           <el-button slot='append' @click="maxAmount" class="maxButton">MAX</el-button>
         </el-input>
       </el-form-item>
@@ -83,6 +91,7 @@ export default {
     return {
       tokenOptions: [],
       currentTokenAmount: 0,
+      currentToken: '',
       formData: {
         token: '',
         recipient: '',
@@ -129,16 +138,19 @@ export default {
   },
   watch: {
     async 'formData.token' (newVal, oldVal) {
-      const tokenAddress = this.selectAddressByName(this.formData.token)
       const provider = await getProvider()
       const signer = provider.getSigner()
+      const tokenAddress = this.selectAddressByName(newVal)
+      if (newVal.length < 20) {
+        this.currentToken = newVal
+      }
       if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
         const balance = await signer.getBalance()
         this.currentTokenAmount = ethers.utils.formatEther(balance)
       } else {
-        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(this.formData.token.toLowerCase()), signer)
+        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(newVal.toLowerCase()), signer)
         const balanceOf = await tokenContract.balanceOf(this.selectCurrentAccount)
-        this.currentTokenAmount = decimalsNumber(balanceOf, this.selectDecimalsByName(this.formData.token))
+        this.currentTokenAmount = decimalsNumber(balanceOf, this.selectDecimalsByName(newVal))
       }
     }
   },
@@ -146,13 +158,56 @@ export default {
     this.fetchSupportToken()
   },
   methods: {
+    async querySearch (queryString, cb) {
+      let tokens = this.tokenOptions
+      if (queryString) {
+        if (ethers.utils.isAddress(queryString)) {
+          const provider = await getProvider()
+          const signer = provider.getSigner()
+          const tokenContract = new ethers.Contract(queryString, selectAbi(queryString), signer)
+          try {
+            const name = await tokenContract.name()
+            const symbol = await tokenContract.symbol()
+            const balanceOf = await tokenContract.balanceOf(this.selectCurrentAccount)
+            const decimals = await tokenContract.decimals()
+            this.currentTokenAmount = decimalsNumber(balanceOf, decimals)
+            tokens = [{
+              value: symbol,
+              id: queryString,
+              name,
+              symbol,
+              decimals
+            }]
+            this.tokenOptions.push(tokens)
+          } catch (e) {
+            this.$message({
+              message: 'Please check the address',
+              type: 'warning'
+            })
+          }
+        } else if (queryString.length > 20) {
+          this.$message({
+            message: 'Please check the address',
+            type: 'warning'
+          })
+        }
+      }
+      cb(tokens)
+    },
+    handleSelect (item) {
+      console.log(item)
+    },
     maxAmount () {
       this.formData.depositAmount = this.currentTokenAmount
     },
     async fetchSupportToken () {
       const tokens = await this.$apollo.query({ query: SUPPORT_TOKENS })
-      this.tokenOptions = tokens.data.tokens
+      this.tokenOptions = tokens.data.tokens.map(token => ({
+        ...token,
+        value: token.symbol
+      }))
       this.formData.token = this.tokenOptions[0].symbol
+      this.currentToken = this.tokenOptions[0].symbol
     },
     selectAddressByName (name) {
       return this.tokenOptions.find(token => token.symbol === name).id
@@ -174,6 +229,7 @@ export default {
           const formData = { ...this.formData }
           const tokenDecimals = this.selectDecimalsByName(formData.token)
           const tokenAddress = this.selectAddressByName(formData.token)
+          console.log(tokenAddress, tokenDecimals)
 
           if (!formData.token || !formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
             this.$message({
