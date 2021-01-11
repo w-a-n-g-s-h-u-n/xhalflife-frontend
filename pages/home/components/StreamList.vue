@@ -76,7 +76,7 @@
       class="pagination"
       :current-page.sync="query.page"
       :page-size="query.limit"
-      layout="prev, pager, next, jumper"
+      layout="prev, pager, next"
       :total="total"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
