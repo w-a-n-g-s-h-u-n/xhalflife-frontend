@@ -61,6 +61,8 @@ export const STREAM_DETAIL = gql`
         }
         token {
           symbol
+          id
+          decimals
         }
       }
   }
