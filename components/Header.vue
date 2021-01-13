@@ -3,7 +3,7 @@
     <div class="content">
       <img class="logo" src="~/assets/xdefi.svg" alt="">
       <div class='navContent'>
-        <span class="nav-item active">
+        <span class="nav-item active currentSite">
           <NuxtLink to="/"><span class="text">HalfLife</span></NuxtLink>
           <span class="indicator" />
         </span>

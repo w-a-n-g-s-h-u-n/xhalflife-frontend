@@ -113,8 +113,8 @@ export const STREAM_LIST_BY_RECIPIENT = gql`
   }`
 
 export const STREAM_LIST_BY_SENDER = gql`
-  query streams($first: Int!, $sender:Bytes!) {
-    streams(first: $first, where: {sender: $sender}, orderBy: timestamp, orderDirection: desc) {
+  query streams($first: Int!, $skip: Int!, $sender:Bytes!) {
+    streams(first: $first, skip: $skip, where: {sender: $sender}, orderBy: timestamp, orderDirection: desc) {
       id
       sender
       recipient
