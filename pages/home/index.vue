@@ -6,7 +6,7 @@
             Total Streams
           </div>
           <div class="value">
-            {{ stats.totalCount }}
+            {{ stats.count }}
           </div>
         </div>
         <div class="card card-2">
@@ -14,7 +14,7 @@
             XDEX Toatal Locked
           </div>
           <div class="value">
-            {{ stats.xdexLocked | precision18 }}
+            {{ stats.locked | toFixed }}
           </div>
         </div>
         <div class="card card-3">
@@ -22,7 +22,7 @@
             XDEX Withdrawed
           </div>
           <div class="value">
-            {{ stats.xdexWithdrawed | precision18 }}
+            {{ stats.withdrawed | toFixed }}
           </div>
         </div>
       </div>
@@ -111,7 +111,8 @@ export default {
       })
     },
     async getStreamStats () {
-      const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA })
+      console.log('token', process.env.XDEX_TOKEN_ADDRESS.toLowerCase())
+      const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: process.env.XDEX_TOKEN_ADDRESS.toLowerCase() } })
       console.log('getStreamStats', ret)
       const stats = (ret.data && ret.data.streamTotalDatas && ret.data.streamTotalDatas[0]) || {}
       this.stats = stats

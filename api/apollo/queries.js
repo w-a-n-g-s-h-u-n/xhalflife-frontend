@@ -1,5 +1,15 @@
 import gql from 'graphql-tag'
 
+export const SUPPORT_TOKENS = gql`{
+  tokens(first: 10) {
+    id
+    decimals
+    name
+    symbol
+  }
+}
+`
+
 // TODO 参数化、分页
 export const STREAM_LIST = gql`
   query streams($first: Int!, $skip:Int!) {
@@ -19,6 +29,12 @@ export const STREAM_LIST = gql`
           timestamp
           to
           txhash
+        }
+        token {
+          id
+          decimals
+          name
+          symbol
         }
       }
   }
@@ -43,17 +59,29 @@ export const STREAM_DETAIL = gql`
           to
           txhash
         }
+        token {
+          symbol
+          id
+          decimals
+        }
       }
   }
  `
 
-export const STREAM_GET_TOTAL_DATA = gql`{
-  streamTotalDatas(first: 1) {
-    id
-    totalCount
-    xdexLocked
-    xdexWithdrawed
-  }
+export const STREAM_GET_TOTAL_DATA = gql`
+  query streams($id: Bytes!) {
+    streamTotalDatas(where: {id: $id}) {
+      id
+      count
+      locked
+      withdrawed
+      token {
+        id
+        decimals
+        name
+        symbol
+      }
+    }
 }`
 
 export const STREAM_LIST_BY_RECIPIENT = gql`
@@ -74,6 +102,12 @@ export const STREAM_LIST_BY_RECIPIENT = gql`
         timestamp
         to
         txhash
+      }
+      token {
+        id
+        decimals
+        name
+        symbol
       }
     }
   }`
@@ -96,6 +130,12 @@ export const STREAM_LIST_BY_SENDER = gql`
         timestamp
         to
         txhash
+      }
+      token {
+        id
+        decimals
+        name
+        symbol
       }
     }
   }`

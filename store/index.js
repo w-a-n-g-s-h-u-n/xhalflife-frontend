@@ -106,6 +106,9 @@ export const getters = {
     console.log('getters', state)
     console.log('isMetaMaskNetworkRight', state.metamask.chainId, state.chainId)
     return state.metamask.chainId === state.chainId
+  },
+  selectCurrentAccount: (state) => {
+    return state.metamask.account
   }
 }
 

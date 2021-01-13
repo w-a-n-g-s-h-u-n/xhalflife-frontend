@@ -42,13 +42,13 @@
       <div class="detail-cards">
         <div class="left">
           <div class="card" shadow="always">
-            <div class="header">Remaining（XDEX）</div>
-            <div class="content">{{ detail.remaining | precision18 }}</div>
+            <div class="header">Remaining（{{detail.token.symbol}}）</div>
+            <div class="content">{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
           </div>
           <div class="card" shadow="always">
-            <div class="header">Withdrawable（XDEX）</div>
+            <div class="header">Withdrawable（{{detail.token.symbol}}）</div>
             <div class="content">
-              {{ detail.withdrawable | precision18 }}
+              {{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
             </div>
           </div>
         </div>
@@ -74,7 +74,7 @@
               </div>
               <div class="item item2">
                 <div class="label ratio">Unlock Ratio</div>
-                <div class="value">{{ detail.unlockRatio | decimaledRatio(1000) }}‰</div>
+                <div class="value">{{ detail.unlockRatio | decimaledRatio(1000, detail.token.decimals) }}‰</div>
               </div>
               <div class="item item3">
                 <div class="label lockNumber">Unlock K</div>
@@ -140,13 +140,13 @@
       </div>
     </div>
     <el-dialog
-      title="提款"
+      title="Withdraw"
       :visible.sync="withdrawDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          TOTAL: {{ detail.withdrawable | precision18 }} XDEX
+          TOTAL: {{ withdrawable }} {{detail.token.symbol}}
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
           <el-button slot="append" @click="maxAmount('withdraw')">MAX</el-button>
@@ -154,34 +154,34 @@
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doWithdraw" :disabled="withdrawing" :loading="withdrawing">确 定</el-button>
+        <el-button type="primary" @click="doWithdraw" :disabled="withdrawing" :loading="withdrawing">Confirm</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="存款"
+      title="Fund"
       :visible.sync="fundDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          TOTAL: {{ xdexBalance }} XDEX
+          TOTAL: {{ currentTokenAmount }} {{detail.token.symbol}}
         </div>
         <el-input placeholder="" v-model="formFund.amount">
           <el-button slot="append" @click="maxAmount('fund')">MAX</el-button>
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doFund" :disabled="funding" :loading="funding">确 定</el-button>
+        <el-button type="primary" @click="doFund" :disabled="funding" :loading="funding">Confirm</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="取消"
+      title="Cancel"
       :visible.sync="cancelDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
-      <span>确定取消</span>
+      <span>Confirm do cancel ?</span>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">确 定</el-button>
+        <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">Confirm</el-button>
       </span>
     </el-dialog>
   </div>
@@ -191,21 +191,26 @@ import { STREAM_DETAIL } from '@/api/apollo/queries'
 import { XHalfLifeContract } from '@/api/contract'
 import { getProvider } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
-import { isMobile } from '@/utils/index'
-
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
-import XDEX_ABI from '@/api/contract/abis/XDEX'
-
 import { mapState } from 'vuex'
-import { statusedList, decimalsNumber } from '@/utils/index'
+import { isMobile, statusedList, decimalsNumber } from '@/utils/index'
+import { selectAbi } from '@/api/contract'
 
 export default {
   name: 'Detail',
   data () {
     return {
       id: 0,
-      detail: {},
+      detail: {
+        token: {
+          symbol: '',
+          id: '',
+          decimals: ''
+        }
+      },
+      withdrawable: 0,
+      currentTokenAmount: 0,
       withdrawDialogVisible: false,
       fundDialogVisible: false,
       cancelDialogVisible: false,
@@ -232,9 +237,6 @@ export default {
       },
       account (state) {
         return state.metamask && state.metamask.account
-      },
-      xdexBalance (state) {
-        return state.metamask && state.metamask.xdexBalance
       }
     }),
     canWithDraw () {
@@ -256,6 +258,11 @@ export default {
   watch: {
     detailCache () {
       this.detail = { ...this.detail, ...this.detailCache[this.id] }
+    },
+    'detail.token.id' (newVal, oldVal) {
+      if (newVal) {
+        this.tokenBalance()
+      }
     }
   },
   mounted () {
@@ -272,12 +279,22 @@ export default {
     }
   },
   methods: {
-    // async getData () {
-    //   const ret = await this.$apollo.query({ query: STREAM_FUNDS_BY_STREAMID })
-    //   console.log('getStreamStats', ret)
-    //   const stats = (ret.data && ret.data.streamTotalDatas && ret.data.streamTotalDatas[0]) || {}
-    //   this.stats = stats
-    // },
+    async tokenBalance () {
+      const provider = await getProvider()
+      const signer = await provider.getSigner()
+      if (this.detail.token.id) {
+        if (this.detail.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+          const balance = await signer.getBalance()
+          this.currentTokenAmount = ethers.utils.formatEther(balance)
+        } else {
+          const tokenContract = new ethers.Contract(this.detail.token.id, selectAbi(this.detail.token.symbol), signer)
+          const balanceOf = await tokenContract.balanceOf(this.account)
+          this.currentTokenAmount = decimalsNumber(balanceOf, this.detail.token.decimals)
+        }
+      } else {
+        this.currentTokenAmount = 0
+      }
+    },
     async getDetail (id) {
       const ret = await this.$apollo.query({ query: STREAM_DETAIL, variables: { id: Number(id) } })
       this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams)[0])
@@ -287,6 +304,7 @@ export default {
       try {
         const ret = await XHalfLifeContract.balanceOf(id)
         console.log('getStreamBalance', id, ret)
+        this.withdrawable = ethers.utils.formatUnits(ret.withdrawable, this.detail.token.decimals)
         this.$store.commit('updateBalanceByStreamId', { key: id, value: ret })
       } catch (e) {
         console.error(e)
@@ -296,14 +314,14 @@ export default {
       // TODO
       if (!this.formWithdraw.amount > 0) {
         this.$message({
-          message: '数值太小',
+          message: 'Invalid number',
           type: 'warning'
         })
         return
       }
       if (!this.formWithdraw.amount > this.detail.withdrawable) {
         this.$message({
-          message: '数值太大',
+          message: 'Invalid Number',
           type: 'warning'
         })
         return
@@ -315,12 +333,11 @@ export default {
         const provider = await getProvider()
         const signer = provider.getSigner()
         const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
-        // const contractXDEX = new ethers.Contract(process.env.XDEX_TOKEN_ADDRESS, XDEX_ABI, signer)
 
         // 表单数据
         this.formWithdraw.streamId = this.id
         const { streamId } = this.formWithdraw
-        const decimaledAmount = ethers.utils.parseUnits(this.formWithdraw.amount, 18).toString()
+        const decimaledAmount = await ethers.utils.parseUnits(this.formWithdraw.amount, this.detail.token.decimals).toString()
 
         // 提交
         const tx = await contract.withdrawFromStream(streamId, decimaledAmount)
@@ -333,6 +350,8 @@ export default {
         })
         this.withdrawing = false
         this.withdrawDialogVisible = false
+        this.getDetail(streamId)
+        this.getStreamBalance(streamId)
       } catch (e) {
         this.$message({
           message: e.message,
@@ -366,7 +385,7 @@ export default {
         const provider = await getProvider()
         const signer = provider.getSigner()
         const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
-        const contractXDEX = new ethers.Contract(process.env.XDEX_TOKEN_ADDRESS, XDEX_ABI, signer)
+        const tokenContract = new ethers.Contract(this.detail.token.id, selectAbi(this.detail.token.symbol), signer)
 
         const accounts = await metamask.connectMetaMask()
         if (!accounts.length) {
@@ -379,39 +398,40 @@ export default {
 
         // 表单数据
         this.formFund.streamId = this.id
-        console.log(this.formFund)
         const { streamId } = this.formFund
-        const decimaledAmount = ethers.utils.parseUnits(this.formFund.amount, 18).toString()
+        const decimaledAmount = ethers.utils.parseUnits(this.formFund.amount, this.detail.token.decimals).toString()
 
-        // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则出发approve流程
-        const allowance = await contractXDEX.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-        console.log('allowance', allowance, accounts[0])
-
-        const depositAmountBig = ethers.BigNumber.from(decimaledAmount)
-        if (depositAmountBig.lte(allowance)) {
-          console.log('allowance is enough', allowance.toString(), depositAmountBig.toString())
+        let tx
+        if (this.detail.token.id !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+          // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则出发approve流程
+          const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
+          console.log('allowance', allowance, accounts[0])
+          const depositAmountBig = ethers.BigNumber.from(decimaledAmount)
+          if (depositAmountBig.lte(allowance)) {
+            console.log('allowance is enough', allowance.toString(), depositAmountBig.toString())
+          } else {
+            console.log('allowance is not enough', allowance.toString(), depositAmountBig.toString())
+            // approve
+            const approveValue = depositAmountBig.sub(allowance)
+            console.log('Need approve', approveValue)
+            const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
+            const approveResult = await approveTx.wait()
+            console.log('approveResult', approveResult)
+          }
+          tx = await contract.fundStream(streamId, decimaledAmount.toString())
         } else {
-          console.log('allowance is not enough', allowance.toString(), depositAmountBig.toString())
-          // approve
-          const approveValue = depositAmountBig.sub(allowance)
-          console.log('Need approve', approveValue)
-          const approveTx = await contractXDEX.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
-          const approveResult = await approveTx.wait()
-          console.log('approveResult', approveResult)
-          // this.$message('Please wait MetaMast to approve')
+          tx = await contract.fundStream(streamId, decimaledAmount.toString(), { value: decimaledAmount.toString() })
         }
-
-        // 提交
-        const tx = await contract.fundStream(streamId, decimaledAmount.toString())
         const txResult = await tx.wait()
-
-        console.log('doFund ret', txResult)
+        console.log('doWithdraw ret', txResult)
         this.$message({
           message: 'Fund successfully',
           type: 'success'
         })
         this.funding = false
         this.fundDialogVisible = false
+        this.getDetail(streamId)
+        this.getStreamBalance(streamId)
       } catch (e) {
         this.$message({
           message: e.message,
@@ -460,9 +480,9 @@ export default {
     },
     maxAmount (type) {
       if (type === 'fund') {
-        this.formFund.amount = this.xdexBalance
+        this.formFund.amount = this.currentTokenAmount
       } else if (type === 'withdraw') {
-        this.formWithdraw.amount = decimalsNumber(this.detail.withdrawable)
+        this.formWithdraw.amount = ethers.utils.formatUnits(this.detail.withdrawable, this.detail.token.decimals)
       }
     },
     cellStyle (obj) {

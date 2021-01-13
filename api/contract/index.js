@@ -1,7 +1,21 @@
 import { ethers } from 'ethers'
 import { provider } from './ethers'
-import XHalfLifeABI from './abis/XHalfLife'
-import XDEXABI from './abis/XDEX'
+import XHalfLifeABI from './abis/XHalfLife.json'
+import XDEXABI from './abis/XDEX.json'
+
+const tokenAbi = {
+  xdex: require('./abis/XDEX.json'),
+  usdt: require('./abis/USDT.json'),
+  others: require('./abis/IERC20.json').abi
+}
+
+export const selectAbi = (name) => {
+  if (tokenAbi[name]) {
+    return tokenAbi[name]
+  } else {
+    return tokenAbi.others
+  }
+}
 
 export const XHalfLifeContract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, provider)
 

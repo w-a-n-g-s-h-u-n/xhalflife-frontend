@@ -12,6 +12,11 @@
         prop="id"
         label="ID"
       />
+      <el-table-column align="center" label="Token" min-width="90">
+        <template slot-scope="scope">
+          <span :title="scope.row.sender">{{ scope.row.token.symbol}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Sender" min-width="120">
         <template slot-scope="scope">
           <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
@@ -24,12 +29,12 @@
       </el-table-column>
       <el-table-column align="center" label="Deposited" min-width="100">
         <template slot-scope="scope">
-          <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | precision18 }}</span>
+          <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | decimaledAmount(scope.row.token.decimals) }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Withdrawable" min-width="110">
         <template slot-scope="scope">
-          <span :title="scope.row.withdrawable">{{ detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable | precision18 }}</span>
+          <span :title="scope.row.withdrawable">{{ detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable | decimaledAmount(scope.row.token.decimals) }}</span>
         </template>
       </el-table-column>
 
