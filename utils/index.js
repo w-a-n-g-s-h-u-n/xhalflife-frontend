@@ -16,7 +16,11 @@ export const decimalsNumber = (value, decimal = 18) => {
   if (!value || isNaN(value)) { return 0 }
   const n = ethers.BigNumber.from(value).toString()
   const decimalsNumber = BigNumber(n).shiftedBy(0 - decimal).toNumber()
-  return decimalsNumber.toFixed(2)
+  if (decimal === 0) {
+    return decimalsNumber.toString()
+  } else {
+    return decimalsNumber.toFixed(2)
+  }
 }
 
 export const isMobile = () => {

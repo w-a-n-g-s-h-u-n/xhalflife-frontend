@@ -73,11 +73,10 @@
       </el-table-column>
     </el-table>
     <el-pagination
-      v-if="total>0"
       class="pagination"
       :current-page.sync="query.page"
       :page-size="query.limit"
-      layout="prev, pager, next, jumper"
+      layout="prev, pager, next"
       :total="total"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -112,7 +111,7 @@ export default {
       return (this.query.page - 1) * this.query.limit
     },
     total (state) {
-      return Number(state.stats.totalCount) || 0
+      return Number(state.stats.count) || 0
     },
     homeList (state) {
       return state.homeList
@@ -132,6 +131,7 @@ export default {
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
       console.log('StreamList ret', ret)
       const statusList = statusedList(ret.data.streams)
+      console.log(statusList)
       this.$store.commit('updateSteamList', { key: 'homeList', value: statusList })
 
       const ids = statusList.map(item => item.id)
