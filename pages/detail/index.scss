@@ -9,7 +9,7 @@
   letter-spacing: 0;
   height: 60px;
   text-align: left;
-  width: 997px;
+  width: 1200px;
   margin: 0 auto;
   line-height: 60px;
 
@@ -60,6 +60,7 @@
   }
 
   .content {
+    
     font-size: 28px;
     color: #ffffff;
     justify-content: center;
@@ -88,13 +89,16 @@
         align-items: center;
         justify-content: center;
         flex: 1;
+        
       }
     }
   }
 
   .right {
+    flex-grow: 1;
     width: 740px;
     height: 397px;
+    margin-left: 30px;
 
     .header {
       display: flex;
