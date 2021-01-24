@@ -2,7 +2,7 @@
   <div class="main">
     <div class="module mainContainer">
       <div class="breadcrumb">
-        <NuxtLink to="/" class="breadcrumbLink">HalfLife</NuxtLink> <span><i class="el-icon-right" /></span> Detail
+        <NuxtLink to="/" class="breadcrumbLink">{{$t('nav.HalfLife')}}</NuxtLink> <span><i class="el-icon-right" /></span> {{$t('detail.detail')}}
       </div>
       <div class="actions-wrap">
         <div class="detail-id">
@@ -17,7 +17,7 @@
             @click="fundDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"
           >
-            Fund
+            {{$t('detail.Fund')}}
           </el-button>
           <el-button
             v-if="canWithDraw"
@@ -26,7 +26,7 @@
             @click="withdrawDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"
           >
-            WithDraw
+            {{$t('detail.WithDraw')}}
           </el-button>
           <el-button
             v-if="canCancel"
@@ -35,18 +35,18 @@
             @click="cancelDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"
           >
-            Cancel
+            {{$t('detail.Cancel')}}
           </el-button>
         </div>
       </div>
       <div class="detail-cards">
         <div class="left">
           <div class="card" shadow="always">
-            <div class="header">Remaining（{{detail.token.symbol}}）</div>
+            <div class="header">{{$t('detail.Remaining')}}（{{detail.token.symbol}}）</div>
             <div class="content">{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
           </div>
           <div class="card" shadow="always">
-            <div class="header">Withdrawable（{{detail.token.symbol}}）</div>
+            <div class="header">{{$t('detail.Withdrawable')}}（{{detail.token.symbol}}）</div>
             <div class="content">
               {{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
             </div>
@@ -55,7 +55,7 @@
         <div class="right card">
           <div class="header">
             <div class="title">
-              Detail
+              {{$t('detail.detail')}}
             </div>
             <div class="status">
               <stream-status
@@ -69,28 +69,28 @@
           <div class="content">
             <div class="part1 block-info">
               <div class="item item1">
-                <div class="label block">StartBlock</div>
+                <div class="label block">{{$t('detail.StartBlock')}}</div>
                 <div class="value">#{{ detail.startBlock }}</div>
               </div>
               <div class="item item2">
-                <div class="label ratio">Unlock Ratio</div>
+                <div class="label ratio">{{$t('detail.UnlockRatio')}}</div>
                 <div class="value">{{ detail.unlockRatio | decimaledRatio(1000, detail.token.decimals) }}‰</div>
               </div>
               <div class="item item3">
-                <div class="label lockNumber">Unlock K</div>
+                <div class="label lockNumber">{{$t('detail.UnlockK')}}</div>
                 <div class="value">
                   {{ detail.kBlock }}
                 </div>
               </div>
             </div>
             <div class="part2 sender item">
-              <div class="label sender">Sender</div>
+              <div class="label sender">{{$t('detail.Sender')}}</div>
               <div class="value">
                 {{ detail.sender }}
               </div>
             </div>
             <div class="part3 recipent item">
-              <div class="label recipent">Recipent</div>
+              <div class="label recipent">{{$t('detail.Recipent')}}</div>
               <div class="value">
                 {{ detail.recipient }}
               </div>
@@ -100,7 +100,7 @@
       </div>
       <div class="card last-activity">
         <div class="header">
-          Lastest Activity
+          {{$t('detail.LastestActivity')}}
         </div>
         <el-table
           v-loading="loading"
@@ -109,29 +109,29 @@
           :cell-style="cellStyle"
           :header-cell-style="cellStyle"
         >
-          <el-table-column label="Date" min-width="120">
+          <el-table-column :label="$t('detail.Date')" min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.timestamp">{{
                 scope.row.timestamp | date
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Event" align='center' min-width="120">
+          <el-table-column :label="$t('detail.Event')" align='center' min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.event">{{ scope.row.event }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="From" align='center' min-width="120">
+          <el-table-column :label="$t('detail.From')" align='center' min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.from">{{ scope.row.from | addr }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="To" align='center' min-width="120">
+          <el-table-column :label="$t('detail.To')" align='center' min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.to">{{ scope.row.to | addr }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Txhash" align="right">
+          <el-table-column :label="$t('detail.Txhash')" align="right">
             <template slot-scope="scope">
               <span><a :title="scope.row.txhash" target="_blank" :href="`https://kovan.etherscan.io/tx/${scope.row.txhash}`" style='color: inherit;'>{{ scope.row.txhash | addr }}</a></span>
             </template>
@@ -140,48 +140,48 @@
       </div>
     </div>
     <el-dialog
-      title="Withdraw"
+      :title="$t('detail.Withdraw')"
       :visible.sync="withdrawDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          TOTAL: {{ withdrawable }} {{detail.token.symbol}}
+          {{$t('detail.TOTAL')}}: {{ withdrawable }} {{detail.token.symbol}}
         </div>
         <el-input placeholder="" v-model="formWithdraw.amount">
-          <el-button slot="append" @click="maxAmount('withdraw')">MAX</el-button>
+          <el-button slot="append" @click="maxAmount('withdraw')">{{$t('detail.MAX')}}</el-button>
         </el-input>
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doWithdraw" :disabled="withdrawing" :loading="withdrawing">Confirm</el-button>
+        <el-button type="primary" @click="doWithdraw" :disabled="withdrawing" :loading="withdrawing">{{$t('detail.Confirm')}}</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="Fund"
+      :title="$t('detail.Fund')"
       :visible.sync="fundDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          TOTAL: {{ currentTokenAmount }} {{detail.token.symbol}}
+          {{$t('detail.TOTAL')}}: {{ currentTokenAmount }} {{detail.token.symbol}}
         </div>
         <el-input placeholder="" v-model="formFund.amount">
-          <el-button slot="append" @click="maxAmount('fund')">MAX</el-button>
+          <el-button slot="append" @click="maxAmount('fund')">{{$t('detail.MAX')}}</el-button>
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doFund" :disabled="funding" :loading="funding">Confirm</el-button>
+        <el-button type="primary" @click="doFund" :disabled="funding" :loading="funding">{{$t('detail.Confirm')}}</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="Cancel"
+      :title="$t('detail.Cancel')"
       :visible.sync="cancelDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
-      <span>Confirm do cancel ?</span>
+      <span>{{$t('detail.ConfirmDo')}}</span>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">Confirm</el-button>
+        <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">{{$t('detail.Confirm')}}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -314,14 +314,14 @@ export default {
       // TODO
       if (!this.formWithdraw.amount > 0) {
         this.$message({
-          message: 'Invalid number',
+          message: this.$t('detail.Invalid'),
           type: 'warning'
         })
         return
       }
       if (!this.formWithdraw.amount > this.detail.withdrawable) {
         this.$message({
-          message: 'Invalid Number',
+          message: this.$t('detail.Invalid'),
           type: 'warning'
         })
         return
@@ -345,7 +345,7 @@ export default {
 
         console.log('doWithdraw ret', txResult)
         this.$message({
-          message: 'Withdraw successfully',
+          message: this.$t('detail.WithdrawSuccess'),
           type: 'success'
         })
         this.withdrawing = false
@@ -365,14 +365,14 @@ export default {
       // TODO
       if (!this.formFund.amount > 0) {
         this.$message({
-          message: '数值太小',
+          message: this.$t('detail.NumMin'),
           type: 'warning'
         })
         return
       }
       if (!this.formFund.amount > this.detail.withdrawable) {
         this.$message({
-          message: '数值太大',
+          message: this.$t('detail.NumMax'),
           type: 'warning'
         })
         return
@@ -390,7 +390,7 @@ export default {
         const accounts = await metamask.connectMetaMask()
         if (!accounts.length) {
           this.$message({
-            message: 'Need connect to metemask account first',
+            message: this.$t('home.Need'),
             type: 'warning'
           })
           return
@@ -425,7 +425,7 @@ export default {
         const txResult = await tx.wait()
         console.log('doWithdraw ret', txResult)
         this.$message({
-          message: 'Fund successfully',
+          message: this.$t('detail.FundSuccess'),
           type: 'success'
         })
         this.funding = false
@@ -452,7 +452,7 @@ export default {
         const streamId = this.id
         if (!streamId) {
           this.$message({
-            message: 'Missing streamId ',
+            message: this.$t('detail.Missing'),
             type: 'warning'
           })
           return
@@ -464,7 +464,7 @@ export default {
         console.log('doCancel result', txResult)
 
         this.$message({
-          message: 'Cancel successfully',
+          message: this.$t('detail.CancelSuccess'),
           type: 'success'
         })
         this.cancelling = false

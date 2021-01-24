@@ -7,12 +7,12 @@
       :rules="rules"
       ref="createForm"
       class="form">
-      <el-form-item label="Which Token" prop="token">
+      <el-form-item :label="$t('home.Token')" prop="token">
         <el-autocomplete
           size="medium"
           v-model="formData.token"
           :fetch-suggestions="querySearch"
-          placeholder="请输入内容"
+          :placeholder="$t('home.TokenPlaceholder')"
           @select="handleSelect"
           style="width: 100%;"
         ></el-autocomplete>
@@ -26,29 +26,29 @@
           </el-option>
         </el-select> -->
       </el-form-item>
-      <el-form-item :label="`How Much To Start (available: ${currentTokenAmount} ${currentToken})`" prop="depositAmount">
+      <el-form-item :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentToken})`" prop="depositAmount">
         <el-input v-model="formData.depositAmount">
           <span slot='suffix' class="symbol">{{currentToken}}</span>
           <el-button slot='append' @click="maxAmount" class="maxButton">MAX</el-button>
         </el-input>
       </el-form-item>
-      <el-form-item label="The Recipent Address" prop="recipient">
+      <el-form-item :label="$t('home.Address')" prop="recipient">
         <el-input v-model="formData.recipient" />
       </el-form-item>
 
       <el-row :gutter="15">
         <el-col :span="isMobile ? 24 : 8" >
-          <el-form-item label="When Should Start" class="input-style-2" prop="startBlock">
+          <el-form-item :label="$t('home.Should')" class="input-style-2" prop="startBlock">
             <el-input v-model="formData.startBlock" placeholder="" />
           </el-form-item>
         </el-col>
         <el-col :span="isMobile ? 24 : 8">
-          <el-form-item label="Unlock K Block" prop="kBlock">
+          <el-form-item :label="$t('home.Block')" prop="kBlock">
             <el-input v-model="formData.kBlock" placeholder="" />
           </el-form-item>
         </el-col>
         <el-col :span="isMobile ? 24 : 8">
-          <el-form-item label="Unlock Ratio" prop="unlockRatio">
+          <el-form-item :label="$t('home.Ratio')" prop="unlockRatio">
             <el-input v-model="formData.unlockRatio" placeholder="">
               <template slot='append'>‰</template>
             </el-input>
@@ -58,7 +58,7 @@
     </el-form>
     <div class="actions">
       <el-button type="primary" round class="start-btn btn" @click="onSubmit">
-        Start
+        {{$t('home.Start')}}
       </el-button>
     </div>
   </div>
@@ -94,19 +94,19 @@ export default {
       balances: [],
       rules: {
         recipient: [
-          { required: true, message: 'recipient is required', trigger: 'change' }
+          { required: true, message: this.$t('home.recipient'), trigger: 'change' }
         ],
         depositAmount: [
-          { required: true, message: 'depositAmount is required', trigger: 'change' }
+          { required: true, message: this.$t('home.depositAmount'), trigger: 'change' }
         ],
         startBlock: [
-          { required: true, message: 'startBlock is required', trigger: 'change' }
+          { required: true, message: this.$t('home.startBlock'), trigger: 'change' }
         ],
         kBlock: [
-          { required: true, message: 'kBlock is required', trigger: 'change' }
+          { required: true, message: this.$t('home.kBlock'), trigger: 'change' }
         ],
         unlockRatio: [
-          { required: true, message: 'unlockRatio is required', trigger: 'change' }
+          { required: true, message: this.$t('home.unlockRatio'), trigger: 'change' }
         ]
       }
     }
@@ -171,13 +171,13 @@ export default {
             this.tokenOptions.push(tokens)
           } catch (e) {
             this.$message({
-              message: 'Please check the address',
+              message: this.$t('home.checkAddress'),
               type: 'warning'
             })
           }
         } else if (queryString.length > 20) {
           this.$message({
-            message: 'Please check the address',
+            message: this.$t('home.checkAddress'),
             type: 'warning'
           })
         }
@@ -210,7 +210,7 @@ export default {
         console.log('onSubmit validate', valid, this.formData)
         if (!valid) {
           this.$message({
-            message: 'Please check the form data',
+            message: this.$t('home.checkData'),
             type: 'warning'
           })
           return
@@ -223,7 +223,7 @@ export default {
 
           if (!formData.token || !formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
             this.$message({
-              message: 'Please check input fields',
+              message: this.$t('home.checkFields'),
               type: 'warning'
             })
             return
@@ -232,7 +232,7 @@ export default {
           const accounts = await metamask.connectMetaMask()
           if (!accounts.length) {
             this.$message({
-              message: 'Need connect to metemask account first',
+              message: this.$t('home.Need'),
               type: 'warning'
             })
             return
@@ -275,7 +275,7 @@ export default {
           const createStreamResult = await tx.wait()
           console.log('createStreamResult', createStreamResult)
           this.$message({
-            message: 'Create stream successfully',
+            message: this.$t('home.Create'),
             type: 'success'
           })
         } catch (e) {

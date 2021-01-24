@@ -3,7 +3,7 @@
       <div class="module module-stat">
         <div class="card card-1">
           <div class="label">
-            Total Streams
+            {{$t("home.totalStreams")}}
           </div>
           <div class="value">
             {{ stats.count }}
@@ -11,7 +11,7 @@
         </div>
         <div class="card card-2">
           <div class="label">
-            XDEX Toatal Locked
+            {{$t("home.XDEXLocked")}}
           </div>
           <div class="value">
             {{ stats.locked | toFixed }}
@@ -19,7 +19,7 @@
         </div>
         <div class="card card-3">
           <div class="label">
-            XDEX Withdrawed
+            {{$t("home.XDEXWithdrawed")}}
           </div>
           <div class="value">
             {{ stats.withdrawed | toFixed }}
@@ -30,13 +30,16 @@
       <div class="module module-tabs">
         <div class="navs">
           <div class="nav" :class="{'active':activeTab=='a'}" @click="onSwitchTab('a')">
-            Streams
+
+            {{$t("home.Streams")}}
           </div>
           <div class="nav" :class="{'active':activeTab=='b'}" @click="onSwitchTab('b')">
-            Mine
+
+            {{$t("home.Mine")}}
           </div>
           <div class="nav" :class="{'active':activeTab=='c'}" @click="onSwitchTab('c')">
-            New
+
+            {{$t("home.New")}}
           </div>
         </div>
         <div class="content">
@@ -87,6 +90,7 @@ export default {
   },
   mounted () {
     console.log('Home mounted')
+    console.log(this)
     this.getStreamStats()
     // console.log('TEST $apollo query')
     // const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: 10 } })
