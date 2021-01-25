@@ -10,7 +10,7 @@ import Nuxt from './components/nuxt.js'
 import App from './App.js'
 import { setContext, getLocation, getRouteData, normalizeError } from './utils'
 import { createStore } from './store.js'
-import i18n from '../i18n.js'
+
 /* Plugins */
 
 import nuxt_plugin_plugin_0856cd16 from 'nuxt_plugin_plugin_0856cd16' // Source: ./components/plugin.js (mode: 'all')
@@ -18,6 +18,7 @@ import nuxt_plugin_axios_48bce7ea from 'nuxt_plugin_axios_48bce7ea' // Source: .
 import nuxt_plugin_elementui_d905880e from 'nuxt_plugin_elementui_d905880e' // Source: ../plugins/element-ui (mode: 'all')
 import nuxt_plugin_fontawesome_c99c6992 from 'nuxt_plugin_fontawesome_c99c6992' // Source: ../plugins/fontawesome.js (mode: 'all')
 import nuxt_plugin_apollo_2286e3c3 from 'nuxt_plugin_apollo_2286e3c3' // Source: ../plugins/apollo (mode: 'all')
+import nuxt_plugin_i18n_66ff12a5 from 'nuxt_plugin_i18n_66ff12a5' // Source: ../plugins/i18n.js (mode: 'all')
 import nuxt_plugin_appmounted_334e1e9f from 'nuxt_plugin_appmounted_334e1e9f' // Source: ../plugins/app-mounted.js (mode: 'all')
 import nuxt_plugin_vuefilters_64701db7 from 'nuxt_plugin_vuefilters_64701db7' // Source: ../plugins/vue-filters.js (mode: 'all')
 
@@ -79,7 +80,6 @@ async function createApp(ssrContext, config = {}) {
     head: {"title":"xDefi HalfLife","meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"},{"hid":"description","name":"description","content":""},{"http-equiv":"X-UA-Compatible","content":"IE=edge"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.ico"}],"style":[],"script":[]},
 
     store,
-    i18n,
     router,
     nuxt: {
       defaultTransition,
@@ -141,7 +141,6 @@ async function createApp(ssrContext, config = {}) {
   await setContext(app, {
     store,
     route,
-    i18n,
     next,
     error: app.nuxt.error.bind(app),
     payload: ssrContext ? ssrContext.payload : undefined,
@@ -227,6 +226,10 @@ async function createApp(ssrContext, config = {}) {
     await nuxt_plugin_apollo_2286e3c3(app.context, inject)
   }
 
+  if (typeof nuxt_plugin_i18n_66ff12a5 === 'function') {
+    await nuxt_plugin_i18n_66ff12a5(app.context, inject)
+  }
+
   if (typeof nuxt_plugin_appmounted_334e1e9f === 'function') {
     await nuxt_plugin_appmounted_334e1e9f(app.context, inject)
   }
@@ -266,7 +269,6 @@ async function createApp(ssrContext, config = {}) {
   return {
     store,
     app,
-    i18n,
     router
   }
 }
