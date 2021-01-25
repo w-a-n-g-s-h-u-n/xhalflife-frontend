@@ -66,7 +66,7 @@
         <template slot-scope="scope">
           <NuxtLink :to="`/detail?id=${scope.row.id}`">
             <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
-              Detail
+              {{$t("detail.detail")}}
             </el-button>
           </NuxtLink>
         </template>

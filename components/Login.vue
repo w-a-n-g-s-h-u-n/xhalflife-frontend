@@ -5,17 +5,17 @@
         {{ metamask.account | addr }}
       </el-button>
       <el-button v-else type='primary' round @click="accountDialog = true" :size="isMobile ? 'small' : 'medium'">
-        Connect Wallet
+        {{$t('login.Connect')}}
       </el-button>
     </div>
     <el-dialog
-      title="Account"
+      :title="$t('login.Account')"
       :visible.sync="accountDialog"
       :width="isMobile ? '80%' : '25%' "
       class="userManage"
     >
-      <el-button v-if="!isMetaMaskConnected" @click="onClick" class='wallet'>METAMASK</el-button>
-      <el-button v-else type="primary" @click="logout" class='wallet'>logout</el-button>
+      <el-button v-if="!isMetaMaskConnected" @click="onClick" class='wallet'>{{$t('login.METAMASK')}}</el-button>
+      <el-button v-else type="primary" @click="logout" class='wallet'>{{$t('login.logout')}}</el-button>
     </el-dialog>
   </div>
 </template>

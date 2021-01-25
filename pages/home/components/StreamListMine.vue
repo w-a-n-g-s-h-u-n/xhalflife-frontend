@@ -1,11 +1,13 @@
 <template>
   <div>
     <div class="tabs">
+
       <div class="tab" :class="{'active':current=='send'}" @click="change('send')">
-        My Sent
+        {{$t('home.Sent')}}
+
       </div>
       <div class="tab" :class="{'active':current=='received'}" @click="change('received')">
-        My Received
+        {{$t('home.Received')}}
       </div>
     </div>
 
@@ -79,7 +81,7 @@
           <template slot-scope="scope">
             <NuxtLink :to="`/detail?id=${scope.row.id}`">
               <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
-                Detail
+                {{$t('detail.detail')}}
                 <stream-balance :id="scope.row.id" :row="scope.row" />
               </el-button>
             </NuxtLink>

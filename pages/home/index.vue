@@ -3,7 +3,7 @@
       <div class="module module-stat">
         <div class="card card-1">
           <div class="label">
-            Total Streams
+            {{$t("home.totalStreams")}}
           </div>
           <div class="value">
             {{ stats.count }}
@@ -11,7 +11,7 @@
         </div>
         <div class="card card-2">
           <div class="label">
-            XDEX Toatal Locked
+            {{$t("home.XDEXLocked")}}
           </div>
           <div class="value">
             {{ stats.locked | toFixed }}
@@ -19,7 +19,7 @@
         </div>
         <div class="card card-3">
           <div class="label">
-            XDEX Withdrawed
+            {{$t("home.XDEXWithdrawed")}}
           </div>
           <div class="value">
             {{ stats.withdrawed | toFixed }}
@@ -30,13 +30,16 @@
       <div class="module module-tabs">
         <div class="navs">
           <div class="nav" :class="{'active':activeTab=='streams'}" @click="onSwitchTab('streams')">
-            Streams
+
+            {{$t("home.Streams")}}
           </div>
           <div class="nav" :class="{'active':activeTab=='mine'}" @click="onSwitchTab('mine')">
-            Mine
+
+            {{$t("home.Mine")}}
           </div>
           <div class="nav" :class="{'active':activeTab=='create'}" @click="onSwitchTab('create')">
-            New
+
+            {{$t("home.New")}}
           </div>
         </div>
         <div class="content">
@@ -91,21 +94,39 @@ export default {
   },
   mounted () {
     console.log('Home mounted')
+    console.log(this)
     this.getStreamStats()
+
+    // console.log('TEST $apollo query')
+    // const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: 10 } })
+    // console.log('ret', ret)
+    // const provider = getProvider()
+    // console.log('provider', provider)
+    //
+    // const balance = await provider.getBalance('0xc3bcc607335ae9EA59736700A87C1E3bc0ec32D9')
+    // console.log(balance.toString())
+
+    // const v = await XHalfLifeContract.nextStreamId()
+    // console.log('XHalfLifeContract nextStreamId', v)
+
+    // const b2 = await XHalfLifeContract.balanceOf('0xc3bcc607335ae9EA59736700A87C1E3bc0ec32D9')
+
   },
   methods: {
     onSwitchTab (v) {
-      console.log('onSwitchTab', v)
       this.$nextTick(() => {
         this.activeTab = v
       })
     },
     async getStreamStats () {
+
+      const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: process.env.XDEX_TOKEN_ADDRESS.toLowerCase() } })
+
       const provider = await getProvider()
       const proxyContract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XhalfLife, provider)
       const totalStreams = await proxyContract.nextStreamId()
       const totalStream = decimalsNumber(totalStreams, 0)
-      const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: process.env.XDEX_TOKEN_ADDRESS.toLowerCase() } })
+
       const stats = (ret.data && ret.data.streamTotalDatas && ret.data.streamTotalDatas[0]) || {}
       this.stats = { ...stats, count: totalStream - 1 }
       this.$store.commit('updateStats', { ...stats, count: totalStream - 1 })

@@ -17,6 +17,7 @@
       padding: 0 1rem;
 
       .navContent {
+        position: relative;
         display: flex;
         flex: 1 1 auto;
         justify-self: flex-start;
@@ -29,6 +30,11 @@
       .logo {
         width: 110px;
         height: 30px;
+      }
+      .language{
+        position: absolute;
+        right: 30px;
+        width: 120px;
       }
 
       .navIcon {

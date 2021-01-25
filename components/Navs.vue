@@ -7,7 +7,7 @@
       :class="['d-inline', 'd-flex', 'nav-item', nav.name === 'halfLife' ? 'active' : '' ]"
       :target="nav.name !== 'halfLife' ? '_blank' : '' "
     >
-      <span class="text">{{nav.name}}</span>
+      <span class="text">{{$i18n.locale==='en-US'?nav.name:nav['name-zh']}}</span>
       <span class="indicator" />
     </a>
   </div>
