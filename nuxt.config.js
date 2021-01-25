@@ -31,6 +31,7 @@ export default {
     '@/plugins/element-ui',
     '@/plugins/fontawesome.js',
     '@/plugins/apollo',
+    '@/plugins/i18n.js',
     '@/plugins/app-mounted.js',
     '@/plugins/vue-filters.js'
   ],
