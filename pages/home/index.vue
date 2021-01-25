@@ -95,7 +95,6 @@ export default {
     // console.log('TEST $apollo query')
     // const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: 10 } })
     // console.log('ret', ret)
-
     // const provider = getProvider()
     // console.log('provider', provider)
     //
@@ -109,7 +108,6 @@ export default {
   },
   methods: {
     onSwitchTab (v) {
-      console.log('onSwitchTab', v)
       this.$nextTick(() => {
         this.activeTab = v
       })
@@ -117,7 +115,7 @@ export default {
     async getStreamStats () {
       console.log('token', process.env.XDEX_TOKEN_ADDRESS.toLowerCase())
       const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: process.env.XDEX_TOKEN_ADDRESS.toLowerCase() } })
-      console.log('getStreamStats', ret)
+      
       const stats = (ret.data && ret.data.streamTotalDatas && ret.data.streamTotalDatas[0]) || {}
       this.stats = stats
       this.$store.commit('updateStats', stats)
