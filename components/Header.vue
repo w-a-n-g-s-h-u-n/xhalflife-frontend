@@ -10,9 +10,7 @@
           <span class="indicator" />
         </span>
         <Navs />
-        <div class="language">
-          <el-select v-model="$i18n.locale"><el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option></el-select>
-        </div>
+        <Language :show="true"/>
       </div>
       <i class="el-icon-s-fold navIcon" @click="drawer = true" />
       <el-drawer :visible.sync="drawer" :show-close="false" :wrapperClosable="true" size="50%" class="drawer"><Navs /></el-drawer>
@@ -23,11 +21,11 @@
 
 <script>
 import Navs from './Navs'
-
+import Language from './Language'
 export default {
   name: 'Header',
   components: {
-    Navs
+    Navs, Language
   },
   data () {
     return {

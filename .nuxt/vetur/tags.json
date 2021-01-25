@@ -11,6 +11,12 @@
   "LazyHeader": {
     "description": "Auto imported from components/Header.vue"
   },
+  "Language": {
+    "description": "Auto imported from components/Language.vue"
+  },
+  "LazyLanguage": {
+    "description": "Auto imported from components/Language.vue"
+  },
   "Login": {
     "description": "Auto imported from components/Login.vue"
   },
