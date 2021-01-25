@@ -21,6 +21,10 @@
         display: flex;
         flex: 1 1 auto;
         justify-self: flex-start;
+        margin-left: 3rem;
+        .currentSite{
+          display: none !important;
+        }
       }
 
       .logo {
@@ -57,7 +61,6 @@
         align-items: center;
         width: 80px;
         justify-self: start;
-        margin-left: 3rem;
         margin-right: 3rem;
 
         .text {
@@ -93,6 +96,9 @@
         .navContent {
           .navs {
             display: none;
+          }
+          .currentSite{
+            display: flex !important;
           }
         }
 

@@ -32,10 +32,6 @@ export default {
 .navs {
   .nav-item {
     text-transform: capitalize;
-
-    &.active {
-      display: none !important;
-    }
   }
 }
 

@@ -1,15 +1,17 @@
 <template>
   <div>
     <div class="tabs">
-      <div class="tab" :class="{'active':current=='sent'}" @click="change('sent')">
+
+      <div class="tab" :class="{'active':current=='send'}" @click="change('send')">
         {{$t('home.Sent')}}
+
       </div>
       <div class="tab" :class="{'active':current=='received'}" @click="change('received')">
         {{$t('home.Received')}}
       </div>
     </div>
 
-    <div v-if="current=='sent'">
+    <div v-if="current=='send'">
       <el-table
         v-loading="sendInfo.loading"
         :data="MySentList"
@@ -86,15 +88,13 @@
           </template>
         </el-table-column>
       </el-table>
-      <!--      <el-pagination-->
-      <!--        class="pagination"-->
-      <!--        :current-page.sync="currentPage"-->
-      <!--        :page-size="100"-->
-      <!--        layout="prev, pager, next, jumper"-->
-      <!--        :total="1000"-->
-      <!--        @size-change="handleSizeChange"-->
-      <!--        @current-change="handleCurrentChange"-->
-      <!--      />-->
+      <el-pagination
+        class="pagination"
+        :page-size="sendInfo.pageSize"
+        layout="prev, pager, next"
+        :total="sendInfo.total"
+        @current-change="handleCurrentChange"
+      />
     </div>
     <div v-else>
       <el-table
@@ -170,15 +170,14 @@
           </template>
         </el-table-column>
       </el-table>
-      <!--      <el-pagination-->
-      <!--        class="pagination"-->
-      <!--        :current-page.sync="currentPage"-->
-      <!--        :page-size="100"-->
-      <!--        layout="prev, pager, next, jumper"-->
-      <!--        :total="1000"-->
-      <!--        @size-change="handleSizeChange"-->
-      <!--        @current-change="handleCurrentChange"-->
-      <!--      />-->
+      <el-pagination
+        class="pagination"
+        :current-page.sync="receiveInfo.page"
+        :page-size="receiveInfo.pageSize"
+        layout="prev, pager, next"
+        :total="receiveInfo.total"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
@@ -195,18 +194,18 @@ export default {
   mixins: [mixin],
   data () {
     return {
-      current: 'received',
+      current: 'send',
       sendInfo: {
         loading: false,
-        // list: [],
         page: 1,
-        total: 1000
+        pageSize: 10,
+        total: 10
       },
       receiveInfo: {
         loading: false,
-        // list: [],
+        pageSize: 10,
         page: 1,
-        total: 1000
+        total: 10
       }
     }
   },
@@ -230,10 +229,10 @@ export default {
 
     }),
     curTableData () {
-      return this.current === 'sent' ? this.MySentList : this.myReceivedList
+      return this.current === 'send' ? this.MySentList : this.myReceivedList
     },
     currentPage () {
-      return this.current === 'sent' ? this.sendInfo.page : this.receiveInfo.page
+      return this.current === 'send' ? this.sendInfo.page : this.receiveInfo.page
     }
 
   },
@@ -251,7 +250,6 @@ export default {
   },
   methods: {
     change (v) {
-      console.log('change', v)
       if (!ethers.utils.isAddress(this.account)) {
         this.$message({
           message: 'Please connect to metemask account first',
@@ -260,16 +258,25 @@ export default {
         return
       }
       this.current = v
-      this.current === 'sent'
+      this.current === 'send'
         ? this.getListBySender('refresh')
         : this.getListByRecipient('refresh')
     },
     // TODO 分页 我发出的
     async getListBySender (type = 'refresh') {
       this.sendInfo.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: { first: 100, sender: this.account } })
-      console.log('StreamList send', ret)
-      // this.sendInfo.list = ret.data.streams
+      const queryVariable = {
+        first: this.sendInfo.pageSize,
+        skip: type === 'refresh' ? 0 : (this.sendInfo.page - 1) * this.sendInfo.pageSize,
+        sender: this.account
+      }
+      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: queryVariable })
+      console.log(`StreamList send ${this.sendInfo.page}`, ret)
+      if (ret.data.streams.length < this.sendInfo.pageSize) {
+        this.sendInfo.total = (this.sendInfo.page - 1) * this.sendInfo.pageSize + ret.data.streams.length
+      } else {
+        this.sendInfo.total = this.sendInfo.total + this.sendInfo.pageSize
+      }
 
       this.$store.commit('updateSteamList', { key: 'MySentList', value: statusedList(ret.data.streams) })
       this.sendInfo.loading = false
@@ -282,9 +289,17 @@ export default {
     // 我收到的
     async getListByRecipient (type = 'refresh') {
       this.receiveInfo.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: { first: 100, recipient: this.account } })
-      console.log('StreamList receive', ret)
-      // this.receiveInfo.list = ret.data.streams
+      const queryVariable = {
+        first: this.receiveInfo.pageSize,
+        skip: type === 'refresh' ? 0 : (this.receiveInfo.page - 1) * this.receiveInfo.pageSize,
+        recipient: this.account
+      }
+      const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: queryVariable })
+      if (ret.data.streams.length < this.receiveInfo.pageSize) {
+        this.receiveInfo.total = (this.receiveInfo.page - 1) * this.receiveInfo.pageSize + ret.data.streams.length
+      } else {
+        this.receiveInfo.total = this.receiveInfo.total + this.receiveInfo.pageSize
+      }
       this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(ret.data.streams) })
       this.receiveInfo.loading = false
 
@@ -294,19 +309,17 @@ export default {
       return ret
     },
 
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      if (this.current === 'received') {
+        this.receiveInfo.page = val
+        this.getListByRecipient('fetch')
+      } else {
+        this.sendInfo.page = val
+        this.getListBySender('fetch')
+      }
     },
     cellStyle (obj) {
       return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // if (obj.columnIndex === 8) {
-      //   return 'background-color:#1e2049;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // } else {
-      //   return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
-      // }
     }
   }
 }
