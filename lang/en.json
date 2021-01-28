@@ -29,6 +29,7 @@
   "detail.Withdrawable": "Withdrawable",
   "detail.detail": "Detail",
   "home.Address": "The Recipent Address",
+  "home.sameAdd": "The recipent address cannot be the same as the sender address",
   "home.Block": "Unlock K Block",
   "home.Create": "Create stream successfully",
   "home.Mine": "Mine",
@@ -59,5 +60,7 @@
   "login.Connect": "Connect Wallet",
   "login.METAMASK": "METAMASK",
   "login.logout": "logout",
-  "nav.HalfLife": "HalfLife"
+  "nav.HalfLife": "HalfLife",
+  "homeLink": "https://app.gitbook.com/@xdefi/s/en/streams",
+  "tips": ["Tip: Default block is 10 faster. Click", "Blocks", "to get the latest block and enter the appropriate value."]
 }

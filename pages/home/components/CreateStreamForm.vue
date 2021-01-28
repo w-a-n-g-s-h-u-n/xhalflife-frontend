@@ -36,19 +36,22 @@
         <el-input v-model="formData.recipient" />
       </el-form-item>
 
-      <el-row :gutter="15">
-        <el-col :span="isMobile ? 24 : 8" >
-          <el-form-item :label="$t('home.Should')" class="input-style-2" prop="startBlock">
+      <el-row :gutter="15" class="newStyle">
+        <el-col :span="isMobile ? 24 : 9" >
+          <el-form-item class="input-style-2" prop="startBlock" >
+            <span slot="label">{{$t('home.Should')}}<a :href="$t('homeLink')"><i class="el-icon-warning-outline"></i></a></span>
             <el-input v-model="formData.startBlock" placeholder="" />
           </el-form-item>
         </el-col>
         <el-col :span="isMobile ? 24 : 8">
-          <el-form-item :label="$t('home.Block')" prop="kBlock">
+          <el-form-item prop="kBlock">
+            <span slot="label">{{$t('home.Block')}}<a :href="$t('homeLink')"><i class="el-icon-warning-outline"></i></a></span>
             <el-input v-model="formData.kBlock" placeholder="" />
           </el-form-item>
         </el-col>
-        <el-col :span="isMobile ? 24 : 8">
-          <el-form-item :label="$t('home.Ratio')" prop="unlockRatio">
+        <el-col :span="isMobile ? 24 : 7">
+          <el-form-item prop="unlockRatio">
+            <span slot="label">{{$t('home.Ratio')}}<a :href="$t('homeLink')"><i class="el-icon-warning-outline"></i></a></span>
             <el-input v-model="formData.unlockRatio" placeholder="">
               <template slot='append'>‰</template>
             </el-input>
@@ -61,6 +64,7 @@
         {{$t('home.Start')}}
       </el-button>
     </div>
+    <p class="tips">{{$t('tips')[0]}}<a href="https://etherscan.io/blocks">"{{$t('tips')[1]}}"</a>{{$t('tips')[2]}}</p>
   </div>
 </template>
 
@@ -144,7 +148,8 @@ export default {
       }
     }
   },
-  created () {
+  async created () {
+    console.log('metamask.account-----',await metamask.getAccountsByMetaMask())
     this.fetchSupportToken()
   },
   methods: {
@@ -215,11 +220,19 @@ export default {
           })
           return
         }
+        const formData = { ...this.formData }
+        const tokenDecimals = this.selectDecimalsByName(formData.token)
+        const tokenAddress = this.selectAddressByName(formData.token)
+        const selfAdd = await metamask.getAccountsByMetaMask()
+        
+        if(selfAdd == this.formData.recipient){
+          this.$message({
+            message: this.$t('home.sameAdd'),
+            type: 'warning'
+          })
+          return
+        }
         try {
-          const formData = { ...this.formData }
-          const tokenDecimals = this.selectDecimalsByName(formData.token)
-          const tokenAddress = this.selectAddressByName(formData.token)
-          console.log(tokenAddress, tokenDecimals)
 
           if (!formData.token || !formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
             this.$message({
@@ -292,6 +305,18 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .tips{
+    color: #fff;
+    font-size: 14px;
+    a{
+      color: #fced3e;
+    }
+  }
+  .newStyle{
+    a{
+      color: #fced3e;
+    }
+  }
   .wrap {
     text-align: left;
     width: 500px;

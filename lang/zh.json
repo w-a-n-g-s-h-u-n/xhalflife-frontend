@@ -29,6 +29,7 @@
   "detail.Withdrawable": "可赎回的",
   "detail.detail": "详情",
   "home.Address": "收款人地址",
+  "home.sameAdd": "收款地址不能与付款地址相同",
   "home.Block": "自区块K开始解锁",
   "home.Create": "成功创建资金流",
   "home.Mine": "我的",
@@ -59,5 +60,7 @@
   "login.Connect": "连接钱包",
   "login.METAMASK": "METAMASK",
   "login.logout": "退出",
-  "nav.HalfLife": "HalfLife"
+  "nav.HalfLife": "HalfLife",
+  "homeLink": "https://app.gitbook.com/@xdefi/s/cn/streams",
+  "tips": ["提示：默认块比当前实时块快10个，点击","区块","可以查询主网区块进度，自主输入合适值。"]
 }
