@@ -30,7 +30,7 @@
           </el-button>
           <el-button
             v-if="canCancel"
-            type="success"
+            type="danger"
             class="action-cancel"
             @click="cancelDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"
@@ -43,12 +43,12 @@
         <div class="left">
           <div class="card" shadow="always">
             <div class="header">{{$t('detail.Remaining')}}（{{detail.token.symbol}}）</div>
-            <div class="content">{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
+            <div class="content">～{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
           </div>
           <div class="card" shadow="always">
             <div class="header">{{$t('detail.Withdrawable')}}（{{detail.token.symbol}}）</div>
             <div class="content">
-              {{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
+              ～{{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
             </div>
           </div>
         </div>

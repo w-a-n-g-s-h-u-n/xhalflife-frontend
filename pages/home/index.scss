@@ -18,7 +18,9 @@ body > .container {
   margin: 0 auto;
   width: 1200px;
 }
-
+.el-select-dropdown{
+  z-index: 9999!important;
+}
 .main {
   background-color: #1e2049;
   color: #333;
@@ -138,7 +140,7 @@ body > .container {
   .module {
     width: 100%;
   }
- 
+
   .main {
     padding-bottom: 7rem;
     & > .module-stat {
@@ -158,6 +160,7 @@ body > .container {
       .navs {
         width: 100%;
         display: flex;
+        max-width: none;
         .nav {
           width: auto;
           padding: 0 1rem;

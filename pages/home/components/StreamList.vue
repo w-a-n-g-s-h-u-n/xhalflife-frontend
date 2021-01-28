@@ -17,33 +17,33 @@
           <span :title="scope.row.sender">{{ scope.row.token.symbol}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Sender" min-width="120">
+      <el-table-column align="center" :label="$t('Sender')" min-width="120">
         <template slot-scope="scope">
           <span :title="scope.row.sender">{{ scope.row.sender | addr }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Recipient" style="background: #272958;" min-width="120">
+      <el-table-column align="center" :label="$t('Recipient')" style="background: #272958;" min-width="120">
         <template slot-scope="scope">
           <span :title="scope.row.recipient">{{ scope.row.recipient | addr }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Deposited" min-width="100">
+      <el-table-column align="center" :label="$t('Deposited')" min-width="100">
         <template slot-scope="scope">
           <span :title="scope.row.depositAmount">{{ scope.row.depositAmount | decimaledAmount(scope.row.token.decimals) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Withdrawable" min-width="110">
+      <el-table-column align="center" :label="$t('Withdrawable')" min-width="110">
         <template slot-scope="scope">
           <span :title="scope.row.withdrawable">{{ detailCache[scope.row.id] && detailCache[scope.row.id].withdrawable | decimaledAmount(scope.row.token.decimals) }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Start Block" min-width="100">
+      <el-table-column align="center" :label="$t('StartBlock')" min-width="100">
         <template slot-scope="scope">
           <span :title="scope.row.startBlock">#{{ scope.row.startBlock }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" fixed='right' label="Status" min-width="120">
+      <el-table-column align="center" fixed='right' :label="$t('Status')" min-width="120">
         <template slot-scope="scope">
           <stream-status
             :start-block="scope.row.startBlock"
@@ -53,7 +53,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="Date"  width="90">
+      <el-table-column :label="$t('Date')"  width="90">
         <template slot-scope="scope">
           <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
         </template>
@@ -127,6 +127,7 @@ export default {
   },
   methods: {
     async getList () {
+      
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
       console.log('StreamList ret', ret)

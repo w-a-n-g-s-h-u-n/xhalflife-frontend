@@ -23,12 +23,12 @@
       </div>
       <div class="content">
         <div v-if="activeTab == 'streams'">
-          <div><stream-list /></div>
+          <div><StreamList ref="refreshList"></StreamList></div>
         </div>
         <div v-else-if="activeTab == 'mine'">
           <div><stream-list-mine /></div>
         </div>
-        <div v-else><create-stream-form /></div>
+        <div v-else><create-stream-form @refresh="refresh"/></div>
       </div>
     </div>
   </div>
@@ -88,6 +88,14 @@ export default {
       this.$nextTick(() => {
         this.activeTab = v
       })
+    },
+    refresh(){
+      
+      this.onSwitchTab('streams')
+      setTimeout(()=>{
+        this.$refs.refreshList.getList()
+      },20)
+
     },
     async getStreamStats () {
       const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: process.env.XDEX_TOKEN_ADDRESS.toLowerCase() } })

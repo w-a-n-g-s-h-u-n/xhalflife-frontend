@@ -16,9 +16,10 @@ export default {
   },
   computed: {
     status () {
+      const that=this
       let value = 'loading'
       if (this.isCanceled) {
-        return 'canceled'
+        return that.$t('canceled')
       }
       console.log('startBlock, currentBlock, remaining', this.startBlock, this.currentBlock, this.remaining)
 
@@ -30,12 +31,12 @@ export default {
 
         if (startBlock.lte(currentBlock)) {
           if (remaining.lte(minRemaining)) {
-            value = 'ended'
+            value = that.$t('ended')
           } else {
-            value = 'streaming'
+            value = that.$t('streaming')
           }
         } else {
-          value = 'waiting'
+          value = that.$t('waiting')
         }
       }
       return value
