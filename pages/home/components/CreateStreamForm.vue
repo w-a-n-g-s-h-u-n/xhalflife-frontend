@@ -36,19 +36,22 @@
         <el-input v-model="formData.recipient" />
       </el-form-item>
 
-      <el-row :gutter="15">
-        <el-col :span="isMobile ? 24 : 8" >
-          <el-form-item :label="$t('home.Should')" class="input-style-2" prop="startBlock">
+      <el-row :gutter="15" class="newStyle">
+        <el-col :span="isMobile ? 24 : 9" >
+          <el-form-item class="input-style-2" prop="startBlock" >
+            <span slot="label">{{$t('home.Should')}}<a :href="$t('homeLink')"><i class="el-icon-warning-outline"></i></a></span>
             <el-input v-model="formData.startBlock" placeholder="" />
           </el-form-item>
         </el-col>
         <el-col :span="isMobile ? 24 : 8">
-          <el-form-item :label="$t('home.Block')" prop="kBlock">
+          <el-form-item prop="kBlock">
+            <span slot="label">{{$t('home.Block')}}<a :href="$t('homeLink')"><i class="el-icon-warning-outline"></i></a></span>
             <el-input v-model="formData.kBlock" placeholder="" />
           </el-form-item>
         </el-col>
-        <el-col :span="isMobile ? 24 : 8">
-          <el-form-item :label="$t('home.Ratio')" prop="unlockRatio">
+        <el-col :span="isMobile ? 24 : 7">
+          <el-form-item prop="unlockRatio">
+            <span slot="label">{{$t('home.Ratio')}}<a :href="$t('homeLink')"><i class="el-icon-warning-outline"></i></a></span>
             <el-input v-model="formData.unlockRatio" placeholder="">
               <template slot='append'>‰</template>
             </el-input>
@@ -61,6 +64,7 @@
         {{$t('home.Start')}}
       </el-button>
     </div>
+    <p class="tips">{{$t('tips')[0]}}<a href="https://etherscan.io/blocks" target="_blank">"{{$t('tips')[1]}}"</a>{{$t('tips')[2]}}</p>
   </div>
 </template>
 
@@ -77,6 +81,7 @@ import { decimalsNumber } from '@/utils'
 
 export default {
   name: 'CreateStreamForm',
+  props:["refresh"],
   data () {
     return {
       tokenOptions: [],
@@ -90,6 +95,7 @@ export default {
         kBlock: '40',
         unlockRatio: '1' // '1000000000000000'
       },
+      blockNumber:0,
       isMobile: isMobile(),
       balances: [],
       rules: {
@@ -114,6 +120,7 @@ export default {
   async mounted () {
     const provider = await getProvider()
     const blockNumber = await provider.getBlockNumber()
+    this.blockNumber=blockNumber
     this.formData.startBlock = blockNumber + 10
   },
   computed: {
@@ -144,7 +151,8 @@ export default {
       }
     }
   },
-  created () {
+  async created () {
+    console.log('metamask.account-----',await metamask.getAccountsByMetaMask())
     this.fetchSupportToken()
   },
   methods: {
@@ -206,6 +214,7 @@ export default {
       return this.tokenOptions.find(token => token.symbol === name).decimals
     },
     onSubmit () {
+
       this.$refs.createForm.validate(async (valid) => {
         console.log('onSubmit validate', valid, this.formData)
         if (!valid) {
@@ -215,11 +224,42 @@ export default {
           })
           return
         }
+        if(this.formData.startBlock<this.blockNumber || !(/(^[1-9]\d*$)/.test(this.formData.startBlock))){
+          this.$message({
+            message: this.$t('startBlockMess'),
+            type: 'warning'
+          })
+          return
+        }
+        if(this.formData.unlockRatio<1 || this.formData.unlockRatio>1000 || !(/(^[1-9]\d*$)/.test(this.formData.unlockRatio))){
+          this.$message({
+            message: this.$t('unlockRatioMess'),
+            type: 'warning'
+          })
+          return
+        }
+        if(this.formData.kBlock<1 || !(/(^[1-9]\d*$)/.test(this.formData.kBlock))){
+          this.$message({
+            message: this.$t('kBlockMess'),
+            type: 'warning'
+          })
+          return
+        }
+
+
+        const formData = { ...this.formData }
+        const tokenDecimals = this.selectDecimalsByName(formData.token)
+        const tokenAddress = this.selectAddressByName(formData.token)
+        const selfAdd = await metamask.getAccountsByMetaMask()
+
+        if(selfAdd == this.formData.recipient){
+          this.$message({
+            message: this.$t('home.sameAdd'),
+            type: 'warning'
+          })
+          return
+        }
         try {
-          const formData = { ...this.formData }
-          const tokenDecimals = this.selectDecimalsByName(formData.token)
-          const tokenAddress = this.selectAddressByName(formData.token)
-          console.log(tokenAddress, tokenDecimals)
 
           if (!formData.token || !formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
             this.$message({
@@ -265,6 +305,7 @@ export default {
               const approveValue = decimalsAmount.sub(allowance)
               console.log('Need approve', approveValue)
               const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
+              console.log('333', approveValue)
               const approveResult = await approveTx.wait()
               console.log('approveResult', approveResult)
             }
@@ -278,6 +319,7 @@ export default {
             message: this.$t('home.Create'),
             type: 'success'
           })
+          this.$emit('refresh')
         } catch (e) {
           console.error(e)
           this.$message({
@@ -292,6 +334,18 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .tips{
+    color: #fff;
+    font-size: 14px;
+    a{
+      color: #fced3e;
+    }
+  }
+  .newStyle{
+    a{
+      color: #fced3e;
+    }
+  }
   .wrap {
     text-align: left;
     width: 500px;
@@ -343,7 +397,7 @@ export default {
   @media (max-width: 768px) {
     .wrap {
       width: 100%;
-
+      margin-top: 0;
       .actions {
         .btn {
           width: 100%;

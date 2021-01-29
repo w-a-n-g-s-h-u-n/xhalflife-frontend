@@ -30,7 +30,7 @@
           </el-button>
           <el-button
             v-if="canCancel"
-            type="success"
+            type="danger"
             class="action-cancel"
             @click="cancelDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"
@@ -43,12 +43,12 @@
         <div class="left">
           <div class="card" shadow="always">
             <div class="header">{{$t('detail.Remaining')}}（{{detail.token.symbol}}）</div>
-            <div class="content">{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
+            <div class="content">～{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
           </div>
           <div class="card" shadow="always">
             <div class="header">{{$t('detail.Withdrawable')}}（{{detail.token.symbol}}）</div>
             <div class="content">
-              {{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
+              ～{{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
             </div>
           </div>
         </div>
@@ -80,6 +80,12 @@
                 <div class="label lockNumber">{{$t('detail.UnlockK')}}</div>
                 <div class="value">
                   {{ detail.kBlock }}
+                </div>
+              </div>
+              <div class="item item4">
+                <div class="label HalfLife">{{$t('nav.HalfLife')}}<i class="el-icon-warning-outline" @click="open"></i></div>
+                <div class="value">
+                  {{halfLife}}<span v-html="$t('Company')"></span>
                 </div>
               </div>
             </div>
@@ -196,12 +202,15 @@ import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import { mapState } from 'vuex'
 import { isMobile, statusedList, decimalsNumber } from '@/utils/index'
 import { selectAbi } from '@/api/contract'
+import { BigNumber } from 'bignumber.js'
+
 
 export default {
   name: 'Detail',
   data () {
     return {
       id: 0,
+      halfLife:0,
       detail: {
         token: {
           symbol: '',
@@ -258,6 +267,7 @@ export default {
   watch: {
     detailCache () {
       this.detail = { ...this.detail, ...this.detailCache[this.id] }
+      this.show(this.detail)
     },
     'detail.token.id' (newVal, oldVal) {
       if (newVal) {
@@ -271,7 +281,7 @@ export default {
     this.id = id
     this.detail = { ...this.detail, ...this.detailCache[id] }
     this.$store.dispatch('refreshLatestBlockNumber')
-
+    this.show(this.detail)
     // 请求最新
     if (id) {
       this.getDetail(id)
@@ -279,6 +289,20 @@ export default {
     }
   },
   methods: {
+    show(detail){
+      const ratio = detail.unlockRatio
+      let value = BigNumber(ratio).shiftedBy(0 - detail.token.decimals).toNumber()
+      this.halfLife = parseInt(((detail.kBlock * 0.69) /(-Math.log(value)))* 13.1*10)/10
+    },
+    open() {
+      this.$alert(this.$t('openTips'), {
+        showConfirmButton: false,
+        dangerouslyUseHTMLString: true,
+        callback: action => {
+
+        }
+      });
+    },
     async tokenBalance () {
       const provider = await getProvider()
       const signer = await provider.getSigner()

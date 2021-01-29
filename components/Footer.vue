@@ -32,17 +32,19 @@
       </div>
     </div>
     <Login class='account'/>
+    <Language />
   </el-footer>
 </template>
 
 <script>
 import contacts from 'xdefi-assets/ui/footer.json'
 import Login from './Login'
+import Language from './Language'
 
 export default {
   name: 'Footer',
   components: {
-    Login
+    Login, Language
   },
   data () {
     return {
