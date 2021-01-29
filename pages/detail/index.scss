@@ -60,7 +60,7 @@
   }
 
   .content {
-    
+
     font-size: 28px;
     color: #ffffff;
     justify-content: center;
@@ -90,7 +90,7 @@
         align-items: center;
         justify-content: center;
         flex: 1;
-        
+
       }
     }
   }
@@ -132,6 +132,9 @@
         &.lockNumber {
           color: #b5366a;
         }
+        &.HalfLife{
+          color: #409EFF;
+        }
         &.sender {
           color: #8955cd;
         }
@@ -170,6 +173,9 @@
         }
 
         &.item3 {
+          text-align: center;
+        }
+        &.item4 {
           text-align: right;
         }
       }
@@ -259,7 +265,7 @@
       margin-bottom: 1rem;
       padding-bottom: 1rem;
       height: auto;
-      
+
       .content {
         flex-direction: column;
         padding-bottom: 1rem;
