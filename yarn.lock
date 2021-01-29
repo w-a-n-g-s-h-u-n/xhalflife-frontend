@@ -12394,9 +12394,9 @@ ws@^7.2.3:
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.2.tgz#782100048e54eb36fe9843363ab1c68672b261dd"
   integrity sha512-T4tewALS3+qsrpGI/8dqNMLIVdq/g/85U98HPMa6F0m6xTbvhXU6RCQLqPH3+SlomNV/LdY6RXEbBpMH6EOJnA==
 
-"xdefi-assets@github:xdefilab/xdefi-assets#master":
+"xdefi-assets@github:xdefilab/xdefi-assets":
   version "0.0.1"
-  resolved "git+ssh://git@github.com/xdefilab/xdefi-assets.git#069c67c92e03cde4d457261293e1092ab938ebca"
+  resolved "https://codeload.github.com/xdefilab/xdefi-assets/tar.gz/2ed0121bf51303a94971ddbeccf289294932832d"
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
