@@ -1,4 +1,4 @@
-import { XHalfLifeContract } from '@/api/contract'
+import { XHalfLifeContract } from '@/api/contract';
 
 export default {
   data () {
@@ -37,6 +37,6 @@ export default {
           self.refreshBalanceOfStreams()
         }, 100)
       }
-    }
+    },
   }
 }

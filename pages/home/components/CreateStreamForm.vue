@@ -64,7 +64,7 @@
         {{$t('home.Start')}}
       </el-button>
     </div>
-    <p class="tips">{{$t('tips')[0]}}<a href="https://etherscan.io/blocks" target="_blank">"{{$t('tips')[1]}}"</a>{{$t('tips')[2]}}</p>
+    <p class="tips">{{$t('tips')[0]}}<a href="https://etherscan.io/blocks" target="_blank">"{{$t('tips')[1]}}"</a>{{$t('tips')[2]}} {{$t('currentBlock')}}:{{blockNumber}}</p>
   </div>
 </template>
 
@@ -75,7 +75,7 @@ import { SUPPORT_TOKENS } from '@/api/apollo/queries'
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife.json'
 import { isMobile } from '@/utils/index'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import { selectAbi } from '@/api/contract'
 import { decimalsNumber } from '@/utils'
 
@@ -121,7 +121,7 @@ export default {
     const provider = await getProvider()
     const blockNumber = await provider.getBlockNumber()
     this.blockNumber=blockNumber
-    this.formData.startBlock = blockNumber + 10
+    this.formData.startBlock = blockNumber
   },
   computed: {
     ...mapState({
@@ -156,6 +156,7 @@ export default {
     this.fetchSupportToken()
   },
   methods: {
+    ...mapActions(['refreshLatestBlockNumber']),
     async querySearch (queryString, cb) {
       let tokens = this.tokenOptions
       if (queryString) {
@@ -214,7 +215,6 @@ export default {
       return this.tokenOptions.find(token => token.symbol === name).decimals
     },
     onSubmit () {
-
       this.$refs.createForm.validate(async (valid) => {
         console.log('onSubmit validate', valid, this.formData)
         if (!valid) {
@@ -224,12 +224,10 @@ export default {
           })
           return
         }
-        if(this.formData.startBlock<this.blockNumber || !(/(^[1-9]\d*$)/.test(this.formData.startBlock))){
-          this.$message({
-            message: this.$t('startBlockMess'),
-            type: 'warning'
-          })
-          return
+        const fetchedBlockNumber = await this.refreshLatestBlockNumber();
+        if(this.formData.startBlock < fetchedBlockNumber ){
+          this.blockNumber = fetchedBlockNumber ;
+          this.formData.startBlock = fetchedBlockNumber + 5;
         }
         if(this.formData.unlockRatio<1 || this.formData.unlockRatio>1000 || !(/(^[1-9]\d*$)/.test(this.formData.unlockRatio))){
           this.$message({
@@ -245,7 +243,6 @@ export default {
           })
           return
         }
-
 
         const formData = { ...this.formData }
         const tokenDecimals = this.selectDecimalsByName(formData.token)
