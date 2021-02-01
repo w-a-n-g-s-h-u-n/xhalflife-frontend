@@ -12396,7 +12396,7 @@ ws@^7.2.3:
 
 "xdefi-assets@github:xdefilab/xdefi-assets":
   version "0.0.1"
-  resolved "https://codeload.github.com/xdefilab/xdefi-assets/tar.gz/2ed0121bf51303a94971ddbeccf289294932832d"
+  resolved "https://codeload.github.com/xdefilab/xdefi-assets/tar.gz/50249dfa3b8e92e97db0c5340e8cc1c585e6c471"
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
