@@ -78,7 +78,7 @@
   "kBlockMess":"The interval block should be a positive integer",
   "unlockRatioMess":"The unlock ratio should be a positive integer before 1 to 1000",
   "currentBlock":"Current Block Height: ",
-  "Company":"s",
+  "Company":"day",
   "openTips":"The time it takes for the total tokens to consume half of the stream, calculated by the formula<br><b style='color:#f00'> Halflife=K * 0.69 /-log(ratio) * 13.1</b>.",
   "tips": ["Tip: Default block is 10 faster. Click", "Blocks", "to get the latest block and enter the appropriate value."]
 }

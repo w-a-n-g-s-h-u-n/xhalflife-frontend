@@ -204,13 +204,12 @@ import { isMobile, statusedList, decimalsNumber } from '@/utils/index'
 import { selectAbi } from '@/api/contract'
 import { BigNumber } from 'bignumber.js'
 
-
 export default {
   name: 'Detail',
   data () {
     return {
       id: 0,
-      halfLife:0,
+      halfLife: 0,
       detail: {
         token: {
           symbol: '',
@@ -289,19 +288,21 @@ export default {
     }
   },
   methods: {
-    show(detail){
+    show (detail) {
       const ratio = detail.unlockRatio
-      let value = BigNumber(ratio).shiftedBy(0 - detail.token.decimals).toNumber()
-      this.halfLife = parseInt(((detail.kBlock * 0.69) /(-Math.log(value)))* 13.1*10)/10
+
+      const value = BigNumber(ratio).shiftedBy(0 - detail.token.decimals).toNumber()
+      const time = parseInt(((detail.kBlock * 0.69) / (-Math.log(1 - value))) * 13.1 / 43200 * 100) / 100
+      this.halfLife = time
     },
-    open() {
+    open () {
       this.$alert(this.$t('openTips'), {
         showConfirmButton: false,
         dangerouslyUseHTMLString: true,
-        callback: action => {
+        callback: (action) => {
 
         }
-      });
+      })
     },
     async tokenBalance () {
       const provider = await getProvider()

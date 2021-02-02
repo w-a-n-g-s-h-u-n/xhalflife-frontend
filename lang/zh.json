@@ -78,7 +78,7 @@
   "kBlockMess":"间隔区块应为正整数",
   "unlockRatioMess":"解锁比率应为1到1000之前正整数",
   "currentBlock":"当前区块高度：",
-  "Company":"<i style='font-size:16px;font-style:normal;'>秒</i>",
+  "Company":"<i style='font-size:16px;font-style:normal;'>天</i>",
   "openTips":"资金流代币总数量消耗一半所需时间，根据公式<br><b style='color:#f00'>Halflife=K * 0.69 /-log（ratio）* 13.1</b>求得。",
   "tips": ["提示：默认块比当前实时块快10个，点击","区块","可以查询主网区块进度，自主输入合适值。"]
 }
