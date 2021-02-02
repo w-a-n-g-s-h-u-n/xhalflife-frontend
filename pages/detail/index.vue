@@ -291,8 +291,10 @@ export default {
   methods: {
     show(detail){
       const ratio = detail.unlockRatio
+
       let value = BigNumber(ratio).shiftedBy(0 - detail.token.decimals).toNumber()
-      this.halfLife = parseInt(((detail.kBlock * 0.69) /(-Math.log(value)))* 13.1*10)/10
+      let time = parseInt(((detail.kBlock * 0.69) /(-Math.log(1-value)))* 13.1/43200*100)/100
+      this.halfLife = time
     },
     open() {
       this.$alert(this.$t('openTips'), {

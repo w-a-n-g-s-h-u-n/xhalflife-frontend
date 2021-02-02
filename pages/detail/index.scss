@@ -248,6 +248,9 @@
 @media (max-width:768px){
   .mainContainer{
     padding: 0 1rem;
+    .breadcrumb{
+      max-width: 100%;
+    }
   }
 
   .detail-cards {
@@ -260,11 +263,13 @@
     }
     .right {
       width: 100%;
+      flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       margin-bottom: 1rem;
       padding-bottom: 1rem;
       height: auto;
+      margin-left: 0;
 
       .content {
         flex-direction: column;

@@ -126,7 +126,7 @@ export default {
       position: fixed;
       bottom: 0;
       left: 0;
-      z-index: 3001;
+      z-index: 1001;
 
       .footerContent {
         display: none !important;
