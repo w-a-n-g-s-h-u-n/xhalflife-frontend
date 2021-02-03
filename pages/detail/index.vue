@@ -1,4 +1,6 @@
 <template>
+  <div class="mainParent">
+    <div class="hKxtfS"><img src="../../assets/bg.png" /></div>
   <div class="main">
     <div class="module mainContainer">
       <div class="breadcrumb">
@@ -191,6 +193,8 @@
       </span>
     </el-dialog>
   </div>
+<div class="fQDgZz"><img src="../../assets/bg.png" /></div>
+</div>
 </template>
 <script>
 import { STREAM_DETAIL } from '@/api/apollo/queries'
@@ -520,4 +524,33 @@ export default {
 <style scoped lang="scss">
 @import "~/pages/home/index.scss";
 @import "./index.scss";
+.mainParent{
+    position: relative;
+    overflow: hidden;
+  }
+.hKxtfS {
+  width: 50%;
+  min-width: 300px;
+  position: absolute;
+  left: 200px;
+  top: 0px;
+  z-index: 0;
+}
+.hKxtfS img {
+  width: 100%;
+}
+.fQDgZz img {
+  width: 100%;
+}
+.fQDgZz {
+  position: absolute;
+  bottom: 0px;
+  width: 50%;
+  min-width: 300px;
+  left: auto;
+  margin-top: 0px;
+  transform: rotateX(180deg);
+  top: auto;
+  right: 100px !important;
+}
 </style>
