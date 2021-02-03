@@ -127,7 +127,6 @@ export default {
   },
   methods: {
     async getList () {
-      
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
       console.log('StreamList ret', ret)

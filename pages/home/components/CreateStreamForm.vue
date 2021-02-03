@@ -81,7 +81,7 @@ import { decimalsNumber } from '@/utils'
 
 export default {
   name: 'CreateStreamForm',
-  props:["refresh"],
+  props: ['refresh'],
   data () {
     return {
       tokenOptions: [],
@@ -95,7 +95,7 @@ export default {
         kBlock: '40',
         unlockRatio: '1' // '1000000000000000'
       },
-      blockNumber:0,
+      blockNumber: 0,
       isMobile: isMobile(),
       balances: [],
       rules: {
@@ -120,7 +120,7 @@ export default {
   async mounted () {
     const provider = await getProvider()
     const blockNumber = await provider.getBlockNumber()
-    this.blockNumber=blockNumber
+    this.blockNumber = blockNumber
     this.formData.startBlock = blockNumber
   },
   computed: {
@@ -152,7 +152,7 @@ export default {
     }
   },
   async created () {
-    console.log('metamask.account-----',await metamask.getAccountsByMetaMask())
+    console.log('metamask.account-----', await metamask.getAccountsByMetaMask())
     this.fetchSupportToken()
   },
   methods: {
@@ -224,19 +224,19 @@ export default {
           })
           return
         }
-        const fetchedBlockNumber = await this.refreshLatestBlockNumber();
-        if(this.formData.startBlock < fetchedBlockNumber ){
-          this.blockNumber = fetchedBlockNumber ;
-          this.formData.startBlock = fetchedBlockNumber + 5;
+        const fetchedBlockNumber = await this.refreshLatestBlockNumber()
+        if (this.formData.startBlock < fetchedBlockNumber) {
+          this.blockNumber = fetchedBlockNumber
+          this.formData.startBlock = fetchedBlockNumber + 5
         }
-        if(this.formData.unlockRatio<1 || this.formData.unlockRatio>1000 || !(/(^[1-9]\d*$)/.test(this.formData.unlockRatio))){
+        if (this.formData.unlockRatio < 1 || this.formData.unlockRatio > 1000 || !(/(^[1-9]\d*$)/.test(this.formData.unlockRatio))) {
           this.$message({
             message: this.$t('unlockRatioMess'),
             type: 'warning'
           })
           return
         }
-        if(this.formData.kBlock<1 || !(/(^[1-9]\d*$)/.test(this.formData.kBlock))){
+        if (this.formData.kBlock < 1 || !(/(^[1-9]\d*$)/.test(this.formData.kBlock))) {
           this.$message({
             message: this.$t('kBlockMess'),
             type: 'warning'
@@ -249,7 +249,7 @@ export default {
         const tokenAddress = this.selectAddressByName(formData.token)
         const selfAdd = await metamask.getAccountsByMetaMask()
 
-        if(selfAdd == this.formData.recipient){
+        if (selfAdd === this.formData.recipient) {
           this.$message({
             message: this.$t('home.sameAdd'),
             type: 'warning'
@@ -257,7 +257,6 @@ export default {
           return
         }
         try {
-
           if (!formData.token || !formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
             this.$message({
               message: this.$t('home.checkFields'),
@@ -331,77 +330,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .tips{
-    color: #fff;
-    font-size: 14px;
-    a{
-      color: #fced3e;
-    }
-  }
-  .newStyle{
-    a{
-      color: #fced3e;
-    }
-  }
-  .wrap {
-    text-align: left;
-    width: 500px;
-    margin: 4rem auto;
-
-    .maxButton {
-      color: #fced3e;
-      padding: 0 15px;
-    }
-
-    .symbol {
-      line-height: 40px;
-      margin-right: 10px;
-    }
-
-    .el-form-item__label {
-      color: #fff !important;
-    }
-
-    .el-form--label-top .el-form-item__label {
-      color: #fff;
-    }
-
-    .actions {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      .btn {
-        width: 343px;
-        margin: 0 auto;
-      }
-
-      .start-btn {
-        background-image: linear-gradient(136deg, #2bf7dd 0%, #3a8ff7 51%, #da37fa 100%);
-        border-radius: 28px;
-        margin-bottom: 10px;
-      }
-    }
-
-    .input-style-2 {
-      border: 0 solid #4c4f8a;
-      border-radius: 22px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .wrap {
-      width: 100%;
-      margin-top: 0;
-      .actions {
-        .btn {
-          width: 100%;
-          margin-top: 1rem;
-        }
-      }
-    }
-  }
-
+@import '../index.scss';
 </style>

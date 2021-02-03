@@ -16,7 +16,7 @@ export default {
   },
   computed: {
     status () {
-      const that=this
+      const that = this
       let value = 'loading'
       if (this.isCanceled) {
         return that.$t('canceled')
