@@ -31,7 +31,7 @@
           </el-button>
           <el-button
             v-if="canCancel"
-            type="danger"
+            type="text"
             class="action-cancel"
             @click="cancelDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"

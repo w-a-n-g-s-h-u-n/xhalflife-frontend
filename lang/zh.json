@@ -56,6 +56,7 @@
   "home.startBlock": "启动区块为必填项",
   "home.totalStreams": "资金流总数量",
   "home.unlockRatio": "解锁率为必填项",
+  "home.recipentCantBeCurrentUser": "Recipent不能为当前账户",
   "login.Account": "账户",
   "login.Connect": "连接钱包",
   "login.METAMASK": "METAMASK",

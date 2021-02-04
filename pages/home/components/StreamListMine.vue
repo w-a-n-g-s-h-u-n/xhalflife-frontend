@@ -1,13 +1,11 @@
 <template>
   <div>
     <div class="tabs">
-
-      <div class="tab" :class="{'active':current=='send'}" @click="change('send')">
-        {{$t('home.Sent')}}
-
-      </div>
       <div class="tab" :class="{'active':current=='received'}" @click="change('received')">
         {{$t('home.Received')}}
+      </div>
+      <div class="tab" :class="{'active':current=='send'}" @click="change('send')">
+        {{$t('home.Sent')}}
       </div>
     </div>
 
@@ -194,7 +192,7 @@ export default {
   mixins: [mixin],
   data () {
     return {
-      current: 'send',
+      current: 'received',
       sendInfo: {
         loading: false,
         page: 1,
@@ -350,6 +348,7 @@ export default {
       color: #56588e;
       letter-spacing: 0;
       margin-right: 10px;
+      cursor: pointer;
 
       &.active {
         //font-family: PingFangSC-Semibold;

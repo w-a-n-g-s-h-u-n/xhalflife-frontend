@@ -65,8 +65,6 @@ export default {
     }
   },
   mounted () {
-    console.log('Home mounted')
-    console.log(this)
     this.getStreamStats()
 
     // console.log('TEST $apollo query')
@@ -89,9 +87,9 @@ export default {
         this.activeTab = v
       })
     },
-    refresh () {
+    refresh(){
       this.onSwitchTab('streams')
-      setTimeout(() => {
+      setTimeout(()=>{
         this.$refs.refreshList.getList()
       }, 20)
     },
