@@ -16,15 +16,6 @@
           @select="handleSelect"
           style="width: 100%;"
         ></el-autocomplete>
-        <!-- <el-select v-model="formData.token" placeholder="请选择" style="width: 100%;">
-          <el-option
-            v-for="item in tokenOptions"
-            :key="item.name"
-            :label="`${item.symbol}`"
-            :value="item.symbol">
-            <span>{{item.symbol}} ({{item.name}})</span>
-          </el-option>
-        </el-select> -->
       </el-form-item>
       <el-form-item :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentToken})`" prop="depositAmount">
         <el-input v-model="formData.depositAmount">
@@ -83,6 +74,13 @@ export default {
   name: 'CreateStreamForm',
   props: ['refresh'],
   data () {
+    const recipentValidator = async (rule, value, callback) => {
+      const currentAccount = await metamask.getAccountsByMetaMask()
+      if(value === ethers.utils.getAddress(currentAccount[0])){
+        callback(new Error(this.$t('home.recipentCantBeCurrentUser')));
+      }
+        callback();
+    }
     return {
       tokenOptions: [],
       currentTokenAmount: 0,
@@ -100,7 +98,8 @@ export default {
       balances: [],
       rules: {
         recipient: [
-          { required: true, message: this.$t('home.recipient'), trigger: 'change' }
+          { required: true, message: this.$t('home.recipient'), trigger: 'change' },
+          {validator: recipentValidator, message: '', trigger: 'change'}
         ],
         depositAmount: [
           { required: true, message: this.$t('home.depositAmount'), trigger: 'change' }
@@ -152,7 +151,6 @@ export default {
     }
   },
   async created () {
-    console.log('metamask.account-----', await metamask.getAccountsByMetaMask())
     this.fetchSupportToken()
   },
   methods: {

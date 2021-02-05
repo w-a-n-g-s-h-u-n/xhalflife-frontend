@@ -65,8 +65,6 @@ export default {
     }
   },
   mounted () {
-    console.log('Home mounted')
-    console.log(this)
     this.getStreamStats()
 
     // console.log('TEST $apollo query')
@@ -90,7 +88,6 @@ export default {
       })
     },
     refresh(){
-      
       this.onSwitchTab('streams')
       setTimeout(()=>{
         this.$refs.refreshList.getList()
