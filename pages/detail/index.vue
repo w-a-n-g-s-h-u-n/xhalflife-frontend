@@ -232,7 +232,7 @@ export default {
       total:0,
       pageData:[],
       halfLife: 0,
-      http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/assets/':'https://static.xdefi.net/blockchains/ethereum/assets/',
+      http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/':'https://static.xdefi.net/blockchains/ethereum/',
 
       detail: {
         token: {
@@ -352,7 +352,13 @@ export default {
 
     },
     showImg(detail){
-      const url = this.http + web3.utils.toChecksumAddress(detail.token.id) + '/logo.png';
+      let url
+      if(detail.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'){
+        url = this.http +'info/logo.png'
+      }else{
+        url = this.http +'assets/'+ web3.utils.toChecksumAddress(detail.token.id) + '/logo.png';
+
+      }
 
       const img = new Image();
       img.src= url;

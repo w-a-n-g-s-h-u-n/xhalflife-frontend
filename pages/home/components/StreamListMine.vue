@@ -205,7 +205,7 @@ export default {
         pageSize: 10,
         total: 10
       },
-      http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/assets/':'https://static.xdefi.net/blockchains/ethereum/assets/',
+      http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/':'https://static.xdefi.net/blockchains/ethereum/',
 
       receiveInfo: {
         loading: false,
@@ -272,7 +272,13 @@ export default {
       let arr = []
       data.map((obj,id)=>{
         let item = obj
-        const url = this.http + web3.utils.toChecksumAddress(item.token.id) + '/logo.png';
+        let url
+        if(item.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'){
+          url = this.http +'info/logo.png'
+        }else{
+          url = this.http +'assets/'+ web3.utils.toChecksumAddress(item.token.id) + '/logo.png';
+        
+        }
         const img = new Image();
         img.src= url;
 
