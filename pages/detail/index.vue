@@ -43,11 +43,17 @@
       <div class="detail-cards">
         <div class="left">
           <div class="card" shadow="always">
-            <div class="header">{{$t('detail.Remaining')}}（{{detail.token.symbol}}）</div>
+            <div class="header">{{$t('detail.Remaining')}}（
+            <i v-if="!detail.imgShow">?</i>
+            <img v-else :src="detail.imgUrl" />
+            {{detail.token.symbol}}）</div>
             <div class="content">～{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
           </div>
           <div class="card" shadow="always">
-            <div class="header">{{$t('detail.Withdrawable')}}（{{detail.token.symbol}}）</div>
+            <div class="header">{{$t('detail.Withdrawable')}}（
+            <i v-if="!detail.imgShow">?</i>
+            <img v-else :src="detail.imgUrl" />
+            {{detail.token.symbol}}）</div>
             <div class="content">
               ～{{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
             </div>
@@ -111,7 +117,7 @@
         </div>
         <el-table
           v-loading="loading"
-          :data="detail.txs"
+          :data="pageData"
           class="table"
           :cell-style="cellStyle"
           :header-cell-style="cellStyle"
@@ -144,6 +150,16 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          class="pagination"
+          style="padding-top: 20px;"
+          :current-page.sync="page"
+          :page-size="limit"
+          layout="prev, pager, next"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
     </div>
     <el-dialog
@@ -205,13 +221,19 @@ import { mapState } from 'vuex'
 import { isMobile, statusedList, decimalsNumber } from '@/utils/index'
 import { selectAbi } from '@/api/contract'
 import { BigNumber } from 'bignumber.js'
-
+import web3 from 'web3'
 export default {
   name: 'Detail',
   data () {
     return {
       id: 0,
+      page: 1,
+      limit: 10,
+      total:0,
+      pageData:[],
       halfLife: 0,
+      http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/':'https://static.xdefi.net/blockchains/ethereum/',
+
       detail: {
         token: {
           symbol: '',
@@ -245,9 +267,13 @@ export default {
       detailCache (state) {
         return state.detailCache
       },
+      total (state) {
+        return Number(state.stats.count) || 0
+      },
       account (state) {
         return state.metamask && state.metamask.account
       }
+
     }),
     canWithDraw () {
       const yes = this.account && this.account === this.detail.recipient && this.detail.withdrawable > 0.0001
@@ -268,7 +294,10 @@ export default {
   watch: {
     detailCache () {
       this.detail = { ...this.detail, ...this.detailCache[this.id] }
+      this.total = this.detail.txs?this.detail.txs.length:0
+      this.detail.txs&&this.formData(this.detail.txs)
       this.show(this.detail)
+      this.detail.txs&&this.showImg(this.detail)
     },
     'detail.token.id' (newVal, oldVal) {
       if (newVal) {
@@ -281,8 +310,10 @@ export default {
     const id = this.$route.query && this.$route.query.id
     this.id = id
     this.detail = { ...this.detail, ...this.detailCache[id] }
+    this.total = this.detail.txs?this.detail.txs.length:0
+    this.detail.txs&&this.formData(this.detail.txs)
     this.$store.dispatch('refreshLatestBlockNumber')
-    this.show(this.detail)
+    this.detail.txs&&this.show(this.detail)
     // 请求最新
     if (id) {
       this.getDetail(id)
@@ -290,12 +321,60 @@ export default {
     }
   },
   methods: {
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange (val) {
+      this.page = val
+      console.log(`当前页: ${val}`)
+      this.formData(this.detail.txs)
+    },
+    formData(data){
+
+      const page = this.page
+      const limit = this.limit
+      let arr = []
+      data.map((item,id)=>{
+        if(id>=(page-1)*limit&&id<page*limit){
+          arr.push(item)
+        }
+      })
+      this.pageData = arr;
+    },
     show (detail) {
       const ratio = detail.unlockRatio
 
       const value = BigNumber(ratio).shiftedBy(0 - detail.token.decimals).toNumber()
       const time = parseInt(((detail.kBlock * 0.69) / (-Math.log(1 - value))) * 13.1 / 43200 * 100) / 100
       this.halfLife = time
+
+
+
+    },
+    showImg(detail){
+      let url
+      if(detail.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'){
+        url = this.http +'info/logo.png'
+      }else{
+        url = this.http +'assets/'+ web3.utils.toChecksumAddress(detail.token.id) + '/logo.png';
+
+      }
+
+      const img = new Image();
+      img.src= url;
+      this.detail = Object.assign({},detail,{
+          imgUrl:'',
+          imgShow:false
+        })
+
+      img.onload=()=>{
+
+        this.detail = Object.assign({},detail,{
+          imgShow:true,
+          imgUrl:url
+        })
+      }
+
     },
     open () {
       this.$alert(this.$t('openTips'), {

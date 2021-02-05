@@ -1,4 +1,3 @@
-
 html,
 body {
   background: #1b1c45;
@@ -9,7 +8,7 @@ body > .container {
   background: #051840;
 }
 
-.el-table__empty-block{
+.el-table__empty-block {
   background: #1e2049;
 }
 
@@ -18,8 +17,8 @@ body > .container {
   margin: 0 auto;
   width: 1200px;
 }
-.el-select-dropdown{
-  z-index: 9999!important;
+.el-select-dropdown {
+  z-index: 9999 !important;
 }
 .main {
   background-color: #1e2049;
@@ -27,7 +26,7 @@ body > .container {
   margin-bottom: 2rem;
   min-height: calc(100% - 156px);
 
-  >.crumb {
+  > .crumb {
     height: 60px;
     padding-top: 20px;
     background: transparent;
@@ -148,7 +147,7 @@ body > .container {
       flex-direction: column;
       padding: 0 1rem;
 
-      .card{
+      .card {
         flex: 1 1 100%;
         margin-bottom: 1rem;
       }
@@ -173,80 +172,81 @@ body > .container {
       .content {
         width: 100%;
         margin-top: 1rem;
-        background: transparent
+        background: transparent;
       }
     }
   }
 }
 .tips {
-    color: #fff;
-    font-size: 14px;
-  }
-  .tips a {
+  color: #fff;
+  font-size: 14px;
+}
+.tips a {
+  color: #fced3e;
+}
+.newStyle {
+  a {
     color: #fced3e;
   }
-  .newStyle {
-    a {
-      color: #fced3e;
+}
+.wrap {
+  text-align: left;
+  width: 500px;
+  margin: 4rem auto;
+
+  .maxButton {
+    color: #fced3e;
+    padding: 0 15px;
+  }
+
+  .symbol {
+    line-height: 40px;
+    margin-right: 10px;
+  }
+
+  .el-form-item__label {
+    color: #fff !important;
+  }
+
+  .el-form--label-top .el-form-item__label {
+    color: #fff;
+  }
+
+  .actions {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .btn {
+      width: 343px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background-image: linear-gradient(136deg, #2bf7dd 0%, #3a8ff7 51%, #da37fa 100%);
+      border-radius: 28px;
+      margin-bottom: 10px;
     }
   }
+
+  .input-style-2 {
+    border: 0 solid #4c4f8a;
+    border-radius: 22px;
+  }
+}
+
+@media (max-width: 768px) {
   .wrap {
-    text-align: left;
-    width: 500px;
-    margin: 4rem auto;
-
-    .maxButton {
-      color: #fced3e;
-      padding: 0 15px;
-    }
-
-    .symbol {
-      line-height: 40px;
-      margin-right: 10px;
-    }
-
-    .el-form-item__label {
-      color: #fff !important;
-    }
-
-    .el-form--label-top .el-form-item__label {
-      color: #fff;
-    }
-
+    width: 100%;
+    margin-top: 0;
     .actions {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
       .btn {
-        width: 343px;
-        margin: 0 auto;
-      }
-
-      .start-btn {
-        background-image: linear-gradient(136deg, #2bf7dd 0%, #3a8ff7 51%, #da37fa 100%);
-        border-radius: 28px;
-        margin-bottom: 10px;
-      }
-    }
-
-    .input-style-2 {
-      border: 0 solid #4c4f8a;
-      border-radius: 22px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .wrap {
-      width: 100%;
-      margin-top: 0;
-      .actions {
-        .btn {
-          width: 100%;
-          margin-top: 1rem;
-        }
+        width: 100%;
+        margin-top: 1rem;
       }
     }
   }
+}
+
