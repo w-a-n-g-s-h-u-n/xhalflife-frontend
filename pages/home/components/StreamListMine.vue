@@ -26,7 +26,10 @@
         />
         <el-table-column align="center" label="Token" min-width="90">
           <template slot-scope="scope">
-            <span :title="scope.row.sender">{{ scope.row.token.symbol}}</span>
+            <span :title="scope.row.sender" class="icons">
+            <i v-if="!scope.row.imgShow">?</i>
+            <img v-else :src="scope.row.imgUrl" />
+            {{ scope.row.token.symbol}}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="Sender" min-width="120">
@@ -111,7 +114,10 @@
         />
         <el-table-column align="center" label="Token" min-width="90">
           <template slot-scope="scope">
-            <span :title="scope.row.sender">{{ scope.row.token.symbol}}</span>
+            <span :title="scope.row.sender" class="icons">
+            <i v-if="!scope.row.imgShow">?</i>
+            <img v-else :src="scope.row.imgUrl" />
+            {{ scope.row.token.symbol}}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="Sender" min-width="120">
@@ -188,7 +194,7 @@ import { mapState } from 'vuex'
 import { ethers } from 'ethers'
 import { statusedList } from '@/utils/index'
 import mixin from './mixin'
-
+import web3 from 'web3'
 export default {
   name: 'StreamListMine',
   mixins: [mixin],
@@ -201,6 +207,8 @@ export default {
         pageSize: 10,
         total: 10
       },
+      http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/assets/':'https://static.xdefi.net/blockchains/ethereum/assets/',
+
       receiveInfo: {
         loading: false,
         pageSize: 10,
@@ -262,6 +270,35 @@ export default {
         ? this.getListBySender('refresh')
         : this.getListByRecipient('refresh')
     },
+    formData(data,type){
+      let arr = []
+      data.map((obj,id)=>{
+        let item = obj
+        const url = this.http + web3.utils.toChecksumAddress(item.token.id) + '/logo.png';
+        const img = new Image();
+        img.src= url;
+
+        img.onload=()=>{
+          item = Object.assign({},obj,{
+            imgShow:true,
+            imgUrl:url
+          })
+          arr[id] = item
+
+        }
+        img.onerror=()=>{
+          item = Object.assign({},item,{
+            imgUrl:'',
+            imgShow:false
+          })
+          arr[id] = item
+
+        }
+      })
+      setTimeout(()=>{
+        this.$store.commit('updateSteamList', { key: type, value: arr })
+      },1000)
+    },
     // TODO 分页 我发出的
     async getListBySender (type = 'refresh') {
       this.sendInfo.loading = true
@@ -277,8 +314,11 @@ export default {
       } else {
         this.sendInfo.total = this.sendInfo.total + this.sendInfo.pageSize
       }
-
       this.$store.commit('updateSteamList', { key: 'MySentList', value: statusedList(ret.data.streams) })
+      
+      this.formData(statusedList(ret.data.streams),'MySentList')
+
+
       this.sendInfo.loading = false
 
       const ids = ret.data.streams.map(item => item.id)
@@ -300,7 +340,9 @@ export default {
       } else {
         this.receiveInfo.total = this.receiveInfo.total + this.receiveInfo.pageSize
       }
+      
       this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(ret.data.streams) })
+      this.formData(statusedList(ret.data.streams),'myReceivedList')
       this.receiveInfo.loading = false
 
       const ids = ret.data.streams.map(item => item.id)
@@ -326,6 +368,29 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icons i {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 11px;
+    font-style: normal;
+    color: #fff;
+    margin-right: 5px;
+    background-color: #90a4ae;
+    border-radius: 50%;
+  }
+  .icons img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
   .tabs {
     display: flex;
     justify-content: flex-start;

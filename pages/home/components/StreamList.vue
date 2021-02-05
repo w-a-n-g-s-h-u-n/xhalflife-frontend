@@ -1,20 +1,14 @@
 <template>
   <div>
-    <el-table
-      v-loading="loading"
-      :data="homeList"
-      class="table"
-      :cell-style="cellStyle"
-      :header-cell-style="cellStyle"
-    >
-      <el-table-column
-        width="40"
-        prop="id"
-        label="ID"
-      />
+    <el-table v-loading="loading" :data="homeListData" class="table" :cell-style="cellStyle" :header-cell-style="cellStyle">
+      <el-table-column width="40" prop="id" label="ID" />
       <el-table-column align="center" label="Token" min-width="90">
         <template slot-scope="scope">
-          <span :title="scope.row.sender">{{ scope.row.token.symbol}}</span>
+          <span :title="scope.row.sender" class="icons">
+            <i v-if="!scope.row.imgShow">?</i>
+            <img v-else :src="scope.row.imgUrl" />
+            {{ scope.row.token.symbol }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('Sender')" min-width="120">
@@ -43,7 +37,7 @@
           <span :title="scope.row.startBlock">#{{ scope.row.startBlock }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" fixed='right' :label="$t('Status')" min-width="120">
+      <el-table-column align="center" fixed="right" :label="$t('Status')" min-width="120">
         <template slot-scope="scope">
           <stream-status
             :start-block="scope.row.startBlock"
@@ -53,21 +47,16 @@
           />
         </template>
       </el-table-column>
-      <el-table-column :label="$t('Date')"  width="90">
+      <el-table-column :label="$t('Date')" width="90">
         <template slot-scope="scope">
           <span :title="scope.row.timestamp">{{ scope.row.timestamp | date }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        fixed="right"
-        label=""
-      >
+      <el-table-column fixed="right" label="">
         <template slot-scope="scope">
           <NuxtLink :to="`/detail?id=${scope.row.id}`">
-            <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">
-              {{$t("detail.detail")}}
-            </el-button>
+            <el-button :id="scope.row.id" size="small" round class="view-detail-btn" @click="drawer = true">{{ $t('detail.detail') }}</el-button>
           </NuxtLink>
         </template>
       </el-table-column>
@@ -87,6 +76,7 @@
 <script>
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
+import web3 from 'web3'
 import { statusedList } from '@/utils/index'
 // import gql from 'graphql-tag'
 import mixin from './mixin'
@@ -97,6 +87,8 @@ export default {
     return {
       loading: false,
       list: [],
+      homeListData:[],
+	  http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/assets/':'https://static.xdefi.net/blockchains/ethereum/assets/',
       query: {
         page: 1,
         limit: 10
@@ -121,7 +113,7 @@ export default {
     }
   }),
   created () {
-    console.log('StreamList mounted', this.homeList)
+
     this.getList()
     this.$store.dispatch('refreshLatestBlockNumber')
   },
@@ -129,10 +121,42 @@ export default {
     async getList () {
       this.loading = true
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
-      console.log('StreamList ret', ret)
+
       const statusList = statusedList(ret.data.streams)
-      console.log(statusList)
+      this.homeListData=statusList
       this.$store.commit('updateSteamList', { key: 'homeList', value: statusList })
+      let arr = []
+      statusList.map((obj,id)=>{
+        let item = obj
+        const url = this.http + web3.utils.toChecksumAddress(item.token.id) + '/logo.png';
+        const img = new Image();
+        img.src= url;
+
+        img.onload=()=>{
+          item = Object.assign({},obj,{
+            imgShow:true,
+            imgUrl:url
+          })
+          
+          arr[id] = item
+        }
+        img.onerror=()=>{
+          item = Object.assign({},item,{
+            imgUrl:'',
+            imgShow:false
+          })
+          arr[id] = item
+        }
+
+
+
+
+      })
+      setTimeout(()=>{
+        this.homeListData=arr
+        this.$store.commit('updateSteamList', { key: 'homeList', value: arr })
+      },1000)
+
 
       const ids = statusList.map(item => item.id)
       this.refreshBalanceOfStreams(ids)
@@ -140,11 +164,12 @@ export default {
       this.loading = false
       return ret
     },
+
+
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
       this.getList()
     },
     cellStyle (obj) {
@@ -155,38 +180,60 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .pagination {
-    width: 100%;
-    margin-top: 20px;
-  }
+.pagination {
+  width: 100%;
+  margin-top: 20px;
+}
+.icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icons i {
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  font-size: 11px;
+  font-style: normal;
+  color: #fff;
+  margin-right: 5px;
+  background-color: #90a4ae;
+  border-radius: 50%;
+}
+.icons img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.table {
+  width: 100%;
+}
 
-  .table {
-    width: 100%;
-  }
+.el-pagination button:disabled {
+  background-color: transparent !important;
+}
 
-  .el-pagination button:disabled {
-    background-color: transparent !important;
-  }
+.el-pager li {
+  background: transparent !important;
+}
 
-  .el-pager li {
-    background: transparent !important;
-  }
+.el-table--border::after,
+.el-table--group::after,
+.el-table::before {
+  border: none;
+}
 
-  .el-table--border::after,
-  .el-table--group::after,
-  .el-table::before {
-    border: none;
-  }
-
-  .view-detail-btn {
-    display: flex;
-    align-items: center;
-    border-radius: 20px;
-    font-size: 13px;
-    background: transparent;
-    color: #fced3e;
-    border: 1px solid #fced3e;
-    letter-spacing: 0;
-    text-align: center;
-  }
+.view-detail-btn {
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  font-size: 13px;
+  background: transparent;
+  color: #fced3e;
+  border: 1px solid #fced3e;
+  letter-spacing: 0;
+  text-align: center;
+}
 </style>

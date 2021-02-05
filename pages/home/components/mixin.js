@@ -24,7 +24,7 @@ export default {
 
         if (this.reqCount[id] < 4) { // 最多请求三次
           const ret = await XHalfLifeContract.balanceOf(id)
-          console.log('refreshBalanceOfStreams', id, ret)
+          
           this.$store.commit('updateBalanceByStreamId', { key: id, value: ret })
         }
 

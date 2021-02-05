@@ -89,11 +89,13 @@ export default {
         this.activeTab = v
       })
     },
-    refresh () {
+    refresh(){
+      
       this.onSwitchTab('streams')
-      setTimeout(() => {
+      setTimeout(()=>{
         this.$refs.refreshList.getList()
-      }, 20)
+      },20)
+
     },
     async getStreamStats () {
       const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: process.env.XDEX_TOKEN_ADDRESS.toLowerCase() } })
