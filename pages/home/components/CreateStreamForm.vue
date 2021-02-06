@@ -51,8 +51,8 @@
       </el-row>
     </el-form>
     <div class="actions">
-      <el-button type="primary" round class="start-btn btn" @click="onSubmit">
-        {{$t('home.Start')}}
+      <el-button type="primary" round class="start-btn btn" @click="onSubmit" :disabled="buttonDisable">
+        {{buttonState === 'start' ? $t('home.Start') : 'Unlock'}}
       </el-button>
     </div>
     <p class="tips">{{$t('tips')[0]}}<a href="https://etherscan.io/blocks" target="_blank">"{{$t('tips')[1]}}"</a>{{$t('tips')[2]}} {{$t('currentBlock')}}:{{blockNumber}}</p>
@@ -85,6 +85,8 @@ export default {
       tokenOptions: [],
       currentTokenAmount: 0,
       currentToken: '',
+      buttonState:'start',
+      buttonDisable: false,
       formData: {
         token: '',
         recipient: '',
@@ -99,7 +101,7 @@ export default {
       rules: {
         recipient: [
           { required: true, message: this.$t('home.recipient'), trigger: 'change' },
-          {validator: recipentValidator, message: '', trigger: 'change'}
+          { validator: recipentValidator, message: '', trigger: 'change' }
         ],
         depositAmount: [
           { required: true, message: this.$t('home.depositAmount'), trigger: 'change' }
@@ -222,6 +224,7 @@ export default {
           })
           return
         }
+        this.buttonDisable = true;
         const fetchedBlockNumber = await this.refreshLatestBlockNumber()
         if (this.formData.startBlock < fetchedBlockNumber) {
           this.blockNumber = fetchedBlockNumber
@@ -287,35 +290,30 @@ export default {
             tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, { value: decimalsAmount })
           } else {
             const tokenContract = new ethers.Contract(tokenAddress, selectAbi(formData.token.toLowerCase()), signer)
-            // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则触发approve流程
             const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-            console.log(allowance)
 
             if (decimalsAmount.lte(allowance)) {
-              console.log('allowance is enough', allowance.toString(), decimalsAmount.toString())
+              this.buttonState = 'start'
             } else {
-              console.log('allowance is not enough', allowance.toString(), decimalsAmount.toString())
-              // approve
-              const approveValue = decimalsAmount.sub(allowance)
-              console.log('Need approve', approveValue)
+              this.buttonState = 'unlock'
+              const approveValue = decimalsAmount
               const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
-              console.log('333', approveValue)
               const approveResult = await approveTx.wait()
-              console.log('approveResult', approveResult)
+              this.buttonState = 'start';
             }
-
-            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
+            const txFetchBlock = await this.refreshLatestBlockNumber()
+            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), txFetchBlock+5, kBlock, decimalsRatio)
           }
 
           const createStreamResult = await tx.wait()
-          console.log('createStreamResult', createStreamResult)
+          this.buttonDisable = false;
           this.$message({
             message: this.$t('home.Create'),
             type: 'success'
           })
           this.$emit('refresh')
         } catch (e) {
-          console.error(e)
+          this.buttonDisable = false;
           this.$message({
             message: e.message + e.code,
             type: 'warning'
