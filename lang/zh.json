@@ -2,6 +2,7 @@
   "detail.Cancel": "取消",
   "detail.CancelSuccess": "取消成功",
   "detail.Confirm": "确认",
+  "detail.ConfirmDo1": "警告：未提取余额将退还给您，可提取余额将发送给接收方。",
   "detail.ConfirmDo": "警告：您的未提取余额将退还给发送方，可提取余额将发送给您。请确保您和您的发送人一致同意取消。",
   "detail.Date": "日期",
   "detail.Event": "操作",

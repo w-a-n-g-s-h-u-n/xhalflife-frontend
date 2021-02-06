@@ -202,7 +202,8 @@
       :visible.sync="cancelDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
-      <span>{{$t('detail.ConfirmDo')}}</span>
+      <span v-if="canWithDraw">{{$t('detail.ConfirmDo')}}</span>
+      <span v-else>{{$t('detail.ConfirmDo1')}}</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">{{$t('detail.Confirm')}}</el-button>
       </span>
@@ -267,9 +268,9 @@ export default {
       detailCache (state) {
         return state.detailCache
       },
-      total (state) {
+      /*total (state) {
         return Number(state.stats.count) || 0
-      },
+      },*/
       account (state) {
         return state.metamask && state.metamask.account
       }
@@ -298,6 +299,7 @@ export default {
       this.detail.txs&&this.formData(this.detail.txs)
       this.show(this.detail)
       this.detail.txs&&this.showImg(this.detail)
+      console.log(this.detail)
     },
     'detail.token.id' (newVal, oldVal) {
       if (newVal) {
@@ -314,6 +316,7 @@ export default {
     this.detail.txs&&this.formData(this.detail.txs)
     this.$store.dispatch('refreshLatestBlockNumber')
     this.detail.txs&&this.show(this.detail)
+    console.log(this.detail)
     // 请求最新
     if (id) {
       this.getDetail(id)
