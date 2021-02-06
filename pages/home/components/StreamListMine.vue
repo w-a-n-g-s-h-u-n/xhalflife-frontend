@@ -271,13 +271,14 @@ export default {
     formData(data,type){
       let arr = []
       data.map((obj,id)=>{
+
         let item = obj
         let url
         if(item.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'){
           url = this.http +'info/logo.png'
         }else{
           url = this.http +'assets/'+ web3.utils.toChecksumAddress(item.token.id) + '/logo.png';
-        
+
         }
         const img = new Image();
         img.src= url;
@@ -318,12 +319,22 @@ export default {
       } else {
         this.sendInfo.total = this.sendInfo.total + this.sendInfo.pageSize
       }
-      this.$store.commit('updateSteamList', { key: 'MySentList', value: statusedList(ret.data.streams) })
+      let arr=[]
+      ret.data.streams.map(obj=>{
+        if(!(obj.startBlock&&this.blockNumber&&this.detailCache[obj.id] && this.detailCache[obj.id].remaining)){
+          return
+        }
+        arr.push(obj)
+      })
+      setTimeout(()=>{
+        this.$store.commit('updateSteamList', { key: 'MySentList', value: statusedList(arr) })
+        this.sendInfo.loading = false
+      },300)
       
       this.formData(statusedList(ret.data.streams),'MySentList')
 
 
-      this.sendInfo.loading = false
+      
 
       const ids = ret.data.streams.map(item => item.id)
       this.refreshBalanceOfStreams(ids)
@@ -344,8 +355,15 @@ export default {
       } else {
         this.receiveInfo.total = this.receiveInfo.total + this.receiveInfo.pageSize
       }
-      
-      this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(ret.data.streams) })
+      let arr=[]
+      ret.data.streams.map(obj=>{
+        if(!(obj.startBlock&&this.blockNumber&&this.detailCache[obj.id] && this.detailCache[obj.id].remaining)){
+          return
+        }
+        arr.push(obj)
+      })
+
+      this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(arr) })
       this.formData(statusedList(ret.data.streams),'myReceivedList')
       this.receiveInfo.loading = false
 

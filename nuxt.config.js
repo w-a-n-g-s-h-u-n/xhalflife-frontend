@@ -85,6 +85,6 @@ export default {
   },
   server: {
     port: 9090, // default: 9090
-    host: 'local.kovan.com' // default: localhost
+    host:  'localhost'//'local.kovan.com' // default: localhost
   }
 }

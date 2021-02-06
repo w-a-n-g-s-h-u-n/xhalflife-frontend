@@ -21,6 +21,7 @@ export default {
       if (this.isCanceled) {
         return that.$t('canceled')
       }
+
       if (this.startBlock && this.currentBlock && this.remaining) {
         const startBlock = BigNumber.from(this.startBlock).mul(10000)
         const currentBlock = BigNumber.from(this.currentBlock).mul(10000)

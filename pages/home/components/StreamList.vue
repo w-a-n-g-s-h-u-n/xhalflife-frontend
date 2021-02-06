@@ -128,6 +128,7 @@ export default {
       let arr = []
       statusList.map((obj,id)=>{
         let item = obj
+
         let url
         if(item.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'){
           url = this.http +'info/logo.png'
