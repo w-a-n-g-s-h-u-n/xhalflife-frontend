@@ -365,7 +365,7 @@ export default {
       })
       setTimeout(()=>{
         this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(arr) })
-        this.sendInfo.loading = false
+        this.receiveInfo.loading = false
       },300)
 
       //this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(arr) })
