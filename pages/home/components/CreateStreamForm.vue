@@ -170,13 +170,13 @@ export default {
             const balanceOf = await tokenContract.balanceOf(this.selectCurrentAccount)
             const decimals = await tokenContract.decimals()
             this.currentTokenAmount = decimalsNumber(balanceOf, decimals)
-            tokens = [{
+            tokens = {
               value: symbol,
               id: queryString,
               name,
               symbol,
               decimals
-            }]
+            }
             this.tokenOptions.push(tokens)
           } catch (e) {
             this.$message({
@@ -209,10 +209,14 @@ export default {
       this.currentToken = this.tokenOptions[0].symbol
     },
     selectAddressByName (name) {
-      return this.tokenOptions.find(token => token.symbol === name).id
+      console.log(name, this.tokenOptions);
+      console.log(this.tokenOptions.filter(token => token.symbol === name))
+      return this.tokenOptions.filter(token => token.symbol === name)[0].id
     },
     selectDecimalsByName (name) {
-      return this.tokenOptions.find(token => token.symbol === name).decimals
+      console.log(name, this.tokenOptions);
+      console.log(this.tokenOptions.filter(token => token.symbol === name))
+      return this.tokenOptions.filter(token => token.symbol === name)[0].decimals
     },
     onSubmit () {
       this.$refs.createForm.validate(async (valid) => {
@@ -278,7 +282,7 @@ export default {
           // deal form data to api
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
           const decimalsAmount = ethers.utils.parseUnits(depositAmount, tokenDecimals)
-          const decimalsRatio = ethers.utils.parseUnits(unlockRatio, Number(tokenDecimals) - 3).toString()
+          const decimalsRatio = unlockRatio
 
           // 获得provider
           const provider = await getProvider()

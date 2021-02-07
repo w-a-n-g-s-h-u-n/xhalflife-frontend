@@ -4,8 +4,6 @@ import XHalfLifeABI from './abis/XHalfLife.json'
 import XDEXABI from './abis/XDEX.json'
 
 const tokenAbi = {
-  xdex: require('./abis/XDEX.json'),
-  usdt: require('./abis/USDT.json'),
   others: require('./abis/IERC20.json').abi
 }
 
