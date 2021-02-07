@@ -321,6 +321,7 @@ export default {
       }
       let arr=[]
       ret.data.streams.map(obj=>{
+        console.log(`StreamList send remaining`, this.detailCache[obj.id])
         if(!(obj.startBlock&&this.blockNumber&&this.detailCache[obj.id] && this.detailCache[obj.id].remaining)){
           return
         }
@@ -330,11 +331,11 @@ export default {
         this.$store.commit('updateSteamList', { key: 'MySentList', value: statusedList(arr) })
         this.sendInfo.loading = false
       },300)
-      
+
       this.formData(statusedList(ret.data.streams),'MySentList')
 
 
-      
+
 
       const ids = ret.data.streams.map(item => item.id)
       this.refreshBalanceOfStreams(ids)
@@ -362,10 +363,14 @@ export default {
         }
         arr.push(obj)
       })
+      setTimeout(()=>{
+        this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(arr) })
+        this.sendInfo.loading = false
+      },300)
 
-      this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(arr) })
+      //this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(arr) })
       this.formData(statusedList(ret.data.streams),'myReceivedList')
-      this.receiveInfo.loading = false
+      //this.receiveInfo.loading = false
 
       const ids = ret.data.streams.map(item => item.id)
       this.refreshBalanceOfStreams(ids)
