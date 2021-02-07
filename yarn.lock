@@ -13626,7 +13626,7 @@ ws@^7.2.3:
 
 "xdefi-assets@github:xdefilab/xdefi-assets":
   version "0.0.1"
-  resolved "https://codeload.github.com/xdefilab/xdefi-assets/tar.gz/5db2fb89fb09565735831d74e407c57887d059cf"
+  resolved "https://codeload.github.com/xdefilab/xdefi-assets/tar.gz/78a5a2364a306735e7512cf63cff73841742563a"
 
 xhr-request-promise@^0.1.2:
   version "0.1.3"
