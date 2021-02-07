@@ -12,11 +12,11 @@
         class='menuItem'
       >
         <a
-          :href="nav.name === 'stat' ? '/' : nav.href"
+          :href="nav.name === 'halfLife' ? '/' : nav.href"
           :class="['d-inline', 'd-flex', 'nav-item', nav.name === 'halfLife' ? 'active' : '']"
         >
-          {{ $i18n.locale === 'zh-CN' ? nav['name-zh'] : nav['name-en'] }}
-          <b></b>
+          <div class='text'>{{ $i18n.locale === 'zh-CN' ? nav['name-zh'] : nav['name-en'] }}</div>
+          <b class='indicator'></b>
         </a>
       </el-menu-item>
       <el-submenu v-else :index="index" class='menuItem'>
@@ -25,7 +25,7 @@
           <a
             :href="child.href"
           >
-            {{ $i18n.locale === 'zh-CN' ? child['name-zh'] : child['name-en'] }}
+            <div class='text'>{{ $i18n.locale === 'zh-CN' ? child['name-zh'] : child['name-en'] }}</div>
           </a>
         </el-menu-item>
       </el-submenu>

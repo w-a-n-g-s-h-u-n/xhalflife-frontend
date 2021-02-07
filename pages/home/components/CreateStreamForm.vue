@@ -209,13 +209,9 @@ export default {
       this.currentToken = this.tokenOptions[0].symbol
     },
     selectAddressByName (name) {
-      console.log(name, this.tokenOptions);
-      console.log(this.tokenOptions.filter(token => token.symbol === name))
       return this.tokenOptions.filter(token => token.symbol === name)[0].id
     },
     selectDecimalsByName (name) {
-      console.log(name, this.tokenOptions);
-      console.log(this.tokenOptions.filter(token => token.symbol === name))
       return this.tokenOptions.filter(token => token.symbol === name)[0].decimals
     },
     onSubmit () {
