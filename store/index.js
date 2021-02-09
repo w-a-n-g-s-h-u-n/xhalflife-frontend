@@ -1,4 +1,4 @@
-import { getProvider } from '@/api/contract/ethers'
+import { getProvider, provider } from '@/api/contract/ethers'
 import { decimalsNumber } from '@/utils/index'
 
 const initialMetamask = {
@@ -111,7 +111,7 @@ export const getters = {
 
 export const actions = {
   async refreshLatestBlockNumber (context) {
-    const provider = await getProvider()
+    //const provider = await getProvider()
     const blockNumber = await provider.getBlockNumber()
     context.commit('update', { key: 'blockNumber', value: blockNumber })
     return blockNumber

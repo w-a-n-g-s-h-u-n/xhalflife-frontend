@@ -213,7 +213,7 @@
 <script>
 import { STREAM_DETAIL } from '@/api/apollo/queries'
 import { XHalfLifeContract } from '@/api/contract'
-import { getProvider } from '@/api/contract/ethers'
+import { getProvider, provider } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'

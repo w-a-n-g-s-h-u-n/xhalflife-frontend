@@ -41,7 +41,7 @@ import StreamList from '@/pages/home/components/StreamList'
 import StreamListMine from '@/pages/home/components/StreamListMine'
 import { isMobile, decimalsNumber } from '@/utils/index'
 import { ethers } from 'ethers'
-import { getProvider } from '@/api/contract/ethers'
+import { getProvider, provider } from '@/api/contract/ethers'
 import XhalfLife from '@/api/contract/abis/XHalfLife.json'
 
 export default {
@@ -77,7 +77,7 @@ export default {
     },
     async getStreamStats () {
       const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: process.env.XDEX_TOKEN_ADDRESS.toLowerCase() } })
-      const provider = await getProvider()
+      //const provider = await getProvider()
       const proxyContract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XhalfLife, provider)
       const totalStreams = await proxyContract.nextStreamId()
       const totalStream = decimalsNumber(totalStreams, 0)

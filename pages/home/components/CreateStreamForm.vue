@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { getProvider } from '@/api/contract/ethers'
+import { getProvider, provider } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
 import { SUPPORT_TOKENS } from '@/api/apollo/queries'
 import { ethers } from 'ethers'
