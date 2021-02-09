@@ -18,7 +18,7 @@
         :header-cell-style="cellStyle"
       >
         <el-table-column
-          width="40"
+          width="70"
           prop="id"
           label="ID"
         />
@@ -106,7 +106,7 @@
         :header-cell-style="cellStyle"
       >
         <el-table-column
-          width="40"
+          width="70"
           prop="id"
           label="ID"
         />
