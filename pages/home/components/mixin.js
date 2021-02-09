@@ -27,11 +27,13 @@ export default {
       if (!this.streamIdQueue.length) {
         return
       }
+
       const multi = new ethers.Contract(
         addresses.multicall,
         multicall.abi,
         provider
       );
+
 
       const calls = [];
       const promises = [];
@@ -41,6 +43,8 @@ export default {
         calls.push([halflifeContractAddress, xhalflifeContract.encodeFunctionData('balanceOf', [id])]);
       });
       promises.push(multi.aggregate(calls));
+      const dataIds = [];
+
       try{
         // @ts-ignore
         const [[,response]] = await Promise.all(promises);
@@ -51,6 +55,7 @@ export default {
       }catch (e){
         console.error(e)
         //this.$message.error('error')
+
       }
     },
   }
