@@ -194,7 +194,6 @@ export default {
       cb(tokens)
     },
     handleSelect (item) {
-      console.log(item)
     },
     maxAmount () {
       this.formData.depositAmount = this.currentTokenAmount
@@ -216,7 +215,6 @@ export default {
     },
     onSubmit () {
       this.$refs.createForm.validate(async (valid) => {
-        console.log('onSubmit validate', valid, this.formData)
         if (!valid) {
           this.$message({
             message: this.$t('home.checkData'),

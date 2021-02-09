@@ -19,7 +19,6 @@ export const getProvider = async (network) => {
   // let isMetaMaskInstalled = true
 
   if (window.ethereum) {
-    console.log('instance', window.ethereum)
     App.web3Provider = window.ethereum
     // App.provider = new ethers.providers.JsonRpcProvider(atob(ETHEREUM_NODE_URL))
     try {

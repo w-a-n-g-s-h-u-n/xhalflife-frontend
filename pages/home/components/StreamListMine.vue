@@ -250,7 +250,6 @@ export default {
       })
       return
     }
-    console.log('StreamList mounted', this.current)
     this.current === 'send' ? this.getListBySender() : this.getListByRecipient()
     this.$store.dispatch('refreshLatestBlockNumber')
   },
