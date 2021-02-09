@@ -81,7 +81,7 @@
               </div>
               <div class="item item2">
                 <div class="label ratio">{{$t('detail.UnlockRatio')}}</div>
-                <div class="value">{{ detail.unlockRatio | decimaledRatio(1000, detail.token.decimals) }}‰</div>
+                <div class="value">{{ detail.unlockRatio }}‰</div>
               </div>
               <div class="item item3">
                 <div class="label lockNumber">{{$t('detail.UnlockK')}}</div>
@@ -347,7 +347,7 @@ export default {
     show (detail) {
       const ratio = detail.unlockRatio
 
-      const value = BigNumber(ratio).shiftedBy(0 - detail.token.decimals).toNumber()
+      const value = BigNumber(ratio).shiftedBy(0 - 3).toNumber()
       const time = parseInt(((detail.kBlock * 0.69) / (-Math.log(1 - value))) * 13.1 / 43200 * 100) / 100
       this.halfLife = time
 
