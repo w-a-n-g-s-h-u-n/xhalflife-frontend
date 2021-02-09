@@ -351,8 +351,6 @@ export default {
       const time = parseInt(((detail.kBlock * 0.69) / (-Math.log(1 - value))) * 13.1 / 43200 * 100) / 100
       this.halfLife = time
 
-
-
     },
     showImg(detail){
       let url
