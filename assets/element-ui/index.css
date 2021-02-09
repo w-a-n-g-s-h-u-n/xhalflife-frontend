@@ -4395,6 +4395,7 @@
 .el-message-box {
   display: inline-block;
   width: 420px;
+  max-width: 80%;
   padding-bottom: 10px;
   vertical-align: middle;
   background-color: #FFF;

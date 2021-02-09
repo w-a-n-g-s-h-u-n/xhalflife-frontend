@@ -43,7 +43,7 @@
         <el-col :span="isMobile ? 24 : 7">
           <el-form-item prop="unlockRatio">
             <span slot="label">{{$t('home.Ratio')}}<a :href="$t('homeLink')"><i class="el-icon-warning-outline"></i></a></span>
-            <el-input v-model="formData.unlockRatio" placeholder="">
+            <el-input v-model="formData.unlockRatio" placeholder="1～999">
               <template slot='append'>‰</template>
             </el-input>
           </el-form-item>

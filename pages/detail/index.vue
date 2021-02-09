@@ -278,7 +278,8 @@ export default {
     }),
     canWithDraw () {
       const yes = this.account && this.account === this.detail.recipient && this.detail.withdrawable > 0.0001
-      console.log('canWithDraw', this.account, this.recipient)
+      console.log(this.detail)
+      console.log('canWithDraw----', this.account, this.account === this.detail.recipient,this.detail.withdrawable > 0.0001)
       return yes
     },
     canFund () {

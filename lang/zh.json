@@ -22,7 +22,7 @@
   "detail.TOTAL": "共计",
   "detail.To": "到",
   "detail.Txhash": "交易哈希值",
-  "detail.UnlockK": "自区块K开始解锁",
+  "detail.UnlockK": "每K个区块解锁一次",
   "detail.UnlockRatio": "解锁率",
   "detail.WithDraw": "赎回",
   "detail.Withdraw": "赎回",

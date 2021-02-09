@@ -45,6 +45,7 @@ export default {
     '@/plugins/fontawesome.js',
     '@/plugins/apollo',
     '@/plugins/i18n.js',
+    '@/plugins/addscript.js',
     '@/plugins/app-mounted.js',
     '@/plugins/vue-filters.js'
   ],
