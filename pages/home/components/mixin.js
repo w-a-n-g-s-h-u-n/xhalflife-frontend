@@ -27,7 +27,6 @@ export default {
       if (!this.streamIdQueue.length) {
         return
       }
-
       const multi = new ethers.Contract(
         addresses.multicall,
         multicall.abi,
@@ -42,8 +41,6 @@ export default {
         calls.push([halflifeContractAddress, xhalflifeContract.encodeFunctionData('balanceOf', [id])]);
       });
       promises.push(multi.aggregate(calls));
-      const dataIds = [];
-
       try{
         // @ts-ignore
         const [[,response]] = await Promise.all(promises);
@@ -52,8 +49,8 @@ export default {
           this.$store.commit('updateBalanceByStreamId', { key: id, value: decodeData })
         })
       }catch (e){
-        this.$message.error('error')
-        //console.log(e)
+        console.error(e)
+        //this.$message.error('error')
       }
     },
   }

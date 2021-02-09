@@ -312,20 +312,20 @@ export default {
         sender: this.account
       }
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: queryVariable })
-      console.log(`StreamList send ${this.sendInfo.page}`, ret)
+      const statusStreamList = statusedList(ret.data.streams)
       if (ret.data.streams.length < this.sendInfo.pageSize) {
         this.sendInfo.total = (this.sendInfo.page - 1) * this.sendInfo.pageSize + ret.data.streams.length
       } else {
         this.sendInfo.total = this.sendInfo.total + this.sendInfo.pageSize
       }
-      this.$store.commit('updateSteamList', { key: 'MySentList', value: statusedList(ret.data.streams) })
+      this.$store.commit('updateSteamList', { key: 'MySentList', value:  statusStreamList})
       
-      this.formData(statusedList(ret.data.streams),'MySentList')
+      this.formData(statusStreamList,'MySentList')
 
 
       this.sendInfo.loading = false
 
-      const ids = ret.data.streams.map(item => item.id)
+      const ids = statusStreamList.filter(item => !item.isCanceled).map(item => item.id)
       this.refreshBalanceOfStreams(ids)
 
       return ret
@@ -339,17 +339,18 @@ export default {
         recipient: this.account
       }
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: queryVariable })
+      const statusStreamList = statusedList(ret.data.streams)
       if (ret.data.streams.length < this.receiveInfo.pageSize) {
         this.receiveInfo.total = (this.receiveInfo.page - 1) * this.receiveInfo.pageSize + ret.data.streams.length
       } else {
         this.receiveInfo.total = this.receiveInfo.total + this.receiveInfo.pageSize
       }
       
-      this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusedList(ret.data.streams) })
-      this.formData(statusedList(ret.data.streams),'myReceivedList')
+      this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusStreamList })
+      this.formData(statusStreamList,'myReceivedList')
       this.receiveInfo.loading = false
 
-      const ids = ret.data.streams.map(item => item.id)
+      const ids = statusStreamList.filter(item => !item.isCanceled).map(item => item.id)
       this.refreshBalanceOfStreams(ids)
 
       return ret

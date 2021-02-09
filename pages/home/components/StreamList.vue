@@ -162,8 +162,7 @@ export default {
         this.$store.commit('updateSteamList', { key: 'homeList', value: arr })
       },1000)
 
-
-      const ids = statusList.map(item => item.id)
+      const ids = statusList.filter(item => !item.isCanceled).map(item => item.id)
       this.refreshBalanceOfStreams(ids)
 
       this.loading = false
