@@ -77,7 +77,7 @@
 import { STREAM_LIST } from '@/api/apollo/queries'
 import { mapState } from 'vuex'
 import web3 from 'web3'
-import { statusedList } from '@/utils/index'
+import { statusedList, isKovanEnv } from '@/utils/index'
 // import gql from 'graphql-tag'
 import mixin from './mixin'
 export default {
@@ -88,7 +88,7 @@ export default {
       loading: false,
       list: [],
       homeListData:[],
-	  http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/':'https://static.xdefi.net/blockchains/ethereum/',
+	    http: isKovanEnv() ?'https://static.xdefi.net/blockchains/kovan/':'https://static.xdefi.net/blockchains/ethereum/',
       query: {
         page: 1,
         limit: 10
@@ -113,7 +113,6 @@ export default {
     }
   }),
   created () {
-
     this.getList()
     this.$store.dispatch('refreshLatestBlockNumber')
   },

@@ -14,5 +14,7 @@ module.exports = {
   plugins: [
   ],
   // add your custom rules here
-  rules: {}
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 1 : "off",
+  }
 }

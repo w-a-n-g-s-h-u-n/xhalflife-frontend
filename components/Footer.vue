@@ -51,9 +51,6 @@ export default {
       contacts
     }
   },
-  created () {
-    console.log('contacts', contacts)
-  }
 }
 </script>
 
