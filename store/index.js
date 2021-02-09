@@ -99,12 +99,9 @@ export const mutations = {
 
 export const getters = {
   isMetaMaskConnected: (state) => {
-    console.log('getters', state)
     return !!state.metamask.account
   },
   isMetaMaskNetworkRight: (state) => {
-    console.log('getters', state)
-    console.log('isMetaMaskNetworkRight', state.metamask.chainId, state.chainId)
     return state.metamask.chainId === state.chainId
   },
   selectCurrentAccount: (state) => {

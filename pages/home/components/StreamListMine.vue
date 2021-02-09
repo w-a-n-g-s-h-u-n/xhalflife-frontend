@@ -18,7 +18,7 @@
         :header-cell-style="cellStyle"
       >
         <el-table-column
-          width="40"
+          width="70"
           prop="id"
           label="ID"
         />
@@ -106,7 +106,7 @@
         :header-cell-style="cellStyle"
       >
         <el-table-column
-          width="40"
+          width="70"
           prop="id"
           label="ID"
         />
@@ -250,7 +250,6 @@ export default {
       })
       return
     }
-    console.log('StreamList mounted', this.current)
     this.current === 'send' ? this.getListBySender() : this.getListByRecipient()
     this.$store.dispatch('refreshLatestBlockNumber')
   },
@@ -313,12 +312,13 @@ export default {
         sender: this.account
       }
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_SENDER, variables: queryVariable })
-      console.log(`StreamList send ${this.sendInfo.page}`, ret)
+      const statusStreamList = statusedList(ret.data.streams)
       if (ret.data.streams.length < this.sendInfo.pageSize) {
         this.sendInfo.total = (this.sendInfo.page - 1) * this.sendInfo.pageSize + ret.data.streams.length
       } else {
         this.sendInfo.total = this.sendInfo.total + this.sendInfo.pageSize
       }
+
       let arr=[]
       ret.data.streams.map(obj=>{
         console.log(`StreamList send remaining`, this.detailCache[obj.id])
@@ -332,12 +332,17 @@ export default {
         this.sendInfo.loading = false
       },300)
 
-      this.formData(statusedList(ret.data.streams),'MySentList')
+      this.formData(statusStreamList,'MySentList')
+
+      //this.$store.commit('updateSteamList', { key: 'MySentList', value:  statusStreamList})
 
 
 
 
-      const ids = ret.data.streams.map(item => item.id)
+
+
+
+      const ids = statusStreamList.filter(item => !item.isCanceled).map(item => item.id)
       this.refreshBalanceOfStreams(ids)
 
       return ret
@@ -351,11 +356,13 @@ export default {
         recipient: this.account
       }
       const ret = await this.$apollo.query({ query: STREAM_LIST_BY_RECIPIENT, variables: queryVariable })
+      const statusStreamList = statusedList(ret.data.streams)
       if (ret.data.streams.length < this.receiveInfo.pageSize) {
         this.receiveInfo.total = (this.receiveInfo.page - 1) * this.receiveInfo.pageSize + ret.data.streams.length
       } else {
         this.receiveInfo.total = this.receiveInfo.total + this.receiveInfo.pageSize
       }
+
       let arr=[]
       ret.data.streams.map(obj=>{
         if(!(obj.startBlock&&this.blockNumber&&this.detailCache[obj.id] && this.detailCache[obj.id].remaining)){
@@ -372,7 +379,8 @@ export default {
       this.formData(statusedList(ret.data.streams),'myReceivedList')
       //this.receiveInfo.loading = false
 
-      const ids = ret.data.streams.map(item => item.id)
+
+      const ids = statusStreamList.filter(item => !item.isCanceled).map(item => item.id)
       this.refreshBalanceOfStreams(ids)
 
       return ret

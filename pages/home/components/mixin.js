@@ -34,6 +34,7 @@ export default {
         provider
       );
 
+
       const calls = [];
       const promises = [];
       const xhalflifeContract = new ethers.utils.Interface(halflifeContract);
@@ -52,8 +53,11 @@ export default {
           this.$store.commit('updateBalanceByStreamId', { key: id, value: decodeData })
         })
       }catch (e){
-        this.$message.error('error')
-        //console.log(e)
+
+
+        console.error(e)
+        //this.$message.error('error')
+
       }
     },
   }

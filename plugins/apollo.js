@@ -9,8 +9,6 @@ Vue.use(VueApollo)
 
 // TODO 动态加载所有客户端
 export default (ctx, inject) => {
-  console.log('apollo plugin')
-
   const apolloProvider = new VueApollo({
     defaultClient: client
   })

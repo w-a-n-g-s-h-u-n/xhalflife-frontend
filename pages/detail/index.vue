@@ -278,18 +278,18 @@ export default {
     }),
     canWithDraw () {
       const yes = this.account && this.account === this.detail.recipient && this.detail.withdrawable > 0.0001
+
       console.log(this.detail)
       console.log('canWithDraw----', this.account, this.account === this.detail.recipient,this.detail.withdrawable > 0.0001)
+
       return yes
     },
     canFund () {
       const yes = this.account && this.account === this.detail.sender
-      console.log('canFund', this.account, this.sender)
       return yes
     },
     canCancel () {
       const yes = this.account && (this.account === this.detail.recipient || this.account === this.detail.sender)
-      console.log('canCancel', this.account)
       return yes
     }
   },
@@ -309,7 +309,6 @@ export default {
     }
   },
   mounted () {
-    console.log('Home mounted', this.$route)
     const id = this.$route.query && this.$route.query.id
     this.id = id
     this.detail = { ...this.detail, ...this.detailCache[id] }
@@ -317,6 +316,7 @@ export default {
     this.detail.txs&&this.formData(this.detail.txs)
 
     //this.$store.dispatch('refreshLatestBlockNumber')
+
     this.detail.txs && this.show(this.detail)
 
     // 请求最新
@@ -327,11 +327,9 @@ export default {
   },
   methods: {
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
       this.page = val
-      console.log(`当前页: ${val}`)
       this.formData(this.detail.txs)
     },
     formData(data){
@@ -411,10 +409,8 @@ export default {
       this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams)[0])
     },
     async getStreamBalance (id) {
-      console.log('getStreamBalance', id)
       try {
         const ret = await XHalfLifeContract.balanceOf(id)
-        console.log('getStreamBalance', id, ret)
         this.withdrawable = ethers.utils.formatUnits(ret.withdrawable, this.detail.token.decimals)
         this.$store.commit('updateBalanceByStreamId', { key: id, value: ret })
       } catch (e) {
@@ -454,7 +450,6 @@ export default {
         const tx = await contract.withdrawFromStream(streamId, decimaledAmount)
         const txResult = await tx.wait()
 
-        console.log('doWithdraw ret', txResult)
         this.$message({
           message: this.$t('detail.WithdrawSuccess'),
           type: 'success'
@@ -516,25 +511,19 @@ export default {
         if (this.detail.token.id !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
           // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则出发approve流程
           const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-          console.log('allowance', allowance, accounts[0])
           const depositAmountBig = ethers.BigNumber.from(decimaledAmount)
           if (depositAmountBig.lte(allowance)) {
-            console.log('allowance is enough', allowance.toString(), depositAmountBig.toString())
           } else {
-            console.log('allowance is not enough', allowance.toString(), depositAmountBig.toString())
             // approve
             const approveValue = depositAmountBig.sub(allowance)
-            console.log('Need approve', approveValue)
             const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
             const approveResult = await approveTx.wait()
-            console.log('approveResult', approveResult)
           }
           tx = await contract.fundStream(streamId, decimaledAmount.toString())
         } else {
           tx = await contract.fundStream(streamId, decimaledAmount.toString(), { value: decimaledAmount.toString() })
         }
         const txResult = await tx.wait()
-        console.log('doWithdraw ret', txResult)
         this.$message({
           message: this.$t('detail.FundSuccess'),
           type: 'success'
@@ -572,7 +561,6 @@ export default {
         // 提交
         const tx = await contract.cancelStream(streamId)
         const txResult = await tx.wait()
-        console.log('doCancel result', txResult)
 
         this.$message({
           message: this.$t('detail.CancelSuccess'),

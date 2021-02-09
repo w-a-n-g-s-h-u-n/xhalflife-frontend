@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-table v-loading="loading" :data="homeListData" class="table" :cell-style="cellStyle" :header-cell-style="cellStyle">
-      <el-table-column width="40" prop="id" label="ID" />
+      <el-table-column width="70" prop="id" label="ID" />
       <el-table-column align="center" label="Token" min-width="90">
         <template slot-scope="scope">
           <span :title="scope.row.sender" class="icons">
@@ -163,8 +163,7 @@ export default {
         this.$store.commit('updateSteamList', { key: 'homeList', value: arr })
       },1000)
 
-
-      const ids = statusList.map(item => item.id)
+      const ids = statusList.filter(item => !item.isCanceled).map(item => item.id)
       this.refreshBalanceOfStreams(ids)
 
       this.loading = false

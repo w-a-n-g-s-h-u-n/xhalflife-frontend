@@ -15,6 +15,14 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
+<<<<<<< HEAD
     'no-console': process.env.NODE_ENV === 'production' ? 1 : "off",
+=======
+<<<<<<< HEAD
+    'no-console': process.env.NODE_ENV === 'production' ? 1 : "off",
+=======
+    'no-console': 1
+>>>>>>> f7e5193c35de698b998a406c59814d3872b07289
+>>>>>>> test
   }
 }
