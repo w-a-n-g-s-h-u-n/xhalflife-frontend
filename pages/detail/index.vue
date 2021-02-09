@@ -313,7 +313,7 @@ export default {
     this.total = this.detail.txs?this.detail.txs.length:0
     this.detail.txs&&this.formData(this.detail.txs)
     this.$store.dispatch('refreshLatestBlockNumber')
-    this.detail.txs&&this.show(this.detail)
+    this.detail.txs && this.show(this.detail)
     // 请求最新
     if (id) {
       this.getDetail(id)
