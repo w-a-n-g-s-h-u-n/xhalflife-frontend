@@ -12,9 +12,10 @@ export const SUPPORT_TOKENS = gql`{
 
 // TODO 参数化、分页
 export const STREAM_LIST = gql`
-  query streams($first: Int!, $skip:Int!) {
-    streams(first: $first, skip: $skip, orderBy: timestamp, orderDirection: desc) {
+  query streams($first: Int!, $lastID:Int!) {
+    streams(first: $first, where: {idBigInt_lte: $lastID}, orderBy: timestamp, orderDirection: desc) {
         id
+        idBigInt
         sender
         recipient
         depositAmount

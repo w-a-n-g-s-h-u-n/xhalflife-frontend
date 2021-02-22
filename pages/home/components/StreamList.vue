@@ -62,6 +62,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
+      v-if="total"
       class="pagination"
       :current-page.sync="query.page"
       :page-size="query.limit"
@@ -91,16 +92,13 @@ export default {
 	    http: isKovanEnv() ?'https://static.xdefi.net/blockchains/kovan/':'https://static.xdefi.net/blockchains/ethereum/',
       query: {
         page: 1,
-        limit: 10
+        limit: 10,
       }
     }
   },
   computed: mapState({
     blockNumber (state) {
       return state.blockNumber
-    },
-    skip () {
-      return (this.query.page - 1) * this.query.limit
     },
     total (state) {
       return Number(state.stats.count) || 0
@@ -110,16 +108,28 @@ export default {
     },
     detailCache (state) {
       return state.detailCache
+    },
+    lastID() {
+      return this.total - (this.query.page - 1) * this.query.limit
     }
   }),
   created () {
-    this.getList()
+    if(this.total > 0){
+      this.getList()
+    }
     this.$store.dispatch('refreshLatestBlockNumber')
+  },
+  watch:{
+    total(newVal){
+      if(newVal > 0){
+        this.getList()
+      }
+    }
   },
   methods: {
     async getList () {
       this.loading = true
-      const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, skip: this.skip } })
+      const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, lastID: this.query.page === 1 ? this.total : this.lastID} })
 
       const statusList = statusedList(ret.data.streams)
       this.homeListData=statusList
@@ -152,10 +162,6 @@ export default {
           })
           arr[id] = item
         }
-
-
-
-
       })
       setTimeout(()=>{
         this.homeListData=arr
@@ -163,6 +169,7 @@ export default {
       },1000)
 
       const ids = statusList.filter(item => !item.isCanceled).map(item => item.id)
+
       this.refreshBalanceOfStreams(ids)
 
       this.loading = false

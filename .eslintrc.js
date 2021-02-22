@@ -15,6 +15,6 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    'no-console': 1
+    'no-console': 2
   }
 }

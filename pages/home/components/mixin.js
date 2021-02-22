@@ -50,7 +50,6 @@ export default {
         })
       }catch (e){
         console.error(e)
-        //this.$message.error('error')
       }
     },
   }
