@@ -1,9 +1,10 @@
 <template>
-
   <div class="main">
     <div class="module mainContainer">
       <div class="breadcrumb">
-        <NuxtLink to="/" class="breadcrumbLink">{{$t('nav.HalfLife')}}</NuxtLink> <span><i class="el-icon-right" /></span> {{$t('detail.detail')}}
+        <NuxtLink to="/" class="breadcrumbLink">
+          {{ $t('nav.HalfLife') }}
+        </NuxtLink> <span><i class="el-icon-right" /></span> {{ $t('detail.detail') }}
       </div>
       <div class="actions-wrap">
         <div class="detail-id">
@@ -15,95 +16,117 @@
             v-if="canFund"
             type="primary"
             class="action-fund"
-            @click="fundDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"
+            @click="fundDialogVisible = true"
           >
-            {{$t('detail.Fund')}}
+            {{ $t('detail.Fund') }}
           </el-button>
           <el-button
             v-if="canWithDraw"
             type="primary"
             class="action-withdraw"
-            @click="withdrawDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"
+            @click="withdrawDialogVisible = true"
           >
-            {{$t('detail.WithDraw')}}
+            {{ $t('detail.WithDraw') }}
           </el-button>
           <el-button
             v-if="canCancel"
             type="text"
             class="action-cancel"
-            @click="cancelDialogVisible = true"
             :size="isMobile ? 'small' : 'medium'"
+            @click="cancelDialogVisible = true"
           >
-            {{$t('detail.Cancel')}}
+            {{ $t('detail.Cancel') }}
           </el-button>
         </div>
       </div>
       <div class="detail-cards">
         <div class="left">
           <div class="card" shadow="always">
-            <div class="header">{{$t('detail.Remaining')}}（
-            <i v-if="!detail.imgShow">?</i>
-            <img v-else :src="detail.imgUrl" />
-            {{detail.token.symbol}}）</div>
-            <div class="content">～{{ detail.remaining | decimaledAmount(detail.token.decimals)}}</div>
+            <div class="header">
+              {{ $t('detail.Remaining') }}（
+              <i v-if="!detail.imgShow">?</i>
+              <img v-else :src="detail.imgUrl">
+              {{ detail.token.symbol }}）
+            </div>
+            <div class="content">
+              ～{{ detail.remaining | decimaledAmount(detail.token.decimals) }}
+            </div>
           </div>
           <div class="card" shadow="always">
-            <div class="header">{{$t('detail.Withdrawable')}}（
-            <i v-if="!detail.imgShow">?</i>
-            <img v-else :src="detail.imgUrl" />
-            {{detail.token.symbol}}）</div>
+            <div class="header">
+              {{ $t('detail.Withdrawable') }}（
+              <i v-if="!detail.imgShow">?</i>
+              <img v-else :src="detail.imgUrl">
+              {{ detail.token.symbol }}）
+            </div>
             <div class="content">
-              ～{{ detail.withdrawable | decimaledAmount(detail.token.decimals)}}
+              ～{{ detail.withdrawable | decimaledAmount(detail.token.decimals) }}
             </div>
           </div>
         </div>
         <div class="right card">
           <div class="header">
             <div class="title">
-              {{$t('detail.detail')}}
+              {{ $t('detail.detail') }}
             </div>
             <div class="status">
               <stream-status
                 :start-block="detail.startBlock"
                 :current-block="blockNumber"
                 :remaining="detail.remaining"
-                :isCanceled="detail.isCanceled"
+                :is-canceled="detail.isCanceled"
               />
             </div>
           </div>
           <div class="content">
             <div class="part1 block-info">
               <div class="item item1">
-                <div class="label block">{{$t('detail.StartBlock')}}</div>
-                <div class="value">#{{ detail.startBlock }}</div>
+                <div class="label block">
+                  {{ $t('detail.StartBlock') }}
+                </div>
+                <div class="value">
+                  #{{ detail.startBlock }}
+                </div>
               </div>
               <div class="item item2">
-                <div class="label ratio">{{$t('detail.UnlockRatio')}}</div>
-                <div class="value">{{ detail.unlockRatio }}‰</div>
+                <div class="label ratio">
+                  {{ $t('detail.UnlockRatio') }}
+                </div>
+                <div class="value">
+                  {{ detail.unlockRatio }}‰
+                </div>
               </div>
               <div class="item item3">
-                <div class="label lockNumber">{{$t('detail.UnlockK')}}</div>
+                <div class="label lockNumber">
+                  {{ $t('detail.UnlockK') }}
+                </div>
                 <div class="value">
                   {{ detail.kBlock }}
                 </div>
               </div>
               <div class="item item4">
-                <div class="label HalfLife">{{$t('nav.HalfLife')}}<i class="el-icon-warning-outline" @click="open"></i></div>
+                <div class="label HalfLife">
+                  {{ $t('nav.HalfLife') }}<i class="el-icon-warning-outline" @click="open" />
+                </div>
                 <div class="value">
-                  {{halfLife}}<span v-html="$t('Company')"></span>
+                  {{ halfLife }}<span v-html="$t('Company')" />
                 </div>
               </div>
             </div>
             <div class="part2 sender item">
-              <div class="label sender">{{$t('detail.Sender')}}</div>
+              <div class="label sender">
+                {{ $t('detail.Sender') }}
+              </div>
               <div class="value">
                 {{ detail.sender }}
               </div>
             </div>
             <div class="part3 recipent item">
-              <div class="label recipent">{{$t('detail.Recipent')}}</div>
+              <div class="label recipent">
+                {{ $t('detail.Recipent') }}
+              </div>
               <div class="value">
                 {{ detail.recipient }}
               </div>
@@ -113,7 +136,7 @@
       </div>
       <div class="card last-activity">
         <div class="header">
-          {{$t('detail.LastestActivity')}}
+          {{ $t('detail.LastestActivity') }}
         </div>
         <el-table
           v-loading="loading"
@@ -129,24 +152,24 @@
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('detail.Event')" align='center' min-width="120">
+          <el-table-column :label="$t('detail.Event')" align="center" min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.event">{{ scope.row.event }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('detail.From')" align='center' min-width="120">
+          <el-table-column :label="$t('detail.From')" align="center" min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.from">{{ scope.row.from | addr }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('detail.To')" align='center' min-width="120">
+          <el-table-column :label="$t('detail.To')" align="center" min-width="120">
             <template slot-scope="scope">
               <span :title="scope.row.to">{{ scope.row.to | addr }}</span>
             </template>
           </el-table-column>
           <el-table-column :label="$t('detail.Txhash')" align="right">
             <template slot-scope="scope">
-              <span><a :title="scope.row.txhash" target="_blank" :href="`https://kovan.etherscan.io/tx/${scope.row.txhash}`" style='color: inherit;'>{{ scope.row.txhash | addr }}</a></span>
+              <span><a :title="scope.row.txhash" target="_blank" :href="`https://kovan.etherscan.io/tx/${scope.row.txhash}`" style="color: inherit;">{{ scope.row.txhash | addr }}</a></span>
             </template>
           </el-table-column>
         </el-table>
@@ -169,15 +192,17 @@
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          {{$t('detail.TOTAL')}}: {{ withdrawable }} {{detail.token.symbol}}
+          {{ $t('detail.TOTAL') }}: {{ withdrawable }} {{ detail.token.symbol }}
         </div>
-        <el-input placeholder="" v-model="formWithdraw.amount">
-          <el-button slot="append" @click="maxAmount('withdraw')">{{$t('detail.MAX')}}</el-button>
+        <el-input v-model="formWithdraw.amount" placeholder="">
+          <el-button slot="append" @click="maxAmount('withdraw')">
+            {{ $t('detail.MAX') }}
+          </el-button>
         </el-input>
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doWithdraw" :disabled="withdrawing" :loading="withdrawing">{{$t('detail.Confirm')}}</el-button>
+        <el-button type="primary" :disabled="withdrawing" :loading="withdrawing" @click="doWithdraw">{{ $t('detail.Confirm') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -187,14 +212,16 @@
     >
       <div class="dialog-content">
         <div style="padding: 10px;">
-          {{$t('detail.TOTAL')}}: {{ currentTokenAmount }} {{detail.token.symbol}}
+          {{ $t('detail.TOTAL') }}: {{ currentTokenAmount }} {{ detail.token.symbol }}
         </div>
-        <el-input placeholder="" v-model="formFund.amount">
-          <el-button slot="append" @click="maxAmount('fund')">{{$t('detail.MAX')}}</el-button>
+        <el-input v-model="formFund.amount" placeholder="">
+          <el-button slot="append" @click="maxAmount('fund')">
+            {{ $t('detail.MAX') }}
+          </el-button>
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doFund" :disabled="funding" :loading="funding">{{$t('detail.Confirm')}}</el-button>
+        <el-button type="primary" :disabled="funding" :loading="funding" @click="doFund">{{ $t('detail.Confirm') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -202,24 +229,23 @@
       :visible.sync="cancelDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
-      <span>{{$t('detail.ConfirmDo')}}</span>
+      <span>{{ $t('detail.ConfirmDo') }}</span>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCancel" :disabled="cancelling" :loading="cancelling">{{$t('detail.Confirm')}}</el-button>
+        <el-button type="primary" :disabled="cancelling" :loading="cancelling" @click="doCancel">{{ $t('detail.Confirm') }}</el-button>
       </span>
     </el-dialog>
   </div>
-
 </template>
 <script>
 import { STREAM_DETAIL } from '@/api/apollo/queries'
-import { XHalfLifeContract } from '@/api/contract'
+import { XHalfLifeContract, selectAbi } from '@/api/contract'
 import { getProvider, provider } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
 import { mapState } from 'vuex'
 import { isMobile, statusedList, decimalsNumber } from '@/utils/index'
-import { selectAbi } from '@/api/contract'
+
 import { BigNumber } from 'bignumber.js'
 import web3 from 'web3'
 export default {
@@ -229,10 +255,10 @@ export default {
       id: 0,
       page: 1,
       limit: 10,
-      total:0,
-      pageData:[],
+      total: 0,
+      pageData: [],
       halfLife: 0,
-      http:window.location.origin.indexOf('ethereum')<0?'https://static.xdefi.net/blockchains/kovan/':'https://static.xdefi.net/blockchains/ethereum/',
+      http: !window.location.origin.includes('ethereum') ? 'https://static.xdefi.net/blockchains/kovan/' : 'https://static.xdefi.net/blockchains/ethereum/',
 
       detail: {
         token: {
@@ -276,25 +302,25 @@ export default {
 
     }),
     canWithDraw () {
-      const yes = this.account && this.account === this.detail.recipient && this.detail.withdrawable > 0.0001
+      const yes = this.account && this.account === this.detail.recipient && this.detail.withdrawable > 0.0001 && !this.detail.isCanceled
       return yes
     },
     canFund () {
-      const yes = this.account && this.account === this.detail.sender
+      const yes = this.account && this.account === this.detail.sender && !this.detail.isCanceled
       return yes
     },
     canCancel () {
-      const yes = this.account && (this.account === this.detail.recipient || this.account === this.detail.sender)
+      const yes = this.account && (this.account === this.detail.recipient || this.account === this.detail.sender) && !this.detail.isCanceled
       return yes
     }
   },
   watch: {
     detailCache () {
       this.detail = { ...this.detail, ...this.detailCache[this.id] }
-      this.total = this.detail.txs?this.detail.txs.length:0
-      this.detail.txs&&this.formData(this.detail.txs)
+      this.total = this.detail.txs ? this.detail.txs.length : 0
+      this.detail.txs && this.formData(this.detail.txs)
       this.show(this.detail)
-      this.detail.txs&&this.showImg(this.detail)
+      this.detail.txs && this.showImg(this.detail)
     },
     'detail.token.id' (newVal, oldVal) {
       if (newVal) {
@@ -306,8 +332,8 @@ export default {
     const id = this.$route.query && this.$route.query.id
     this.id = id
     this.detail = { ...this.detail, ...this.detailCache[id] }
-    this.total = this.detail.txs?this.detail.txs.length:0
-    this.detail.txs&&this.formData(this.detail.txs)
+    this.total = this.detail.txs ? this.detail.txs.length : 0
+    this.detail.txs && this.formData(this.detail.txs)
     this.$store.dispatch('refreshLatestBlockNumber')
     this.detail.txs && this.show(this.detail)
     // 请求最新
@@ -323,17 +349,16 @@ export default {
       this.page = val
       this.formData(this.detail.txs)
     },
-    formData(data){
-
+    formData (data) {
       const page = this.page
       const limit = this.limit
-      let arr = []
-      data.map((item,id)=>{
-        if(id>=(page-1)*limit&&id<page*limit){
+      const arr = []
+      data.map((item, id) => {
+        if (id >= (page - 1) * limit && id < page * limit) {
           arr.push(item)
         }
       })
-      this.pageData = arr;
+      this.pageData = arr
     },
     show (detail) {
       const ratio = detail.unlockRatio
@@ -341,34 +366,28 @@ export default {
       const value = BigNumber(ratio).shiftedBy(0 - 3).toNumber()
       const time = parseInt(((detail.kBlock * 0.69) / (-Math.log(1 - value))) * 13.1 / 43200 * 100) / 100
       this.halfLife = time
-
-
-
     },
-    showImg(detail){
+    showImg (detail) {
       let url
-      if(detail.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'){
-        url = this.http +'info/logo.png'
-      }else{
-        url = this.http +'assets/'+ web3.utils.toChecksumAddress(detail.token.id) + '/logo.png';
-
+      if (detail.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+        url = this.http + 'info/logo.png'
+      } else {
+        url = this.http + 'assets/' + web3.utils.toChecksumAddress(detail.token.id) + '/logo.png'
       }
 
-      const img = new Image();
-      img.src= url;
-      this.detail = Object.assign({},detail,{
-          imgUrl:'',
-          imgShow:false
-        })
+      const img = new Image()
+      img.src = url
+      this.detail = Object.assign({}, detail, {
+        imgUrl: '',
+        imgShow: false
+      })
 
-      img.onload=()=>{
-
-        this.detail = Object.assign({},detail,{
-          imgShow:true,
-          imgUrl:url
+      img.onload = () => {
+        this.detail = Object.assign({}, detail, {
+          imgShow: true,
+          imgUrl: url
         })
       }
-
     },
     open () {
       this.$alert(this.$t('openTips'), {
