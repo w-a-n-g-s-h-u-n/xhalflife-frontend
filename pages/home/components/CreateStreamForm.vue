@@ -226,7 +226,13 @@ export default {
         const fetchedBlockNumber = await this.refreshLatestBlockNumber()
         if (this.formData.startBlock < fetchedBlockNumber) {
           this.blockNumber = fetchedBlockNumber
-          this.formData.startBlock = fetchedBlockNumber + 5
+          // this.formData.startBlock = fetchedBlockNumber + 5
+          this.$message({
+            message: this.$t('startBlockMess'),
+            type: 'warning'
+          })
+          this.buttonDisable = true;
+          return
         }
         if (this.formData.unlockRatio < 1 || this.formData.unlockRatio > 1000 || !(/(^[1-9]\d*$)/.test(this.formData.unlockRatio))) {
           this.$message({
@@ -299,8 +305,8 @@ export default {
               const approveResult = await approveTx.wait()
               this.buttonState = 'start';
             }
-            const txFetchBlock = await this.refreshLatestBlockNumber()
-            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), txFetchBlock+5, kBlock, decimalsRatio)
+            // const txFetchBlock = await this.refreshLatestBlockNumber()
+            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
           }
 
           const createStreamResult = await tx.wait()
