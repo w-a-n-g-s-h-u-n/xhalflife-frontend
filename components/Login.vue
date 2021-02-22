@@ -14,7 +14,6 @@
     <el-dialog
       :title="$t('login.Account')"
       :visible.sync="accountDialog"
-      :width="isMobile ? '80%' : '25%' "
       class="userManage"
     >
       <el-button v-if="!isMetaMaskConnected" class="wallet" @click="onClick">
