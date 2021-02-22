@@ -4,7 +4,8 @@ import { decimalsNumber } from '@/utils/index'
 const initialMetamask = {
   account: null,
   accounts: [],
-  xdexBalance: 0
+  xdexBalance: 0,
+  chainId: ''
 }
 
 export const state = () => ({
@@ -106,12 +107,15 @@ export const getters = {
   },
   selectCurrentAccount: (state) => {
     return state.metamask.account
+  },
+  metamaskChainId: (state) => {
+    return state.metamask.chainId
   }
 }
 
 export const actions = {
   async refreshLatestBlockNumber (context) {
-    //const provider = await getProvider()
+    // const provider = await getProvider()
     const blockNumber = await provider.getBlockNumber()
     context.commit('update', { key: 'blockNumber', value: blockNumber })
     return blockNumber
