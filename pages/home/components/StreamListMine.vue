@@ -65,6 +65,7 @@
               :start-block="scope.row.startBlock"
               :current-block="blockNumber"
               :remaining="detailCache[scope.row.id] && detailCache[scope.row.id].remaining"
+              :isCanceled="scope.row.isCanceled"
             />
           </template>
         </el-table-column>
@@ -152,6 +153,7 @@
               :start-block="scope.row.startBlock"
               :current-block="blockNumber"
               :remaining="detailCache[scope.row.id] && detailCache[scope.row.id].remaining"
+              :isCanceled="scope.row.isCanceled"
             />
           </template>
         </el-table-column>
@@ -276,7 +278,7 @@ export default {
           url = this.http +'info/logo.png'
         }else{
           url = this.http +'assets/'+ web3.utils.toChecksumAddress(item.token.id) + '/logo.png';
-        
+
         }
         const img = new Image();
         img.src= url;
@@ -318,7 +320,7 @@ export default {
         this.sendInfo.total = this.sendInfo.total + this.sendInfo.pageSize
       }
       this.$store.commit('updateSteamList', { key: 'MySentList', value:  statusStreamList})
-      
+
       this.formData(statusStreamList,'MySentList')
 
 
@@ -344,7 +346,7 @@ export default {
       } else {
         this.receiveInfo.total = this.receiveInfo.total + this.receiveInfo.pageSize
       }
-      
+
       this.$store.commit('updateSteamList', { key: 'myReceivedList', value: statusStreamList })
       this.formData(statusStreamList,'myReceivedList')
       this.receiveInfo.loading = false
