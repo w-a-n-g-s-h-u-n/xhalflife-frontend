@@ -55,7 +55,7 @@
         {{buttonState === 'start' ? $t('home.Start') : 'Unlock'}}
       </el-button>
     </div>
-    <p class="tips">{{$t('tips')[0]}}<a href="https://etherscan.io/blocks" target="_blank">"{{$t('tips')[1]}}"</a>{{$t('tips')[2]}} {{$t('currentBlock')}} {{blockNumber}}</p>
+    <p class="tips">{{$t('tips')[0]}}<a href="https://etherscan.io/blocks" target="_blank">"{{$t('tips')[1]}}"</a>{{$t('tips')[2]}} {{$t('currentBlock')}}:{{blockNumber}}</p>
   </div>
 </template>
 

@@ -6,7 +6,7 @@ import metamask from '@/api/wallet/metamask'
 // TODO 申请 infura key
 // 节点固定为InfuraProvider
 
-const ETHEREUM_NODE_URL = 'https://kovan.infura.io/v3/6349d126d18e4a62ba64c2d0c00316c8'
+const ETHEREUM_NODE_URL = 'https://kovan.infura.io/v3/5368c27268fd4e8d87547e6e659605b1'
 
 const App = {}
 
@@ -45,4 +45,4 @@ export const getProvider = async (network) => {
 
 // 加载此文件即初始化provider，自带延迟加载功能
 // export const provider = getProvider()
-export const provider = new ethers.providers.InfuraProvider(process.env.DEFAULT_ETHEREUM_NETWORK, '6349d126d18e4a62ba64c2d0c00316c8')
+export const provider = new ethers.providers.InfuraProvider(process.env.DEFAULT_ETHEREUM_NETWORK, '5368c27268fd4e8d87547e6e659605b1')

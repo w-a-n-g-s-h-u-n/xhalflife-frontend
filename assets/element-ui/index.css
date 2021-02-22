@@ -1207,7 +1207,7 @@
 .el-pagination button, .el-pagination span:not([class*=suffix]) {
   display: inline-block;
   font-size: 13px;
-  max-width: 35.5px;
+  min-width: 35.5px;
   height: 28px;
   line-height: 28px;
   vertical-align: top;
@@ -1429,9 +1429,9 @@
   border-radius: 5px;
   margin: 0 5px;
   background: #2E3167;
-  padding: 0 10px;
+  padding: 0 4px;
   font-size: 13px;
-  max-width: 35.5px;
+  min-width: 35.5px;
   height: 28px;
   line-height: 28px;
   box-sizing: border-box;
