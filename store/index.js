@@ -1,6 +1,7 @@
 import { getProvider, provider } from '@/api/contract/ethers'
 import { decimalsNumber } from '@/utils/index'
-
+import { CHAIN_LABEL } from '@/config'
+import metamask from '@/api/wallet/metamask'
 const initialMetamask = {
   account: null,
   accounts: [],
@@ -103,9 +104,9 @@ export const getters = {
     return !!state.metamask.account
   },
   isMetaMaskNetworkRight: (state) => {
-    return state.metamask.chainId === state.chainId
+    return CHAIN_LABEL[state.metamask.chainId] //  是否在支持列表里
   },
-  selectCurrentAccount: (state) => {
+  currentAccount: (state) => {
     return state.metamask.account
   },
   metamaskChainId: (state) => {
@@ -114,6 +115,10 @@ export const getters = {
 }
 
 export const actions = {
+  async connectWallwet (context) {
+    const accounts = await metamask.connectMetaMask()
+    context.commit('updateAccounts', { accounts, source: 'MetaMask' })
+  },
   async refreshLatestBlockNumber (context) {
     // const provider = await getProvider()
     const blockNumber = await provider.getBlockNumber()
