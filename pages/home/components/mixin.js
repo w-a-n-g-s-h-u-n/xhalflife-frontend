@@ -3,7 +3,7 @@ import multicall from 'xdefi-assets/abi/Multicall.json'
 import { ethers } from 'ethers'
 import registry from 'xdefi-assets/generated/pm/registry.homestead.json';
 import registryKovan from 'xdefi-assets/generated/pm/registry.kovan.json';
-import {isKovanEnv} from '../../../utils'; 
+import {isKovanEnv} from '../../../utils';
 import halflifeContract from '@/api/contract/abis/XHalfLife.json'
 import { provider } from '@/api/contract/ethers';
 

@@ -36,13 +36,11 @@ export const getAccountBalances = async () => {
     const { ethereum } = window
     if (ethereum.request) {
       const accounts = await getAccountsByMetaMask()
-      console.error('getAccountBalances accounts', accounts)
 
       if (accounts.length) {
         const balances = await XDEXTokenContract.balanceOf(accounts[0])
         return balances
       } else {
-        console.error('Can not get a valid account')
         return 0
       }
     } else {
