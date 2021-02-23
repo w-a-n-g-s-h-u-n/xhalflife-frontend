@@ -82,7 +82,7 @@
     <el-dialog
       :title="'创建流支付'"
       :close-on-click-modal="false"
-      :close-on-press-escape="fasle"
+      :close-on-press-escape="false"
       :visible.sync="tx.isDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
@@ -139,7 +139,7 @@ export default {
         return
       }
       const max = this.tokenMaxAmountSpend
-      if (v > max) {
+      if (BigNumber(max).lt(value)) { // !!! 直接使用value，否则使用Number转换后的会丢失精度
         callback(new Error(this.$t('deposit_amount_is_too_big')))
         return
       }
