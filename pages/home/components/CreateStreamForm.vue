@@ -16,12 +16,12 @@
           :fetch-suggestions="querySearch"
           :placeholder="$t('home.TokenPlaceholder')"
           style="width: 100%;"
-          @select="handleSelect"
+          @select="onSelectToken"
         />
       </el-form-item>
-      <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentToken})`" prop="depositAmount">
+      <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentTokenInfo && currentTokenInfo.symbol || currentToken})`" prop="depositAmount">
         <el-input v-model="formData.depositAmount">
-          <span slot="suffix" class="symbol">{{ currentToken }}</span>
+          <span slot="suffix" class="symbol">{{ currentTokenInfo && currentTokenInfo.symbol || currentToken }}</span>
           <el-button slot="append" class="maxButton" @click="maxAmount">
             MAX
           </el-button>
@@ -122,8 +122,7 @@ export default {
         callback(new Error(this.$t('deposit_amount_is_too_small')))
         return
       }
-      // 最大值限制 TODO eth需要考虑减去去gas费
-      const max = this.currentTokenAmount
+      const max = this.tokenMaxAmountSpend
       if (v > max) {
         callback(new Error(this.$t('deposit_amount_is_too_big')))
         return
@@ -175,8 +174,10 @@ export default {
     }
     return {
       tokenOptions: [],
-      currentTokenAmount: 0,
       currentToken: '',
+      currentTokenInfo: {},
+      currentTokenAmount: 0,
+
       buttonState: 'start',
       buttonDisable: false,
       formData: {
@@ -187,7 +188,6 @@ export default {
         kBlock: 40,
         unlockRatio: 1 // '1000000000000000'
       },
-      // blockNumber: 0,
       isMobile: isMobile(),
       balances: [],
       rules: {
@@ -231,32 +231,28 @@ export default {
       xdexBalance (state) {
         return state.metamask && state.metamask.xdexBalance
       },
-      selectCurrentAccount (state) {
-        return state.metamask.account
+      tokenMaxAmountSpend () {
+        let amount = 0
+        if (this.currentTokenInfo && this.currentTokenAmount && _.isFinite(Number(this.currentTokenAmount))) {
+          if (this.currentTokenInfo.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+            amount = new BigNumber(this.currentTokenAmount).minus(0.01).toString() // TODO 可配置
+          } else {
+            amount = Number(this.currentTokenAmount)
+          }
+        }
+        return amount
       }
     })
   },
   watch: {
     async 'formData.token' (newVal, oldVal) {
-      const provider = await getProvider()
-      const signer = provider.getSigner()
-      const tokenAddress = this.selectAddressByName(newVal)
       if (newVal.length < 20) {
         this.currentToken = newVal
-      }
-      if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-        const balance = await signer.getBalance()
-        this.currentTokenAmount = ethers.utils.formatEther(balance)
-      } else {
-        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(newVal.toLowerCase()), signer)
-        const balanceOf = await tokenContract.balanceOf(this.selectCurrentAccount)
-        this.currentTokenAmount = decimalsNumber(balanceOf, this.selectDecimalsByName(newVal))
+        this.currentTokenAmount = await this.updateTokenBalance(newVal)
       }
     },
     formData: {
       async handler (val, oldVal) {
-        console.log('watch formData', val)
-
         // 0. 钱包已连接
         // 1. 所有required字段非空
         // 2. 所有非空字段通过校验
@@ -270,7 +266,7 @@ export default {
           formData.startBlock &&
           formData.kBlock && formData.unlockRatio) {
           const valid = await this.$refs.createForm.validate()
-          console.log('isSubmitBtnEnabled valid', valid)
+          // console.log('isSubmitBtnEnabled valid', valid)
           if (valid) {
             this.isSubmitBtnEnabled = true
             return
@@ -287,16 +283,18 @@ export default {
   methods: {
     ...mapActions(['refreshLatestBlockNumber', 'connectWallwet']),
     async querySearch (queryString, cb) {
+      // console.log('querySearch queryString', queryString)
       let tokens = this.tokenOptions
       if (queryString) {
-        if (ethers.utils.isAddress(queryString)) {
+        if (ethers.utils.isAddress(queryString)) { //  如果是一个地址，并和要求，则自动选中
+          // console.log('querySearch ethers.utils.isAddress', queryString)
           const provider = await getProvider()
           const signer = provider.getSigner()
           const tokenContract = new ethers.Contract(queryString, selectAbi(queryString), signer)
           try {
             const name = await tokenContract.name()
             const symbol = await tokenContract.symbol()
-            const balanceOf = await tokenContract.balanceOf(this.selectCurrentAccount)
+            const balanceOf = await tokenContract.balanceOf(this.currentAccount)
             const decimals = await tokenContract.decimals()
             this.currentTokenAmount = decimalsNumber(balanceOf, decimals)
             tokens = {
@@ -307,6 +305,8 @@ export default {
               decimals
             }
             this.tokenOptions.push(tokens)
+            this.currentTokenInfo = tokens
+            // console.log('querySearch ethers.utils.isAddress currentTokenInfo', this.currentTokenInfo)
           } catch (e) {
             this.$message({
               message: this.$t('home.checkAddress'),
@@ -322,15 +322,32 @@ export default {
       }
       cb(tokens)
     },
+    async updateTokenBalance (tokenName) {
+      const provider = await getProvider()
+      const signer = provider.getSigner()
+      const tokenAddress = this.selectAddressByName(tokenName)
+      // console.log('updateTokenBalance', tokenName, tokenAddress)
+      let tokenAmount = 0
+      if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+        const balance = await signer.getBalance()
+        tokenAmount = ethers.utils.formatEther(balance)
+      } else {
+        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(tokenName.toLowerCase()), signer)
+        const balanceOf = await tokenContract.balanceOf(this.currentAccount)
+        tokenAmount = decimalsNumber(balanceOf, this.selectDecimalsByName(tokenName))
+      }
+      return tokenAmount
+    },
     async initBlockNumber () {
       const blockNumber = await this.refreshLatestBlockNumber()
       // this.blockNumber = blockNumber
       this.formData.startBlock = blockNumber + 10
     },
-    handleSelect (item) {
+    onSelectToken (item) {
+      this.currentTokenInfo = item
     },
     maxAmount () {
-      this.formData.depositAmount = this.currentTokenAmount
+      this.formData.depositAmount = this.tokenMaxAmountSpend
     },
     async fetchSupportToken () {
       const tokens = await this.$apollo.query({ query: SUPPORT_TOKENS })
@@ -357,64 +374,11 @@ export default {
           })
           return
         }
-        // this.buttonDisable = true
-        // const fetchedBlockNumber = await this.refreshLatestBlockNumber()
-        // if (this.formData.startBlock < fetchedBlockNumber) {
-        //   this.blockNumber = fetchedBlockNumber
-        //   // this.formData.startBlock = fetchedBlockNumber + 5
-        //   this.$message({
-        //     message: this.$t('startBlockMess'),
-        //     type: 'warning'
-        //   })
-        //   this.buttonDisable = true
-        //   return
-        // }
-        // if (this.formData.unlockRatio < 1 || this.formData.unlockRatio > 1000 || !(/(^[1-9]\d*$)/.test(this.formData.unlockRatio))) {
-        //   this.$message({
-        //     message: this.$t('unlockRatioMess'),
-        //     type: 'warning'
-        //   })
-        //   return
-        // }
-        // if (this.formData.kBlock < 1 || !(/(^[1-9]\d*$)/.test(this.formData.kBlock))) {
-        //   this.$message({
-        //     message: this.$t('kBlockMess'),
-        //     type: 'warning'
-        //   })
-        //   return
-        // }
-
         const formData = { ...this.formData }
         const tokenDecimals = this.selectDecimalsByName(formData.token)
         const tokenAddress = this.selectAddressByName(formData.token)
-        // const selfAdd = await metamask.getAccountsByMetaMask()
-        //
-        // if (selfAdd === this.formData.recipient) {
-        //   this.$message({
-        //     message: this.$t('home.sameAdd'),
-        //     type: 'warning'
-        //   })
-        //   return
-        // }
         try {
-          // if (!formData.token || !formData.recipient || !formData.depositAmount || !formData.startBlock || !formData.kBlock || !formData.unlockRatio) {
-          //   this.$message({
-          //     message: this.$t('home.checkFields'),
-          //     type: 'warning'
-          //   })
-          //   return
-          // }
-          //
           const accounts = await metamask.connectMetaMask()
-          // if (!accounts.length) {
-          //   this.$message({
-          //     message: this.$t('home.Need'),
-          //     type: 'warning'
-          //   })
-          //   return
-          // }
-
-          // deal form data to api
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
           const decimalsAmount = ethers.utils.parseUnits(depositAmount, tokenDecimals)
           const decimalsRatio = unlockRatio
