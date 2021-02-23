@@ -78,6 +78,22 @@
     <p class="tips">
       {{ $t('tips')[0] }}<a href="https://etherscan.io/blocks" target="_blank">"{{ $t('tips')[1] }}"</a>{{ $t('tips')[2] }} {{ $t('currentBlock') }}:{{ blockNumber }}
     </p>
+
+    <el-dialog
+      :title="'创建流支付'"
+      :close-on-click-modal="false"
+      :close-on-press-escape="fasle"
+      :visible.sync="tx.isDialogVisible"
+      :width="isMobile ? '80%' : '30%'"
+    >
+
+      <div style="text-align: center;">
+        <div style="margin-bottom:20px;">
+          <i class="el-icon-loading"></i>
+        </div>
+        {{ tx.msg }}
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -216,7 +232,17 @@ export default {
           { validator: checkUnlockRatio, message: '' }
         ]
       },
-      isSubmitBtnEnabled: false
+      isSubmitBtnEnabled: false,
+      tx: {
+        isDialogVisible: false,
+        msg: 'Wating...',
+        showDialog (){
+          this.isDialogVisible = true
+        },
+        showMsg (msg) {
+          this.msg = msg || 'Wating...'
+        }
+      }
     }
   },
   async mounted () {
@@ -378,6 +404,8 @@ export default {
         const tokenDecimals = this.selectDecimalsByName(formData.token)
         const tokenAddress = this.selectAddressByName(formData.token)
         try {
+          this.tx.showDialog()
+          this.tx.showMsg('请求连接钱包')
           const accounts = await metamask.connectMetaMask()
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
           const decimalsAmount = ethers.utils.parseUnits(depositAmount, tokenDecimals)
@@ -390,25 +418,33 @@ export default {
 
           let tx
           if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+            this.tx.showMsg('请求用户授权，开始创建')
             tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, { value: decimalsAmount })
           } else {
+            this.tx.showMsg('检查授权额度')
             const tokenContract = new ethers.Contract(tokenAddress, selectAbi(formData.token.toLowerCase()), signer)
             const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
 
             if (decimalsAmount.lte(allowance)) {
               this.buttonState = 'start'
             } else {
+              this.tx.showMsg('请求用户授权')
               this.buttonState = 'unlock'
               const approveValue = decimalsAmount
               const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
               const approveResult = await approveTx.wait()
               this.buttonState = 'start'
             }
+            this.tx.showMsg('请求用户授权，开始创建')
             // const txFetchBlock = await this.refreshLatestBlockNumber()
             tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
+            console.log('tx', tx)
+            this.tx.showMsg('开始创建' + tx.hash)
           }
 
           const createStreamResult = await tx.wait()
+          console.log('createStreamResult', createStreamResult)
+
           this.buttonDisable = false
           this.$message({
             message: this.$t('home.Create'),
