@@ -1,7 +1,7 @@
 <template>
   <div class="account">
     <div class="btn">
-      <el-button v-if="!isMetaMaskNetworkRight" round type="danger">
+      <el-button v-if="metamaskChainId && !isMetaMaskNetworkRight" round type="danger">
         网络错误
       </el-button>
       <template v-else>
