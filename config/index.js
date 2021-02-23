@@ -1,6 +1,6 @@
 
 export const CHAIN_LABEL = {
-  '0x1': 'Main',
+  // '0x1': 'Main',
   '0x2a': 'Kovan'
   // '0x3': 'Ropsten',
   // '0x4': 'Rinkeby',

@@ -1,9 +1,15 @@
 <template>
   <div class="account">
     <div class="btn">
-      <el-button v-if="metamaskChainId && metamaskChainId!='0x1'" type="text">
-        {{ CHAIN_LABEL[metamaskChainId] || metamaskChainId }}
+      <el-button v-if="!isMetaMaskNetworkRight" round type="danger">
+        网络错误
       </el-button>
+      <template v-else>
+        <el-button v-if="metamaskChainId && metamaskChainId!='0x1'" type="text">
+          {{ CHAIN_LABEL[metamaskChainId] || metamaskChainId }}
+        </el-button>
+      </template>
+
       <el-button v-if="isMetaMaskConnected" round type="success" @click="accountDialog = true">
         {{ metamask.account | addr }}
       </el-button>

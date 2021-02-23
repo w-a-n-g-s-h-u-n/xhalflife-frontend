@@ -59,13 +59,13 @@
     <div class="actions">
       <el-button
         v-if="isMetaMaskConnected"
-        type="primary"
+        :type="isMetaMaskNetworkRight?'primary':'danger'"
         round
         class="start-btn btn"
-        :disabled="!isSubmitBtnEnabled"
+        :disabled="!isSubmitBtnEnabled || !isMetaMaskNetworkRight"
         @click="onSubmit"
       >
-        {{ buttonState === 'start' ? $t('home.Start') : 'Unlock' }}
+        {{ isMetaMaskNetworkRight? (buttonState === 'start' ? $t('home.Start') : 'Unlock'):'Network Error!' }}
       </el-button>
       <el-button v-else type="primary" round class="start-btn btn" @click="connectWallwet">
         {{ $t('login.Connect') }}
@@ -249,7 +249,7 @@ export default {
     this.initBlockNumber()
   },
   computed: {
-    ...mapGetters(['isMetaMaskConnected', 'currentAccount']),
+    ...mapGetters(['isMetaMaskConnected', 'currentAccount', 'isMetaMaskNetworkRight']),
     ...mapState({
       blockNumber (state) {
         return state.blockNumber
