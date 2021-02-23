@@ -348,7 +348,7 @@ export default {
       return this.tokenOptions.filter(token => token.symbol === name)[0].decimals
     },
     onSubmit () {
-      if (this.isSubmitBtnEnabled) { return }
+      if (!this.isSubmitBtnEnabled) { return }
       this.$refs.createForm.validate(async (valid) => {
         if (!valid) {
           this.$message({
