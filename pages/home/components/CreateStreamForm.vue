@@ -86,10 +86,9 @@
       :visible.sync="tx.isDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
-
       <div style="text-align: center;">
         <div style="margin-bottom:20px;">
-          <i class="el-icon-loading"></i>
+          <i class="el-icon-loading" />
         </div>
         {{ tx.msg }}
       </div>
@@ -128,13 +127,13 @@ export default {
       callback()
     }
     const checkDepositAmount = async (rule, value, callback) => {
-      const v = Number(value)
-      if (!_.isFinite(Number(v))) {
+      const v = BigNumber(value)
+      if (!v.isFinite()) {
         callback(new Error(this.$t('should_be_a_number')))
         return
       }
       // 最小值限制
-      if (v < 0.0001) {
+      if (v.lt(0.0001)) {
         callback(new Error(this.$t('deposit_amount_is_too_small')))
         return
       }
@@ -146,43 +145,44 @@ export default {
       callback()
     }
     const checkBlockNumber = async (rule, value, callback) => {
-      const v = Number(value)
-      if (!_.isFinite(Number(v))) {
+      const v = BigNumber(value)
+      if (!v.isFinite()) {
         callback(new Error(this.$t('should_be_a_number')))
         return
       }
       // 获取最新区块
       const latestBlockNumber = await this.refreshLatestBlockNumber()
       const a = BigNumber(latestBlockNumber)
-      const b = BigNumber(v)
+      const b = v
 
       console.log('checkBlockNumber', a.toString(), b.toString(), b.isGreaterThan(a))
 
       if (!(b.isGreaterThan(a))) {
-        callback(new Error(this.$t('block_number_is_too_small')))
-        return
+        // callback(new Error(this.$t('block_number_is_too_small')))
+        this.formData.startBlock = a.plus(10).toNumber()
+        callback()
       }
       callback()
     }
     const checkKBlock = async (rule, value, callback) => {
-      const v = Number(value)
-      if (!_.isFinite(Number(v))) {
+      const v = BigNumber(value)
+      if (!v.isFinite()) {
         callback(new Error(this.$t('should_be_a_number')))
         return
       }
-      if (!(v > 0)) {
+      if (!(v.gt(0))) {
         callback(new Error(this.$t('block_number_is_too_small')))
         return
       }
       callback()
     }
     const checkUnlockRatio = async (rule, value, callback) => {
-      const v = Number(value)
-      if (!_.isFinite(Number(v))) {
+      const v = BigNumber(value)
+      if (!v.isFinite()) {
         callback(new Error(this.$t('should_be_a_number')))
         return
       }
-      if (v < 1 || v > 1000) {
+      if (v.lt(1) || v.gt(1000)) {
         callback(new Error(this.$t('unlock_ratio_should_be_between_1_1000')))
         return
       }
@@ -236,7 +236,7 @@ export default {
       tx: {
         isDialogVisible: false,
         msg: 'Wating...',
-        showDialog (){
+        showDialog () {
           this.isDialogVisible = true
         },
         showMsg (msg) {
@@ -261,7 +261,7 @@ export default {
         let amount = 0
         if (this.currentTokenInfo && this.currentTokenAmount && _.isFinite(Number(this.currentTokenAmount))) {
           if (this.currentTokenInfo.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-            amount = new BigNumber(this.currentTokenAmount).minus(0.01).toString() // TODO 可配置
+            amount = BigNumber(this.currentTokenAmount).minus(0.01).toString() // TODO 可配置
           } else {
             amount = Number(this.currentTokenAmount)
           }
