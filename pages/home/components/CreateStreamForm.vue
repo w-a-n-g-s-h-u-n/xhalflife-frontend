@@ -19,7 +19,7 @@
           @select="onSelectToken"
         />
       </el-form-item>
-      <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentTokenInfo && currentTokenInfo.symbol || currentToken}) ${currentTokenApprovedAmount}`" prop="depositAmount">
+      <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentTokenInfo && currentTokenInfo.symbol || currentToken})`" prop="depositAmount">
         <div style="display: flex;">
           <el-input v-model="formData.depositAmount">
             <span slot="suffix" class="symbol">{{ currentTokenInfo && currentTokenInfo.symbol || currentToken }}</span>
@@ -286,7 +286,7 @@ export default {
     }),
     showApprove () {
       let show = false
-      if (this.isMetaMaskNetworkRight && this.isMetaMaskConnected && this.currentAccount) {
+      if (this.isMetaMaskNetworkRight && this.isMetaMaskConnected && this.currentAccount && this.formData.depositAmount > 0) {
         show = Number(this.currentTokenApprovedAmount) === 0 || BigNumber(this.currentTokenApprovedAmount).lt(this.formData.depositAmount)
       }
       return show
