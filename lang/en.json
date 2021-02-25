@@ -32,6 +32,7 @@
   "home.sameAdd": "The recipent address cannot be the same as the sender address",
   "home.Block": "Interval block",
   "home.Create": "Create stream successfully",
+  "home.Create.Failure": "Create stream unsuccessful",
   "home.Mine": "Mine",
   "home.Much": "Total tokens of this stream ",
   "home.Need": "Need connect to metemask account first",

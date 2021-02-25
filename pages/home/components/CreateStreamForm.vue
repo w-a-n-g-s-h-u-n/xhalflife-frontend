@@ -19,13 +19,18 @@
           @select="onSelectToken"
         />
       </el-form-item>
-      <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentTokenInfo && currentTokenInfo.symbol || currentToken})`" prop="depositAmount">
-        <el-input v-model="formData.depositAmount">
-          <span slot="suffix" class="symbol">{{ currentTokenInfo && currentTokenInfo.symbol || currentToken }}</span>
-          <el-button slot="append" class="maxButton" @click="maxAmount">
-            MAX
+      <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentTokenInfo && currentTokenInfo.symbol || currentToken}) ${currentTokenApprovedAmount}`" prop="depositAmount">
+        <div style="display: flex;">
+          <el-input v-model="formData.depositAmount">
+            <span slot="suffix" class="symbol">{{ currentTokenInfo && currentTokenInfo.symbol || currentToken }}</span>
+            <el-button slot="append" class="maxButton" @click="maxAmount">
+              MAX
+            </el-button>
+          </el-input>
+          <el-button v-show="showApprove" style="margin-left: 2px;" round @click="approve">
+            Approve
           </el-button>
-        </el-input>
+        </div>
       </el-form-item>
       <el-form-item :label="$t('home.Address')" prop="recipient">
         <el-input v-model.trim="formData.recipient" />
@@ -63,9 +68,9 @@
         round
         class="start-btn btn"
         :disabled="!isSubmitBtnEnabled || !isMetaMaskNetworkRight"
-        @click="onSubmit"
+        @click="createStream"
       >
-        {{ isMetaMaskNetworkRight? (buttonState === 'start' ? $t('home.Start') : 'Unlock'):'Network Error!' }}
+        {{ submitLabel }}
       </el-button>
       <el-button v-else type="primary" round class="start-btn btn" @click="connectWallwet">
         {{ $t('login.Connect') }}
@@ -142,6 +147,15 @@ export default {
         callback(new Error(this.$t('deposit_amount_is_too_big')))
         return
       }
+
+      // 检查已授权
+      const currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.currentToken)
+      this.currentTokenApprovedAmount = currentTokenApprovedAmount
+      if (BigNumber(currentTokenApprovedAmount).lt(value)) {
+        callback(new Error(this.$t('approved_amount_is_too_small')))
+        return
+      }
+
       callback()
     }
     const checkBlockNumber = async (rule, value, callback) => {
@@ -193,6 +207,7 @@ export default {
       currentToken: '',
       currentTokenInfo: {},
       currentTokenAmount: 0,
+      currentTokenApprovedAmount: 0,
 
       buttonState: 'start',
       buttonDisable: false,
@@ -213,7 +228,7 @@ export default {
         ],
         depositAmount: [
           { required: true, message: this.$t('home.depositAmount'), trigger: 'change' },
-          { validator: checkDepositAmount, message: '' }
+          { validator: checkDepositAmount, message: '', trigger: 'change' }
         ],
         startBlock: [
           { required: true, message: this.$t('home.startBlock'), trigger: 'change' },
@@ -236,8 +251,8 @@ export default {
       tx: {
         isDialogVisible: false,
         msg: 'Wating...',
-        showDialog () {
-          this.isDialogVisible = true
+        showDialog (tag = true) {
+          this.isDialogVisible = tag
         },
         showMsg (msg) {
           this.msg = msg || 'Wating...'
@@ -268,13 +283,30 @@ export default {
         }
         return amount
       }
-    })
+    }),
+    showApprove () {
+      let show = false
+      if (this.isMetaMaskNetworkRight && this.isMetaMaskConnected && this.currentAccount) {
+        show = Number(this.currentTokenApprovedAmount) === 0 || BigNumber(this.currentTokenApprovedAmount).lt(this.formData.depositAmount)
+      }
+      return show
+    },
+    submitLabel () {
+      let label = 'Start'
+      if (!this.isMetaMaskNetworkRight) {
+        label = 'Network Error!'
+      }
+      return label
+    }
   },
   watch: {
     async 'formData.token' (newVal, oldVal) {
       if (newVal.length < 20) {
         this.currentToken = newVal
-        this.currentTokenAmount = await this.updateTokenBalance(newVal)
+        if (this.isMetaMaskNetworkRight && this.isMetaMaskConnected && this.currentAccount) {
+          this.currentTokenAmount = await this.updateTokenBalance(newVal)
+          this.currentTokenApprovedAmount = await this.getTokenApprovedAmount(newVal)
+        }
       }
     },
     formData: {
@@ -292,9 +324,12 @@ export default {
           formData.startBlock &&
           formData.kBlock && formData.unlockRatio) {
           const valid = await this.$refs.createForm.validate()
-          // console.log('isSubmitBtnEnabled valid', valid)
+          console.log('formData validate', valid, formData)
           if (valid) {
             this.isSubmitBtnEnabled = true
+            return
+          } else {
+            this.isSubmitBtnEnabled = false
             return
           }
         }
@@ -364,6 +399,24 @@ export default {
       }
       return tokenAmount
     },
+    async getTokenApprovedAmount (tokenName) { // 获取已授权额度
+      const tokenAddress = this.selectAddressByName(tokenName)
+      // 获得provider
+      const provider = await getProvider()
+      const signer = provider.getSigner()
+
+      this.tx.showMsg('检查授权额度')
+      const tokenContract = new ethers.Contract(tokenAddress, selectAbi(tokenName.toLowerCase()), signer)
+      const allowance = await tokenContract.allowance(this.currentAccount, process.env.XHALFLIFE_CONTRACT_ADDTRESS)
+
+      const tokenDecimals = this.selectDecimalsByName(tokenName)
+      const amount = decimalsNumber(allowance, tokenDecimals)
+
+      // side effect
+      this.currentTokenApprovedAmount = amount
+      //  主动触发一次验证
+      return amount
+    },
     async initBlockNumber () {
       const blockNumber = await this.refreshLatestBlockNumber()
       // this.blockNumber = blockNumber
@@ -390,7 +443,47 @@ export default {
     selectDecimalsByName (name) {
       return this.tokenOptions.filter(token => token.symbol === name)[0].decimals
     },
-    onSubmit () {
+    async approve () {
+      try {
+        this.tx.showDialog()
+        this.tx.showMsg('请求授权中')
+        const formData = this.formData
+        const { depositAmount } = this.formData
+
+        const tokenDecimals = this.selectDecimalsByName(formData.token)
+        const decimalsAmount = ethers.utils.parseUnits(depositAmount, tokenDecimals)
+        const tokenAddress = this.selectAddressByName(formData.token)
+
+        // const accounts = await metamask.connectMetaMask()
+        // console.log('connect metamask', accounts)
+
+        if (tokenAddress !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+          // 获得provider
+          const provider = await getProvider()
+          const signer = provider.getSigner()
+          const tokenContract = new ethers.Contract(tokenAddress, selectAbi(this.formData.token.toLowerCase()), signer)
+
+          const approveValue = decimalsAmount
+          const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
+          const approveResult = await approveTx.wait()
+          console.log('approveResult', approveResult)
+          this.tx.showMsg('授权成功')
+          this.tx.showDialog(false)
+
+          // 刷新
+          console.log(' refresh getTokenApprovedAmount')
+          const amount = await this.getTokenApprovedAmount(this.currentToken)
+          console.log(' refresh getTokenApprovedAmount result', amount)
+          this.$refs.createForm.validateField('depositAmount')
+        }
+      } catch (e) {
+        this.$message({
+          message: this.$t('home.Approve.Failure'), // e.message + e.code,
+          type: 'warning'
+        })
+      }
+    },
+    createStream () {
       if (!this.isSubmitBtnEnabled) { return }
       this.$refs.createForm.validate(async (valid) => {
         if (!valid) {
@@ -406,7 +499,7 @@ export default {
         try {
           this.tx.showDialog()
           this.tx.showMsg('请求连接钱包')
-          const accounts = await metamask.connectMetaMask()
+          // const accounts = await metamask.connectMetaMask()
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
           const decimalsAmount = ethers.utils.parseUnits(depositAmount, tokenDecimals)
           const decimalsRatio = unlockRatio
@@ -418,43 +511,45 @@ export default {
 
           let tx
           if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-            this.tx.showMsg('请求用户授权，开始创建')
+            this.tx.showMsg('开始创建')
             tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, { value: decimalsAmount })
           } else {
-            this.tx.showMsg('检查授权额度')
-            const tokenContract = new ethers.Contract(tokenAddress, selectAbi(formData.token.toLowerCase()), signer)
-            const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-
-            if (decimalsAmount.lte(allowance)) {
-              this.buttonState = 'start'
-            } else {
-              this.tx.showMsg('请求用户授权')
-              this.buttonState = 'unlock'
-              const approveValue = decimalsAmount
-              const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
-              const approveResult = await approveTx.wait()
-              this.buttonState = 'start'
-            }
-            this.tx.showMsg('请求用户授权，开始创建')
+            // this.tx.showMsg('检查授权额度')
+            // const tokenContract = new ethers.Contract(tokenAddress, selectAbi(formData.token.toLowerCase()), signer)
+            // const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
+            //
+            // if (decimalsAmount.lte(allowance)) {
+            //   this.buttonState = 'start'
+            // } else {
+            //   this.tx.showMsg('请求用户授权')
+            //   this.buttonState = 'unlock'
+            //   const approveValue = decimalsAmount
+            //   const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
+            //   const approveResult = await approveTx.wait()
+            //   this.buttonState = 'start'
+            // }
+            this.tx.showMsg('开始创建')
             // const txFetchBlock = await this.refreshLatestBlockNumber()
             tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
             console.log('tx', tx)
-            this.tx.showMsg('开始创建' + tx.hash)
+            this.tx.showMsg('开始创建\n' + tx.hash)
           }
 
           const createStreamResult = await tx.wait()
           console.log('createStreamResult', createStreamResult)
+          this.tx.showMsg('授权成功')
+          this.tx.showDialog(false)
 
-          this.buttonDisable = false
           this.$message({
             message: this.$t('home.Create'),
             type: 'success'
           })
           this.$emit('refresh')
         } catch (e) {
-          this.buttonDisable = false
+          console.log('创建失败', e)
+          this.tx.showMsg('创建失败' + e.message)
           this.$message({
-            message: e.message + e.code,
+            message: this.$t('home.Create.Failure'), // e.message + e.code,
             type: 'warning'
           })
         }

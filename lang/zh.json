@@ -32,6 +32,7 @@
   "home.sameAdd": "收款地址不能与付款地址相同",
   "home.Block": "间隔区块",
   "home.Create": "成功创建资金流",
+  "home.Create.Failure": "创建流支付出错",
   "home.Mine": "我的",
   "home.Much": "资金流代币总量",
   "home.Need": "需要先连接到Metamask帐户",
