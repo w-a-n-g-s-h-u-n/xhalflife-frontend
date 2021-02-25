@@ -13,7 +13,7 @@ export const SUPPORT_TOKENS = gql`{
 // TODO 参数化、分页
 export const STREAM_LIST = gql`
   query streams($first: Int!, $lastID:Int!) {
-    streams(first: $first, where: {idBigInt_lte: $lastID}, orderBy: timestamp, orderDirection: desc) {
+    streams(first: $first, where: {idBigInt_lte: $lastID}, orderBy: idBigInt, orderDirection: desc) {
         id
         idBigInt
         sender
