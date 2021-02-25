@@ -311,29 +311,7 @@ export default {
     },
     formData: {
       async handler (val, oldVal) {
-        // 0. 钱包已连接
-        // 1. 所有required字段非空
-        // 2. 所有非空字段通过校验
-        const formData = this.formData
-        if (!(this.isMetaMaskConnected && this.currentAccount)) {
-          this.isSubmitBtnEnabled = false
-          return
-        }
-
-        if (formData.token && formData.recipient && formData.depositAmount &&
-          formData.startBlock &&
-          formData.kBlock && formData.unlockRatio) {
-          const valid = await this.$refs.createForm.validate()
-          console.log('formData validate', valid, formData)
-          if (valid) {
-            this.isSubmitBtnEnabled = true
-            return
-          } else {
-            this.isSubmitBtnEnabled = false
-            return
-          }
-        }
-        this.isSubmitBtnEnabled = false
+        this.checkSubmitBtn()
       },
       deep: true
     }
@@ -405,7 +383,7 @@ export default {
       const provider = await getProvider()
       const signer = provider.getSigner()
 
-      this.tx.showMsg('检查授权额度')
+      // this.tx.showMsg('检查授权额度')
       const tokenContract = new ethers.Contract(tokenAddress, selectAbi(tokenName.toLowerCase()), signer)
       const allowance = await tokenContract.allowance(this.currentAccount, process.env.XHALFLIFE_CONTRACT_ADDTRESS)
 
@@ -443,10 +421,35 @@ export default {
     selectDecimalsByName (name) {
       return this.tokenOptions.filter(token => token.symbol === name)[0].decimals
     },
+    async checkSubmitBtn () {
+      // 0. 钱包已连接
+      // 1. 所有required字段非空
+      // 2. 所有非空字段通过校验
+      const formData = this.formData
+      if (!(this.isMetaMaskConnected && this.currentAccount)) {
+        this.isSubmitBtnEnabled = false
+        return
+      }
+
+      if (formData.token && formData.recipient && formData.depositAmount &&
+        formData.startBlock &&
+        formData.kBlock && formData.unlockRatio) {
+        const valid = await this.$refs.createForm.validate()
+        console.log('formData validate', valid, formData)
+        if (valid) {
+          this.isSubmitBtnEnabled = true
+          return
+        } else {
+          this.isSubmitBtnEnabled = false
+          return
+        }
+      }
+      this.isSubmitBtnEnabled = false
+    },
     async approve () {
       try {
         this.tx.showDialog()
-        this.tx.showMsg('请求授权中')
+        this.tx.showMsg('请求额度授权')
         const formData = this.formData
         const { depositAmount } = this.formData
 
@@ -467,7 +470,7 @@ export default {
           const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
           const approveResult = await approveTx.wait()
           console.log('approveResult', approveResult)
-          this.tx.showMsg('授权成功')
+          this.tx.showMsg('额度授权成功')
           this.tx.showDialog(false)
 
           // 刷新
@@ -475,8 +478,13 @@ export default {
           const amount = await this.getTokenApprovedAmount(this.currentToken)
           console.log(' refresh getTokenApprovedAmount result', amount)
           this.$refs.createForm.validateField('depositAmount')
+          this.checkSubmitBtn()
         }
       } catch (e) {
+        this.tx.showMsg(this.$t('home.Approve.Failure') + e.message)
+        setTimeout(() => {
+          this.tx.showDialog(false)
+        }, 1000)
         this.$message({
           message: this.$t('home.Approve.Failure'), // e.message + e.code,
           type: 'warning'
@@ -498,7 +506,7 @@ export default {
         const tokenAddress = this.selectAddressByName(formData.token)
         try {
           this.tx.showDialog()
-          this.tx.showMsg('请求连接钱包')
+          // this.tx.showMsg('请求连接钱包')
           // const accounts = await metamask.connectMetaMask()
           const { recipient, depositAmount, startBlock, kBlock, unlockRatio } = this.formData
           const decimalsAmount = ethers.utils.parseUnits(depositAmount, tokenDecimals)
@@ -532,12 +540,12 @@ export default {
             // const txFetchBlock = await this.refreshLatestBlockNumber()
             tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
             console.log('tx', tx)
-            this.tx.showMsg('开始创建\n' + tx.hash)
+            this.tx.showMsg('开始创建\n 交易Hash:' + tx.hash)
           }
 
           const createStreamResult = await tx.wait()
           console.log('createStreamResult', createStreamResult)
-          this.tx.showMsg('授权成功')
+          this.tx.showMsg('创建成功')
           this.tx.showDialog(false)
 
           this.$message({
@@ -548,6 +556,9 @@ export default {
         } catch (e) {
           console.log('创建失败', e)
           this.tx.showMsg('创建失败' + e.message)
+          setTimeout(() => {
+            this.tx.showDialog(false)
+          }, 1000)
           this.$message({
             message: this.$t('home.Create.Failure'), // e.message + e.code,
             type: 'warning'
