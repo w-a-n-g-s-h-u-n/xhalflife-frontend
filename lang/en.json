@@ -32,7 +32,7 @@
   "home.sameAdd": "The recipent address cannot be the same as the sender address",
   "home.Block": "Interval block",
 
-  "net_work_error": "Network Error!", 
+  "net_work_error": "Network Error!",
 
 
   "home.Create": "Create stream successfully",
@@ -45,6 +45,7 @@
   "home.Create.approved_amount_is_too_small": "Deposit amount is bigger than approved amount, please approve again",
   "home.Create.block_number_is_too_small": "Start block should bigger then current block number",
   "home.Create.unlock_ratio_should_be_between_1_1000": "Radio value should be between 1 and 1000",
+  "home.Create.approve": "Approve",
   "home.Create.approve_start": "Start approving",
   "home.Create.approve_failed": "Approve sucessfully",
   "home.Create.approve_success": "Approve failed",

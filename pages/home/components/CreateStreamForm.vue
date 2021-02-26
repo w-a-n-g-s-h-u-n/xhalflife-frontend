@@ -28,7 +28,7 @@
             </el-button>
           </el-input>
           <el-button v-show="showApprove" style="margin-left: 2px;" round @click="approve">
-            Approve
+            {{$t("home.Create.approve")}}
           </el-button>
         </div>
       </el-form-item>

@@ -32,7 +32,7 @@
   "home.sameAdd": "收款地址不能与付款地址相同",
   "home.Block": "间隔区块",
 
-  "net_work_error": "网络错误！", 
+  "net_work_error": "网络错误！",
 
   "home.Create": "成功创建资金流",
   "home.Create.Failure": "创建流支付出错",
@@ -44,6 +44,7 @@
   "home.Create.approved_amount_is_too_small": "输入值超过已授权额度，请点击右侧增加授权额度",
   "home.Create.block_number_is_too_small": "起始区块值需大于当前区块",
   "home.Create.unlock_ratio_should_be_between_1_1000": "数值需大于等于1小于等于1000",
+  "home.Create.approve": "授权",
   "home.Create.approve_start": "开始授权",
   "home.Create.approve_failed": "授权失败",
   "home.Create.approve_success": "授权成功",
