@@ -31,8 +31,27 @@
   "home.Address": "收款人地址",
   "home.sameAdd": "收款地址不能与付款地址相同",
   "home.Block": "间隔区块",
+
+  "net_work_error": "网络错误！", 
+
   "home.Create": "成功创建资金流",
   "home.Create.Failure": "创建流支付出错",
+  "home.Create.should_be_an_address": "请检查地址格式地址",
+  "home.Create.recipentCantBeCurrentUser": "接受者不能和当前账户相同",
+  "home.Create.should_be_a_number": "不是一个数字",
+  "home.Create.deposit_amount_is_too_small": "最小值应大于0.001",
+  "home.Create.deposit_amount_is_too_big": "输入值超过最大可提取值",
+  "home.Create.approved_amount_is_too_small": "输入值超过已授权额度，请点击右侧增加授权额度",
+  "home.Create.block_number_is_too_small": "起始区块值需大于当前区块",
+  "home.Create.unlock_ratio_should_be_between_1_1000": "数值需大于等于1小于等于1000",
+  "home.Create.approve_start": "开始授权",
+  "home.Create.approve_failed": "授权失败",
+  "home.Create.approve_success": "授权成功",
+  "home.Create.create_stream_start": "开始创建支付流",
+  "home.Create.create_stream_sucess": "创建支付流成功",
+  "home.Create.create_stream_failed": "创建支付流失败",
+
+
   "home.Mine": "我的",
   "home.Much": "资金流代币总量",
   "home.Need": "需要先连接到Metamask帐户",

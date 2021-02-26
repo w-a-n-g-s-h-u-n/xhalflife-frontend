@@ -121,12 +121,12 @@ export default {
     const checkRecipent = async (rule, value, callback) => {
       console.log('recipentValidator')
       if (!ethers.utils.isAddress(value)) {
-        callback(new Error(this.$t('should_be_an_address')))
+        callback(new Error(this.$t('home.Create.should_be_an_address')))
         return
       }
       const currentAccount = await metamask.getAccountsByMetaMask()
       if (value === ethers.utils.getAddress(currentAccount[0])) {
-        callback(new Error(this.$t('home.recipentCantBeCurrentUser')))
+        callback(new Error(this.$t('home.Create.recipentCantBeCurrentUser')))
         return
       }
       callback()
@@ -134,17 +134,17 @@ export default {
     const checkDepositAmount = async (rule, value, callback) => {
       const v = BigNumber(value)
       if (!v.isFinite()) {
-        callback(new Error(this.$t('should_be_a_number')))
+        callback(new Error(this.$t('home.Create.should_be_a_number')))
         return
       }
       // 最小值限制
       if (v.lt(0.0001)) {
-        callback(new Error(this.$t('deposit_amount_is_too_small')))
+        callback(new Error(this.$t('home.Create.deposit_amount_is_too_small')))
         return
       }
       const max = this.tokenMaxAmountSpend
       if (BigNumber(max).lt(value)) { // !!! 直接使用value，否则使用Number转换后的会丢失精度
-        callback(new Error(this.$t('deposit_amount_is_too_big')))
+        callback(new Error(this.$t('home.Create.deposit_amount_is_too_big')))
         return
       }
 
@@ -152,7 +152,7 @@ export default {
       const currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.currentToken)
       this.currentTokenApprovedAmount = currentTokenApprovedAmount
       if (BigNumber(currentTokenApprovedAmount).lt(value)) {
-        callback(new Error(this.$t('approved_amount_is_too_small')))
+        callback(new Error(this.$t('home.Create.approved_amount_is_too_small')))
         return
       }
 
@@ -161,7 +161,7 @@ export default {
     const checkBlockNumber = async (rule, value, callback) => {
       const v = BigNumber(value)
       if (!v.isFinite()) {
-        callback(new Error(this.$t('should_be_a_number')))
+        callback(new Error(this.$t('home.Create.should_be_a_number')))
         return
       }
       // 获取最新区块
@@ -181,11 +181,11 @@ export default {
     const checkKBlock = async (rule, value, callback) => {
       const v = BigNumber(value)
       if (!v.isFinite()) {
-        callback(new Error(this.$t('should_be_a_number')))
+        callback(new Error(this.$t('home.Create.should_be_a_number')))
         return
       }
       if (!(v.gt(0))) {
-        callback(new Error(this.$t('block_number_is_too_small')))
+        callback(new Error(this.$t('home.Create.block_number_is_too_small')))
         return
       }
       callback()
@@ -193,11 +193,11 @@ export default {
     const checkUnlockRatio = async (rule, value, callback) => {
       const v = BigNumber(value)
       if (!v.isFinite()) {
-        callback(new Error(this.$t('should_be_a_number')))
+        callback(new Error(this.$t('home.Create.should_be_a_number')))
         return
       }
       if (v.lt(1) || v.gt(1000)) {
-        callback(new Error(this.$t('unlock_ratio_should_be_between_1_1000')))
+        callback(new Error(this.$t('home.Create.unlock_ratio_should_be_between_1_1000')))
         return
       }
       callback()
@@ -232,25 +232,25 @@ export default {
         ],
         startBlock: [
           { required: true, message: this.$t('home.startBlock'), trigger: 'change' },
-          { type: 'number', message: 'should_be_number' },
+          { type: 'number', message: this.$t('home.Create.should_be_a_number') },
           { validator: checkBlockNumber, message: '' }
         ],
         kBlock: [
           { required: true, message: this.$t('home.kBlock'), trigger: 'change' },
-          { type: 'number', message: 'should_be_number' },
+          { type: 'number', message: this.$t('home.Create.should_be_a_number') },
           { validator: checkKBlock, message: '' }
 
         ],
         unlockRatio: [
           { required: true, message: this.$t('home.unlockRatio'), trigger: 'change' },
-          { type: 'number', message: 'should_be_number' },
+          { type: 'number', message: this.$t('home.Create.should_be_a_number') },
           { validator: checkUnlockRatio, message: '' }
         ]
       },
       isSubmitBtnEnabled: false,
       tx: {
         isDialogVisible: false,
-        msg: 'Wating...',
+        msg: this.$t('home.Create.waiting'),
         showDialog (tag = true) {
           this.isDialogVisible = tag
         },
@@ -294,7 +294,7 @@ export default {
     submitLabel () {
       let label = 'Start'
       if (!this.isMetaMaskNetworkRight) {
-        label = 'Network Error!'
+        label = this.$t('net_work_error')
       }
       return label
     }
@@ -449,7 +449,7 @@ export default {
     async approve () {
       try {
         this.tx.showDialog()
-        this.tx.showMsg('请求额度授权')
+        this.tx.showMsg(this.$t('home.Create.approve_start'))
         const formData = this.formData
         const { depositAmount } = this.formData
 
@@ -470,7 +470,7 @@ export default {
           const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
           const approveResult = await approveTx.wait()
           console.log('approveResult', approveResult)
-          this.tx.showMsg('额度授权成功')
+          this.tx.showMsg(this.$t('home.Create.approve_success'))
           this.tx.showDialog(false)
 
           // 刷新
@@ -481,7 +481,7 @@ export default {
           this.checkSubmitBtn()
         }
       } catch (e) {
-        this.tx.showMsg(this.$t('home.Approve.Failure') + e.message)
+        this.tx.showMsg(this.$t('home.Create.approve_failed'))
         setTimeout(() => {
           this.tx.showDialog(false)
         }, 1000)
@@ -519,7 +519,7 @@ export default {
 
           let tx
           if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-            this.tx.showMsg('开始创建')
+            this.tx.showMsg(this.$t('home.checkData'))
             tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, { value: decimalsAmount })
           } else {
             // this.tx.showMsg('检查授权额度')
@@ -536,16 +536,16 @@ export default {
             //   const approveResult = await approveTx.wait()
             //   this.buttonState = 'start'
             // }
-            this.tx.showMsg('开始创建')
+            this.tx.showMsg(this.$t('home.Create.create_stream_start'))
             // const txFetchBlock = await this.refreshLatestBlockNumber()
             tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
             console.log('tx', tx)
-            this.tx.showMsg('开始创建\n 交易Hash:' + tx.hash)
+            // this.tx.showMsg('开始创建\n 交易Hash:' + tx.hash)
           }
 
           const createStreamResult = await tx.wait()
           console.log('createStreamResult', createStreamResult)
-          this.tx.showMsg('创建成功')
+          this.tx.showMsg(this.$t('home.Create.create_stream_sucess'))
           this.tx.showDialog(false)
 
           this.$message({
@@ -555,7 +555,7 @@ export default {
           this.$emit('refresh')
         } catch (e) {
           console.log('创建失败', e)
-          this.tx.showMsg('创建失败' + e.message)
+          this.tx.showMsg(this.$t('home.Create.create_stream_failed'))
           setTimeout(() => {
             this.tx.showDialog(false)
           }, 1000)
