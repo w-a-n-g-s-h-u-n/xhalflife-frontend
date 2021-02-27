@@ -174,15 +174,16 @@ export default {
       }
       // 获取最新区块
       const latestBlockNumber = await this.refreshLatestBlockNumber()
-      const a = BigNumber(latestBlockNumber)
-      const b = v
 
-      console.log('checkBlockNumber', a.toString(), b.toString(), b.isGreaterThan(a))
+      // 可能由于网络等问题没获取到的情况 暂忽略 TODO
+      if (latestBlockNumber) {
+        const a = BigNumber(latestBlockNumber)
 
-      if (!(b.isGreaterThan(a))) {
-        // callback(new Error(this.$t('block_number_is_too_small')))
-        this.formData.startBlock = a.plus(10).toNumber()
-        callback()
+        if (!(v.isGreaterThan(a))) {
+          // callback(new Error(this.$t('block_number_is_too_small')))
+          this.formData.startBlock = a.plus(10).toNumber()
+          callback()
+        }
       }
       callback()
     }
@@ -393,20 +394,25 @@ export default {
       return tokenAmount
     },
     async getTokenApprovedAmount (tokenInfo) { // 获取已授权额度
-      const tokenAddress = tokenInfo.id
-      // 获得provider
-      const provider = await getProvider()
-      const signer = provider.getSigner()
+      try {
+        const tokenAddress = tokenInfo.id
+        // 获得provider
+        const provider = await getProvider()
+        const signer = provider.getSigner()
 
-      // this.tx.showMsg('检查授权额度')
-      const tokenContract = new ethers.Contract(tokenAddress, selectAbi(_.toLower(tokenInfo.symbol)), signer)
-      const allowance = await tokenContract.allowance(this.currentAccount, process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-      const amount = decimalsNumber(allowance, tokenInfo.decimals)
+        // this.tx.showMsg('检查授权额度')
+        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(_.toLower(tokenInfo.symbol)), signer)
+        const allowance = await tokenContract.allowance(this.currentAccount, process.env.XHALFLIFE_CONTRACT_ADDTRESS)
+        const amount = decimalsNumber(allowance, tokenInfo.decimals)
 
-      // side effect
-      this.currentTokenApprovedAmount = amount
-      //  主动触发一次验证
-      return amount
+        // side effect
+        this.currentTokenApprovedAmount = amount
+        //  主动触发一次验证
+        return amount
+      } catch (e) {
+        console.error('getTokenApprovedAmount', e)
+        return 0
+      }
     },
     async initBlockNumber () {
       const blockNumber = await this.refreshLatestBlockNumber()

@@ -120,9 +120,13 @@ export const actions = {
     context.commit('updateAccounts', { accounts, source: 'MetaMask' })
   },
   async refreshLatestBlockNumber (context) {
-    // const provider = await getProvider()
-    const blockNumber = await provider.getBlockNumber()
-    context.commit('update', { key: 'blockNumber', value: blockNumber })
-    return blockNumber
+    try {
+      // const provider = await getProvider()
+      const blockNumber = await provider.getBlockNumber()
+      context.commit('update', { key: 'blockNumber', value: blockNumber })
+      return blockNumber
+    } catch (e) {
+      console.error('refreshLatestBlockNumber', e)
+    }
   }
 }
