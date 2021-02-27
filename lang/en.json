@@ -52,6 +52,7 @@
   "home.Create.create_stream_start": "Start creating...",
   "home.Create.create_stream_sucess": "Create sucessfully",
   "home.Create.create_stream_failed": "Create failed",
+  "home.Create.check_token": "Please check token",
 
   "home.Mine": "Mine",
   "home.Much": "Total tokens of this stream ",

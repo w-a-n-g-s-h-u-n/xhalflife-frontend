@@ -51,7 +51,7 @@
   "home.Create.create_stream_start": "开始创建支付流",
   "home.Create.create_stream_sucess": "创建支付流成功",
   "home.Create.create_stream_failed": "创建支付流失败",
-
+  "home.Create.check_token": "请选择或输入正确Token",
 
   "home.Mine": "我的",
   "home.Much": "资金流代币总量",

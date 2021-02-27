@@ -19,16 +19,16 @@
           @select="onSelectToken"
         />
       </el-form-item>
-      <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentTokenInfo && currentTokenInfo.symbol || currentToken})`" prop="depositAmount">
+      <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentTokenInfo && currentTokenInfo.symbol })`" prop="depositAmount">
         <div style="display: flex;">
           <el-input v-model="formData.depositAmount">
-            <span slot="suffix" class="symbol">{{ currentTokenInfo && currentTokenInfo.symbol || currentToken }}</span>
+            <span slot="suffix" class="symbol">{{ currentTokenInfo && currentTokenInfo.symbol }}</span>
             <el-button slot="append" class="maxButton" @click="maxAmount">
               MAX
             </el-button>
           </el-input>
           <el-button v-show="showApprove" style="margin-left: 2px;" round @click="approve">
-            {{$t("home.Create.approve")}}
+            {{ $t("home.Create.approve") }}
           </el-button>
         </div>
       </el-form-item>
@@ -118,8 +118,14 @@ export default {
   name: 'CreateStreamForm',
   props: ['refresh'],
   data () {
+    const checkToken = async (rule, value, callback) => {
+      if (!(this.currentTokenInfo && this.currentTokenInfo.id)) {
+        callback(new Error(this.$t('home.Create.check_token')))
+        return
+      }
+      callback()
+    }
     const checkRecipent = async (rule, value, callback) => {
-      console.log('recipentValidator')
       if (!ethers.utils.isAddress(value)) {
         callback(new Error(this.$t('home.Create.should_be_an_address')))
         return
@@ -149,11 +155,13 @@ export default {
       }
 
       // 检查已授权
-      const currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.currentToken)
-      this.currentTokenApprovedAmount = currentTokenApprovedAmount
-      if (BigNumber(currentTokenApprovedAmount).lt(value)) {
-        callback(new Error(this.$t('home.Create.approved_amount_is_too_small')))
-        return
+      if (!this.isEth(this.currentTokenInfo.id)) {
+        const currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.currentTokenInfo)
+        this.currentTokenApprovedAmount = currentTokenApprovedAmount
+        if (BigNumber(currentTokenApprovedAmount).lt(value)) {
+          callback(new Error(this.$t('home.Create.approved_amount_is_too_small')))
+          return
+        }
       }
 
       callback()
@@ -204,7 +212,7 @@ export default {
     }
     return {
       tokenOptions: [],
-      currentToken: '',
+      tokenMap: {},
       currentTokenInfo: {},
       currentTokenAmount: 0,
       currentTokenApprovedAmount: 0,
@@ -222,6 +230,10 @@ export default {
       isMobile: isMobile(),
       balances: [],
       rules: {
+        token: [
+          { required: true, message: this.$t('home.token'), trigger: 'change' },
+          { validator: checkToken, message: '', trigger: 'change' }
+        ],
         recipient: [
           { required: true, message: this.$t('home.recipient'), trigger: 'change' },
           { validator: checkRecipent, message: '', trigger: 'change' }
@@ -275,7 +287,7 @@ export default {
       tokenMaxAmountSpend () {
         let amount = 0
         if (this.currentTokenInfo && this.currentTokenAmount && _.isFinite(Number(this.currentTokenAmount))) {
-          if (this.currentTokenInfo.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+          if (this.isEth(this.currentTokenInfo.id)) {
             amount = BigNumber(this.currentTokenAmount).minus(0.01).toString() // TODO 可配置
           } else {
             amount = Number(this.currentTokenAmount)
@@ -300,14 +312,17 @@ export default {
     }
   },
   watch: {
-    async 'formData.token' (newVal, oldVal) {
-      if (newVal.length < 20) {
-        this.currentToken = newVal
+    async 'currentTokenInfo' (newVal, oldVal) {
+      const tokenId = this.currentTokenInfo.id
+      if (tokenId) {
         if (this.isMetaMaskNetworkRight && this.isMetaMaskConnected && this.currentAccount) {
-          this.currentTokenAmount = await this.updateTokenBalance(newVal)
-          this.currentTokenApprovedAmount = await this.getTokenApprovedAmount(newVal)
+          this.currentTokenAmount = await this.updateTokenBalance(this.currentTokenInfo)
+          if (!this.isEth(tokenId)) {
+            this.currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.currentTokenInfo)
+          }
         }
       }
+      this.$refs.createForm.validateField('token')
     },
     formData: {
       async handler (val, oldVal) {
@@ -325,8 +340,7 @@ export default {
       // console.log('querySearch queryString', queryString)
       let tokens = this.tokenOptions
       if (queryString) {
-        if (ethers.utils.isAddress(queryString)) { //  如果是一个地址，并和要求，则自动选中
-          // console.log('querySearch ethers.utils.isAddress', queryString)
+        if (ethers.utils.isAddress(queryString)) { //  如果是一个地址，并符合要求，则自动选中
           const provider = await getProvider()
           const signer = provider.getSigner()
           const tokenContract = new ethers.Contract(queryString, selectAbi(queryString), signer)
@@ -339,56 +353,55 @@ export default {
             tokens = {
               value: symbol,
               id: queryString,
+              address: queryString,
               name,
               symbol,
               decimals
             }
-            this.tokenOptions.push(tokens)
             this.currentTokenInfo = tokens
-            // console.log('querySearch ethers.utils.isAddress currentTokenInfo', this.currentTokenInfo)
           } catch (e) {
             this.$message({
               message: this.$t('home.checkAddress'),
               type: 'warning'
             })
           }
-        } else if (queryString.length > 20) {
-          this.$message({
-            message: this.$t('home.checkAddress'),
-            type: 'warning'
-          })
+        } else if (this.tokenMap[_.toLower(queryString)]) {
+          this.currentTokenInfo = this.tokenMap[_.toLower(queryString)]
+        } else {
+          this.currentTokenInfo = {} // 触发验证
+          // this.$message({
+          //   message: this.$t('home.checkAddress'),
+          //   type: 'warning'
+          // })
         }
       }
       cb(tokens)
     },
-    async updateTokenBalance (tokenName) {
+    async updateTokenBalance (tokenInfo) {
       const provider = await getProvider()
       const signer = provider.getSigner()
-      const tokenAddress = this.selectAddressByName(tokenName)
-      // console.log('updateTokenBalance', tokenName, tokenAddress)
+      const tokenAddress = tokenInfo.id
       let tokenAmount = 0
-      if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+      if (this.isEth(tokenAddress)) {
         const balance = await signer.getBalance()
         tokenAmount = ethers.utils.formatEther(balance)
       } else {
-        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(tokenName.toLowerCase()), signer)
+        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(_.toLower(tokenInfo.symbol)), signer)
         const balanceOf = await tokenContract.balanceOf(this.currentAccount)
-        tokenAmount = decimalsNumber(balanceOf, this.selectDecimalsByName(tokenName))
+        tokenAmount = decimalsNumber(balanceOf, tokenInfo.decimals)
       }
       return tokenAmount
     },
-    async getTokenApprovedAmount (tokenName) { // 获取已授权额度
-      const tokenAddress = this.selectAddressByName(tokenName)
+    async getTokenApprovedAmount (tokenInfo) { // 获取已授权额度
+      const tokenAddress = tokenInfo.id
       // 获得provider
       const provider = await getProvider()
       const signer = provider.getSigner()
 
       // this.tx.showMsg('检查授权额度')
-      const tokenContract = new ethers.Contract(tokenAddress, selectAbi(tokenName.toLowerCase()), signer)
+      const tokenContract = new ethers.Contract(tokenAddress, selectAbi(_.toLower(tokenInfo.symbol)), signer)
       const allowance = await tokenContract.allowance(this.currentAccount, process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-
-      const tokenDecimals = this.selectDecimalsByName(tokenName)
-      const amount = decimalsNumber(allowance, tokenDecimals)
+      const amount = decimalsNumber(allowance, tokenInfo.decimals)
 
       // side effect
       this.currentTokenApprovedAmount = amount
@@ -407,19 +420,30 @@ export default {
       this.formData.depositAmount = this.tokenMaxAmountSpend
     },
     async fetchSupportToken () {
-      const tokens = await this.$apollo.query({ query: SUPPORT_TOKENS })
-      this.tokenOptions = tokens.data.tokens.map(token => ({
+      const tokenData = await this.$apollo.query({ query: SUPPORT_TOKENS })
+      const tokenList = tokenData.data.tokens
+      /* [
+        {
+          decimals: "18"
+          id: "0x5c0c06c540f6182de0828af99520d6a71f796370"
+          name: "Graph Token"
+          symbol: "GRT"
+          __typename: "Token"
+        }
+      ]
+      */
+      this.tokenOptions = tokenList.map(token => ({
         ...token,
-        value: token.symbol
+        value: token.symbol,
+        address: token.id
       }))
+      this.tokenMap = _.reduce(tokenList, (ret, item) => {
+        ret[_.toLower(item.symbol)] = item
+        return ret
+      }, {})
+
       this.formData.token = this.tokenOptions[0].symbol
-      this.currentToken = this.tokenOptions[0].symbol
-    },
-    selectAddressByName (name) {
-      return this.tokenOptions.filter(token => token.symbol === name)[0].id
-    },
-    selectDecimalsByName (name) {
-      return this.tokenOptions.filter(token => token.symbol === name)[0].decimals
+      this.currentTokenInfo = this.tokenOptions[0]
     },
     async checkSubmitBtn () {
       // 0. 钱包已连接
@@ -446,6 +470,9 @@ export default {
       }
       this.isSubmitBtnEnabled = false
     },
+    isEth (address) {
+      return address === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+    },
     async approve () {
       try {
         this.tx.showDialog()
@@ -453,14 +480,17 @@ export default {
         const formData = this.formData
         const { depositAmount } = this.formData
 
-        const tokenDecimals = this.selectDecimalsByName(formData.token)
+        const tokenInfo = this.currentTokenInfo
+
+        const tokenDecimals = tokenInfo.decimals
         const decimalsAmount = ethers.utils.parseUnits(depositAmount, tokenDecimals)
-        const tokenAddress = this.selectAddressByName(formData.token)
+        const tokenAddress = tokenInfo.id
 
         // const accounts = await metamask.connectMetaMask()
         // console.log('connect metamask', accounts)
 
-        if (tokenAddress !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+        // 非 ETH
+        if (!this.isEth(tokenAddress)) {
           // 获得provider
           const provider = await getProvider()
           const signer = provider.getSigner()
@@ -475,12 +505,13 @@ export default {
 
           // 刷新
           console.log(' refresh getTokenApprovedAmount')
-          const amount = await this.getTokenApprovedAmount(this.currentToken)
+          const amount = await this.getTokenApprovedAmount(tokenInfo)
           console.log(' refresh getTokenApprovedAmount result', amount)
           this.$refs.createForm.validateField('depositAmount')
           this.checkSubmitBtn()
         }
       } catch (e) {
+        console.log('approve_failed', e)
         this.tx.showMsg(this.$t('home.Create.approve_failed'))
         setTimeout(() => {
           this.tx.showDialog(false)
@@ -501,9 +532,11 @@ export default {
           })
           return
         }
+        const tokenInfo = this.currentTokenInfo
+
         const formData = { ...this.formData }
-        const tokenDecimals = this.selectDecimalsByName(formData.token)
-        const tokenAddress = this.selectAddressByName(formData.token)
+        const tokenDecimals = tokenInfo.decimals
+        const tokenAddress = tokenInfo.id
         try {
           this.tx.showDialog()
           // this.tx.showMsg('请求连接钱包')
@@ -518,29 +551,13 @@ export default {
           const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
 
           let tx
-          if (tokenAddress === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+          if (this.isEth(tokenAddress)) {
             this.tx.showMsg(this.$t('home.checkData'))
             tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, { value: decimalsAmount })
           } else {
-            // this.tx.showMsg('检查授权额度')
-            // const tokenContract = new ethers.Contract(tokenAddress, selectAbi(formData.token.toLowerCase()), signer)
-            // const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-            //
-            // if (decimalsAmount.lte(allowance)) {
-            //   this.buttonState = 'start'
-            // } else {
-            //   this.tx.showMsg('请求用户授权')
-            //   this.buttonState = 'unlock'
-            //   const approveValue = decimalsAmount
-            //   const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
-            //   const approveResult = await approveTx.wait()
-            //   this.buttonState = 'start'
-            // }
             this.tx.showMsg(this.$t('home.Create.create_stream_start'))
-            // const txFetchBlock = await this.refreshLatestBlockNumber()
             tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
             console.log('tx', tx)
-            // this.tx.showMsg('开始创建\n 交易Hash:' + tx.hash)
           }
 
           const createStreamResult = await tx.wait()
