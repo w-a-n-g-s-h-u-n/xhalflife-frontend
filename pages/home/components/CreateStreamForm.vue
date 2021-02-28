@@ -379,19 +379,27 @@ export default {
       cb(tokens)
     },
     async updateTokenBalance (tokenInfo) {
-      const provider = await getProvider()
-      const signer = provider.getSigner()
-      const tokenAddress = tokenInfo.id
-      let tokenAmount = 0
-      if (this.isEth(tokenAddress)) {
-        const balance = await signer.getBalance()
-        tokenAmount = ethers.utils.formatEther(balance)
-      } else {
-        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(_.toLower(tokenInfo.symbol)), signer)
-        const balanceOf = await tokenContract.balanceOf(this.currentAccount)
-        tokenAmount = decimalsNumber(balanceOf, tokenInfo.decimals)
+      try {
+        const provider = await getProvider()
+        const signer = provider.getSigner()
+        const tokenAddress = tokenInfo.id
+        let tokenAmount = 0
+        if (this.isEth(tokenAddress)) {
+          const balance = await signer.getBalance()
+          tokenAmount = ethers.utils.formatEther(balance)
+        } else {
+          const tokenContract = new ethers.Contract(tokenAddress, selectAbi(_.toLower(tokenInfo.symbol)), signer)
+          const balanceOf = await tokenContract.balanceOf(this.currentAccount)
+          tokenAmount = decimalsNumber(balanceOf, tokenInfo.decimals)
+        }
+        return tokenAmount
+      } catch (e) {
+        console.error('updateTokenBalance error', e)
+        this.$message({
+          message: e.message,
+          type: 'warning'
+        })
       }
-      return tokenAmount
     },
     async getTokenApprovedAmount (tokenInfo) { // 获取已授权额度
       try {
@@ -423,7 +431,7 @@ export default {
       this.currentTokenInfo = item
     },
     maxAmount () {
-      this.formData.depositAmount = this.tokenMaxAmountSpend
+      this.formData.depositAmount = this.tokenMaxAmountSpend && this.tokenMaxAmountSpend.toString()
     },
     async fetchSupportToken () {
       const tokenData = await this.$apollo.query({ query: SUPPORT_TOKENS })
