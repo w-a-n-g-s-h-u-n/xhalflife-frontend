@@ -338,10 +338,13 @@ export default {
   methods: {
     ...mapActions(['refreshLatestBlockNumber', 'connectWallwet']),
     async querySearch (queryString, cb) {
-      // console.log('querySearch queryString', queryString)
+      console.log('querySearch queryString', queryString)
       let tokens = this.tokenOptions
       if (queryString) {
+        cb([]) // 关闭建议框
         if (ethers.utils.isAddress(queryString)) { //  如果是一个地址，并符合要求，则自动选中
+          console.log('querySearch queryString isAddress', queryString)
+
           const provider = await getProvider()
           const signer = provider.getSigner()
           const tokenContract = new ethers.Contract(queryString, selectAbi(queryString), signer)
@@ -361,6 +364,7 @@ export default {
             }
             this.currentTokenInfo = tokens
           } catch (e) {
+            console.log('get token info error', queryString, e)
             this.$message({
               message: this.$t('home.checkAddress'),
               type: 'warning'
@@ -375,8 +379,9 @@ export default {
           //   type: 'warning'
           // })
         }
+      } else {
+        cb(tokens)
       }
-      cb(tokens)
     },
     async updateTokenBalance (tokenInfo) {
       try {
