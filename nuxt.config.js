@@ -43,6 +43,7 @@ export default {
   plugins: [
     '@/plugins/element-ui',
     '@/plugins/fontawesome.js',
+    '@/plugins/jazzicon.js',
     '@/plugins/apollo',
     '@/plugins/i18n.js',
     '@/plugins/app-mounted.js',

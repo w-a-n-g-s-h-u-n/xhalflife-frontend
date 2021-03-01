@@ -10,9 +10,10 @@
         </el-button>
       </template>
 
-      <el-button v-if="isMetaMaskConnected" round type="success" @click="accountDialog = true">
-        {{ metamask.account | addr }}
-      </el-button>
+      <div v-if="isMetaMaskConnected" class="accountBtn" @click="accountDialog = true">
+        <Avarter :address="metamask.account" :size="14"/>
+        <div>{{ metamask.account | addr }}</div>
+      </div>
       <el-button v-else type="primary" round :size="isMobile ? 'small' : 'medium'" @click="accountDialog = true">
         {{ $t('login.Connect') }}
       </el-button>
@@ -37,6 +38,7 @@ import metamask from '@/api/wallet/metamask'
 import { mapGetters, mapState } from 'vuex'
 import { isMobile } from '@/utils/index'
 import * as config from '@/config'
+import Avarter from './Avatar';
 export default {
   name: 'Login',
   data () {
@@ -45,6 +47,9 @@ export default {
       accountDialog: false,
       isMobile: isMobile()
     }
+  },
+  components: {
+    Avarter
   },
   computed: {
     ...mapState(['metamask']),
@@ -77,6 +82,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .btn{
+    display: flex;
+  }
   .userManage {
     .wallet {
       width: 100%;
@@ -86,6 +94,22 @@ export default {
       margin-bottom: 10px;
       margin-left: 0;
     }
+  }
+
+  .accountBtn{
+    margin-left: 24px;
+    background: transparent;
+    border: 1px solid rgb(65, 71, 107) !important;
+    box-sizing: border-box;
+    color:#fff;
+    width:160px;
+    padding: 0 16px;
+    height: 44px;
+    border-radius: 22px;
+    display: flex; 
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center
   }
 
   @media (max-width: 768px) {

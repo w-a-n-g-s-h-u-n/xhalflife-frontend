@@ -1,11 +1,11 @@
 import { XHalfLifeContract } from '@/api/contract';
-import multicall from 'xdefi-assets/abi/Multicall.json'
 import { ethers } from 'ethers'
+import { provider } from '@/api/contract/ethers';
+import {isKovanEnv} from '@/utils'
+import multicall from 'xdefi-assets/abi/Multicall.json'
 import registry from 'xdefi-assets/generated/pm/registry.homestead.json';
 import registryKovan from 'xdefi-assets/generated/pm/registry.kovan.json';
-import {isKovanEnv} from '../../../utils';
 import halflifeContract from '@/api/contract/abis/XHalfLife.json'
-import { provider } from '@/api/contract/ethers';
 
 const addresses = isKovanEnv() ? registryKovan.addresses : registry.addresses;
 
