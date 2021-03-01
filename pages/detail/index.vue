@@ -349,7 +349,7 @@ export default {
       }
 
       // 检查已授权
-      if (isEth(this.currentTokenInfo.id)) {
+      if (!isEth(this.currentTokenInfo.id)) {
         const currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.detail.token)
         this.currentTokenApprovedAmount = currentTokenApprovedAmount
         if (BigNumber(currentTokenApprovedAmount).lt(value)) {
