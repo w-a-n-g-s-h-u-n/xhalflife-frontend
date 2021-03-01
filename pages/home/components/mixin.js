@@ -6,6 +6,8 @@ import multicall from 'xdefi-assets/abi/Multicall.json'
 import registry from 'xdefi-assets/generated/pm/registry.homestead.json';
 import registryKovan from 'xdefi-assets/generated/pm/registry.kovan.json';
 import halflifeContract from '@/api/contract/abis/XHalfLife.json'
+import {mapGetters} from "vuex"
+import {NETWORK_CONFIG} from '@/config'
 
 const addresses = isKovanEnv() ? registryKovan.addresses : registry.addresses;
 
@@ -18,6 +20,12 @@ export default {
       reqCount: {} // 请求次数
     }
   },
+  computed:{
+    ...mapGetters(['metamaskChainId']),
+    chainId(state){
+      return state.metamaskChainId
+    }
+  },
   methods: {
     async refreshBalanceOfStreams (ids) {
       if (ids && ids.length) {
@@ -27,18 +35,21 @@ export default {
       if (!this.streamIdQueue.length) {
         return
       }
+
+      const configs = NETWORK_CONFIG[this.chainId];
+      console.log(configs);
       const multi = new ethers.Contract(
-        addresses.multicall,
-        multicall.abi,
+        configs.addresses.multicall,
+        configs.abis.multicall,
         provider
       );
 
       const calls = [];
       const promises = [];
-      const xhalflifeContract = new ethers.utils.Interface(halflifeContract);
+      const xhalflifeContract = new ethers.utils.Interface(configs.abis.halflife);
 
       this.streamIdQueue.forEach(id => {
-        calls.push([halflifeContractAddress, xhalflifeContract.encodeFunctionData('balanceOf', [id])]);
+        calls.push([configs.addresses.halflife, xhalflifeContract.encodeFunctionData('balanceOf', [id])]);
       });
       promises.push(multi.aggregate(calls));
       try{
@@ -50,7 +61,6 @@ export default {
         })
       }catch (e){
         console.error(e)
-        //this.$message.error('error')
       }
     },
   }

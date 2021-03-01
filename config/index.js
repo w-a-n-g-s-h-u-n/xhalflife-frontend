@@ -10,13 +10,19 @@ export const CHAIN_LABEL = {
   // '0x5': 'Goerli'
 }
 
+console.log(registryKovan);
+
 // 不同网络不同合约地址 TODO
 export const NETWORK_CONFIG = {
   '0x2a': {
     ...registryKovan,
+    addresses:{
+      ...registryKovan.addresses,
+      halflife: "0x2891B0BeaF0765f254c80696Cd71Da398C4815B3"
+    },
     abis:{
       halflife: halflifeContract,
-      multicall: multicall
+      multicall: multicall.abi
     }
   }
 }
