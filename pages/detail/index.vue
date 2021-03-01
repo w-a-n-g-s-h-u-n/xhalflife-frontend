@@ -186,45 +186,80 @@
       </div>
     </div>
     <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
       :title="$t('detail.Withdraw')"
       :visible.sync="withdrawDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
-        <div style="padding: 10px;">
-          {{ $t('detail.TOTAL') }}: {{ withdrawable }} {{ detail.token.symbol }}
-        </div>
-        <el-input v-model="formWithdraw.amount" placeholder="">
-          <el-button slot="append" @click="maxAmount('withdraw')">
-            {{ $t('detail.MAX') }}
-          </el-button>
-        </el-input>
+        <!--        <div style="padding: 10px;">-->
+        <!--          {{ $t('detail.TOTAL') }}: {{ withdrawable }} {{ detail.token.symbol }}-->
+        <!--        </div>-->
+        <el-form
+          ref="withdrawForm"
+          label-position="top"
+          label-width="80px"
+          :model="formWithdraw"
+          :rules="withdrawRules"
+          :status-icon="true"
+          class="form"
+        >
+          <el-form-item :label="`${$t('detail.TOTAL')}： ${withdrawable} ${detail.token.symbol}`" prop="amount">
+            <el-input v-model="formWithdraw.amount" placeholder="">
+              <el-button slot="append" @click="maxAmount('withdraw')">
+                {{ $t('detail.MAX') }}
+              </el-button>
+            </el-input>
+          </el-form-item>
+        </el-form>
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" :disabled="withdrawing" :loading="withdrawing" @click="doWithdraw">{{ $t('detail.Confirm') }}</el-button>
+        <el-button type="primary" :disabled="withdrawing || formWithdraw.amount<=0" :loading="withdrawing" @click="doWithdraw">{{ $t('detail.Confirm') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
       :title="$t('detail.Fund')"
       :visible.sync="fundDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
       <div class="dialog-content">
-        <div style="padding: 10px;">
-          {{ $t('detail.TOTAL') }}: {{ currentTokenAmount }} {{ detail.token.symbol }}
-        </div>
-        <el-input v-model="formFund.amount" placeholder="">
-          <el-button slot="append" @click="maxAmount('fund')">
-            {{ $t('detail.MAX') }}
-          </el-button>
-        </el-input>
+        <!--        <div style="padding: 10px;">-->
+        <!--          {{ $t('detail.TOTAL') }}: {{ currentTokenAmount }} {{ detail.token.symbol }}-->
+        <!--        </div>-->
+        <el-form
+          ref="fundForm"
+          label-position="top"
+          label-width="80px"
+          :model="formFund"
+          :rules="fundRules"
+          :status-icon="true"
+          class="form"
+        >
+          <el-form-item :label="`${$t('detail.fund.amount')} ${$t('detail.TOTAL')}: ${currentTokenAmount } ${ detail.token.symbol}`" prop="amount">
+            <div style="display: flex;">
+              <el-input v-model="formFund.amount" placeholder="">
+                <el-button slot="append" @click="maxAmount('fund')">
+                  {{ $t('detail.MAX') }}
+                </el-button>
+              </el-input>
+              <el-button v-show="showApprove" style="margin-left: 2px;" round @click="approve">
+                {{ $t("home.Create.approve") }}
+              </el-button>
+            </div>
+          </el-form-item>
+        </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" :disabled="funding" :loading="funding" @click="doFund">{{ $t('detail.Confirm') }}</el-button>
+        <el-button type="primary" :disabled="funding || showApprove || formFund.amount<=0" :loading="funding" @click="doFund">{{ $t('detail.Confirm') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
       :title="$t('detail.Cancel')"
       :visible.sync="cancelDialogVisible"
       :width="isMobile ? '80%' : '30%'"
@@ -233,6 +268,20 @@
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" :disabled="cancelling" :loading="cancelling" @click="doCancel">{{ $t('detail.Confirm') }}</el-button>
       </span>
+    </el-dialog>
+    <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :title="'资金授权'"
+      :visible.sync="tx.isDialogVisible"
+      :width="isMobile ? '80%' : '30%'"
+    >
+      <div style="text-align: center;">
+        <div style="margin-bottom:20px;">
+          <i class="el-icon-loading" />
+        </div>
+        {{ tx.msg }}
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -243,16 +292,84 @@ import { getProvider, provider } from '@/api/contract/ethers'
 import metamask from '@/api/wallet/metamask'
 import { ethers } from 'ethers'
 import XHalfLifeABI from '@/api/contract/abis/XHalfLife'
-import { mapState } from 'vuex'
-import { isMobile, statusedList, decimalsNumber } from '@/utils/index'
+import { mapGetters, mapState } from 'vuex'
+import { isMobile, statusedList, decimalsNumber, isEth } from '@/utils/index'
+import _ from 'lodash'
 
 import { BigNumber } from 'bignumber.js'
 import web3 from 'web3'
 export default {
   name: 'Detail',
   data () {
+    // withdraw
+    const checkWithdrawAmount = async (rule, value, callback) => {
+      const v = BigNumber(value)
+      if (!v.isFinite()) {
+        callback(new Error(this.$t('home.Create.should_be_a_number')))
+        return
+      }
+      // 最小值限制
+      if (v.lt(0.0001)) {
+        callback(new Error(this.$t('home.Create.deposit_amount_is_too_small')))
+        return
+      }
+
+      const max = this.withdrawable
+      console.log('checkWithdrawAmount', value, max)
+      if (BigNumber(max).lt(value)) { // !!! 直接使用value，否则使用Number转换后的会丢失精度
+        callback(new Error(this.$t('home.Create.deposit_amount_is_too_big')))
+        return
+      }
+
+      callback()
+    }
+    const withdrawRules = {
+      amount: [
+        { required: true, message: this.$t('detail.withdraw.require_amount_field'), trigger: 'change' },
+        { validator: checkWithdrawAmount, message: '', trigger: 'change' }
+      ]
+    }
+
+    // fund
+    const checkFundAmount = async (rule, value, callback) => {
+      const v = BigNumber(value)
+      if (!v.isFinite()) {
+        callback(new Error(this.$t('home.Create.should_be_a_number')))
+        return
+      }
+      // 最小值限制
+      if (v.lt(0.0001)) {
+        callback(new Error(this.$t('home.Create.deposit_amount_is_too_small')))
+        return
+      }
+      const max = this.tokenMaxAmountSpend
+      if (BigNumber(max).lt(value)) { // !!! 直接使用value，否则使用Number转换后的会丢失精度
+        callback(new Error(this.$t('home.Create.deposit_amount_is_too_big')))
+        return
+      }
+
+      // 检查已授权
+      if (isEth(this.currentTokenInfo.id)) {
+        const currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.detail.token)
+        this.currentTokenApprovedAmount = currentTokenApprovedAmount
+        if (BigNumber(currentTokenApprovedAmount).lt(value)) {
+          callback(new Error(this.$t('home.Create.approved_amount_is_too_small')))
+          return
+        }
+      }
+
+      callback()
+    }
+    const fundRules = {
+      amount: [
+        { required: true, message: this.$t('detail.fund.require_amount_field'), trigger: 'change' },
+        { validator: checkFundAmount, message: '', trigger: 'change' }
+      ]
+    }
+
     return {
       id: 0,
+      streamId: 0, // 同id
       page: 1,
       limit: 10,
       total: 0,
@@ -268,7 +385,10 @@ export default {
         }
       },
       withdrawable: 0,
+      currentTokenInfo: {},
       currentTokenAmount: 0,
+      currentTokenApprovedAmount: 0,
+
       withdrawDialogVisible: false,
       fundDialogVisible: false,
       cancelDialogVisible: false,
@@ -276,16 +396,34 @@ export default {
       withdrawing: false,
       funding: false,
       cancelling: false,
-      formWithdraw: {
-        amount: 0
-      },
       isMobile: isMobile(),
+
+      // 赎回
+      withdrawRules,
+      formWithdraw: {
+        amount: undefined
+      },
+
+      // 追加
+      fundRules,
       formFund: {
-        amount: 0
+        amount: undefined
+      },
+
+      tx: {
+        isDialogVisible: false,
+        msg: this.$t('home.Create.waiting'),
+        showDialog (tag = true) {
+          this.isDialogVisible = tag
+        },
+        showMsg (msg) {
+          this.msg = msg || 'Wating...'
+        }
       }
     }
   },
   computed: {
+    ...mapGetters(['isMetaMaskConnected', 'currentAccount', 'isMetaMaskNetworkRight']),
     ...mapState({
       blockNumber (state) {
         return state.blockNumber
@@ -312,6 +450,14 @@ export default {
     canCancel () {
       const yes = this.account && (this.account === this.detail.recipient || this.account === this.detail.sender) && !this.detail.isCanceled
       return yes
+    },
+
+    showApprove () {
+      let show = false
+      if (this.isMetaMaskNetworkRight && this.isMetaMaskConnected && this.currentAccount && this.formFund.amount > 0) {
+        show = Number(this.currentTokenApprovedAmount) === 0 || BigNumber(this.currentTokenApprovedAmount).lt(this.formFund.amount)
+      }
+      return show
     }
   },
   watch: {
@@ -323,26 +469,43 @@ export default {
       this.detail.txs && this.showImg(this.detail)
     },
     'detail.token.id' (newVal, oldVal) {
+      console.log('watch detail.token.id', newVal)
       if (newVal) {
         this.tokenBalance()
       }
     }
   },
-  mounted () {
+  async mounted () {
     const id = this.$route.query && this.$route.query.id
     this.id = id
+    this.streamId = id
     this.detail = { ...this.detail, ...this.detailCache[id] }
     this.total = this.detail.txs ? this.detail.txs.length : 0
     this.detail.txs && this.formData(this.detail.txs)
     this.$store.dispatch('refreshLatestBlockNumber')
     this.detail.txs && this.show(this.detail)
+    if (this.detail.token) {
+      this.currentTokenInfo = this.detail.token
+    }
+
     // 请求最新
-    if (id) {
-      this.getDetail(id)
-      this.getStreamBalance(id)
+    await this.refresh()
+
+    const tokenId = this.detail.token && this.detail.token.id
+    if (tokenId) {
+      if (isEth(tokenId)) {
+        this.currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.detail.token)
+      }
     }
   },
   methods: {
+    async refresh () {
+      const streamId = this.id
+      if (streamId) {
+        await this.getDetail(streamId)
+        await this.getStreamBalance(streamId)
+      }
+    },
     handleSizeChange (val) {
     },
     handleCurrentChange (val) {
@@ -398,25 +561,57 @@ export default {
         }
       })
     },
+
     async tokenBalance () {
+      console.log('tokenBalance', this.detail.token)
       const provider = await getProvider()
       const signer = await provider.getSigner()
-      if (this.detail.token.id) {
-        if (this.detail.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-          const balance = await signer.getBalance()
-          this.currentTokenAmount = ethers.utils.formatEther(balance)
+      try {
+        if (this.detail.token.id) {
+          if (this.detail.token.id === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+            const balance = await signer.getBalance()
+            this.currentTokenAmount = ethers.utils.formatEther(balance)
+          } else {
+            const tokenContract = new ethers.Contract(this.detail.token.id, selectAbi(this.detail.token.symbol), signer)
+            const balanceOf = await tokenContract.balanceOf(this.account)
+            this.currentTokenAmount = decimalsNumber(balanceOf, this.detail.token.decimals)
+          }
         } else {
-          const tokenContract = new ethers.Contract(this.detail.token.id, selectAbi(this.detail.token.symbol), signer)
-          const balanceOf = await tokenContract.balanceOf(this.account)
-          this.currentTokenAmount = decimalsNumber(balanceOf, this.detail.token.decimals)
+          this.currentTokenAmount = 0
         }
-      } else {
+      } catch (e) {
+        console.error('tokenBalance error', e)
         this.currentTokenAmount = 0
+      }
+    },
+    async getTokenApprovedAmount () { // 获取已授权额度
+      const tokenInfo = this.detail.token
+      try {
+        const tokenAddress = tokenInfo.id
+        // 获得provider
+        const provider = await getProvider()
+        const signer = provider.getSigner()
+
+        // this.tx.showMsg('检查授权额度')
+        const tokenContract = new ethers.Contract(tokenAddress, selectAbi(_.toLower(tokenInfo.symbol)), signer)
+        const allowance = await tokenContract.allowance(this.currentAccount, process.env.XHALFLIFE_CONTRACT_ADDTRESS)
+        const amount = decimalsNumber(allowance, tokenInfo.decimals)
+
+        // side effect
+        this.currentTokenApprovedAmount = amount
+        //  主动触发一次验证
+        return amount
+      } catch (e) {
+        console.error('getTokenApprovedAmount', e)
+        return 0
       }
     },
     async getDetail (id) {
       const ret = await this.$apollo.query({ query: STREAM_DETAIL, variables: { id: Number(id) } })
-      this.$store.commit('updateSteamDetail', ret.data.streams && statusedList(ret.data.streams)[0])
+      const detail = ret.data.streams && statusedList(ret.data.streams)[0]
+      this.$store.commit('updateSteamDetail', detail)
+      // side effect
+      this.currentTokenInfo = detail.token
     },
     async getStreamBalance (id) {
       try {
@@ -427,22 +622,8 @@ export default {
         console.error(e)
       }
     },
+
     async doWithdraw () {
-      // TODO
-      if (!this.formWithdraw.amount > 0) {
-        this.$message({
-          message: this.$t('detail.Invalid'),
-          type: 'warning'
-        })
-        return
-      }
-      if (!this.formWithdraw.amount > this.detail.withdrawable) {
-        this.$message({
-          message: this.$t('detail.Invalid'),
-          type: 'warning'
-        })
-        return
-      }
       this.withdrawing = true
 
       try {
@@ -466,36 +647,20 @@ export default {
         })
         this.withdrawing = false
         this.withdrawDialogVisible = false
-        this.getDetail(streamId)
-        this.getStreamBalance(streamId)
+        this.refresh()
       } catch (e) {
+        console.error('WithdrawFailed', e)
         this.$message({
-          message: e.message,
+          message: this.$t('detail.WithdrawFailed'), // e.message,
           type: 'warning'
         })
         this.withdrawing = false
         this.withdrawDialogVisible = false
+        this.refresh()
       }
     },
     async doFund () {
-      // TODO
-      if (!this.formFund.amount > 0) {
-        this.$message({
-          message: this.$t('detail.NumMin'),
-          type: 'warning'
-        })
-        return
-      }
-      if (!this.formFund.amount > this.detail.withdrawable) {
-        this.$message({
-          message: this.$t('detail.NumMax'),
-          type: 'warning'
-        })
-        return
-      }
-
       this.funding = true
-
       try {
         // 获得provider
         const provider = await getProvider()
@@ -503,32 +668,13 @@ export default {
         const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
         const tokenContract = new ethers.Contract(this.detail.token.id, selectAbi(this.detail.token.symbol), signer)
 
-        const accounts = await metamask.connectMetaMask()
-        if (!accounts.length) {
-          this.$message({
-            message: this.$t('home.Need'),
-            type: 'warning'
-          })
-          return
-        }
-
         // 表单数据
         this.formFund.streamId = this.id
         const { streamId } = this.formFund
         const decimaledAmount = ethers.utils.parseUnits(this.formFund.amount, this.detail.token.decimals).toString()
 
         let tx
-        if (this.detail.token.id !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-          // 查看 XHALFLIFE_CONTRACT的已有授权额度， 不够则出发approve流程
-          const allowance = await tokenContract.allowance(accounts[0], process.env.XHALFLIFE_CONTRACT_ADDTRESS)
-          const depositAmountBig = ethers.BigNumber.from(decimaledAmount)
-          if (depositAmountBig.lte(allowance)) {
-          } else {
-            // approve
-            const approveValue = depositAmountBig.sub(allowance)
-            const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
-            const approveResult = await approveTx.wait()
-          }
+        if (!isEth(this.detail.token.id)) {
           tx = await contract.fundStream(streamId, decimaledAmount.toString())
         } else {
           tx = await contract.fundStream(streamId, decimaledAmount.toString(), { value: decimaledAmount.toString() })
@@ -540,15 +686,17 @@ export default {
         })
         this.funding = false
         this.fundDialogVisible = false
-        this.getDetail(streamId)
-        this.getStreamBalance(streamId)
+        this.refresh()
       } catch (e) {
+        console.error('FundFailed', e)
+
         this.$message({
-          message: e.message,
+          message: this.$t('detail.FundFailed'), // e.message,
           type: 'warning'
         })
         this.funding = false
         this.fundDialogVisible = false
+        this.refresh()
       }
     },
     async doCancel () {
@@ -578,13 +726,16 @@ export default {
         })
         this.cancelling = false
         this.cancelDialogVisible = false
+        this.refresh()
       } catch (e) {
+        console.error('CancelFailed', e)
         this.$message({
-          message: e.message,
+          message: this.$t('detail.CancelFailed'), // e.message,
           type: 'warning'
         })
         this.cancelling = false
         this.cancelDialogVisible = false
+        this.refresh()
       }
     },
     maxAmount (type) {
@@ -596,6 +747,54 @@ export default {
     },
     cellStyle (obj) {
       return 'background-color:#272958;border-bottom-color:#2E2F5C;color:#7E7F9C;'
+    },
+
+    async approve () {
+      try {
+        this.tx.showDialog()
+        this.tx.showMsg(this.$t('home.Create.approve_start'))
+        const formData = this.formFund
+        const tokenInfo = this.currentTokenInfo
+
+        const tokenDecimals = tokenInfo.decimals
+        const decimalsAmount = ethers.utils.parseUnits(formData.amount, tokenDecimals)
+        const tokenAddress = tokenInfo.id
+
+        // const accounts = await metamask.connectMetaMask()
+        // console.log('connect metamask', accounts)
+
+        // 非 ETH
+        if (isEth(tokenAddress)) {
+          // 获得provider
+          const provider = await getProvider()
+          const signer = provider.getSigner()
+          const tokenContract = new ethers.Contract(tokenAddress, selectAbi(tokenInfo.id.toLowerCase()), signer)
+
+          const approveValue = decimalsAmount
+          const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
+          const approveResult = await approveTx.wait()
+          console.log('approveResult', approveResult)
+          this.tx.showMsg(this.$t('home.Create.approve_success'))
+          this.tx.showDialog(false)
+
+          // 刷新
+          console.log(' refresh getTokenApprovedAmount')
+          const amount = await this.getTokenApprovedAmount(tokenInfo)
+          console.log(' refresh getTokenApprovedAmount result', amount)
+          this.$refs.fundForm.validateField('amount')
+          // this.checkSubmitBtn()
+        }
+      } catch (e) {
+        console.log('approve_failed', e)
+        this.tx.showMsg(this.$t('home.Create.approve_failed'))
+        setTimeout(() => {
+          this.tx.showDialog(false)
+        }, 1000)
+        this.$message({
+          message: this.$t('home.Approve.Failure'), // e.message + e.code,
+          type: 'warning'
+        })
+      }
     }
   }
 }

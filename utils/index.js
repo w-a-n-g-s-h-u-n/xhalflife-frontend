@@ -9,7 +9,7 @@ export const extend = (app, mixin) => {
 }
 
 export const isKovanEnv = () => {
-  return Boolean(window.location.host.includes('kovan'));
+  return Boolean(window.location.host.includes('kovan'))
 }
 
 export const statusedList = (list) => {
@@ -40,9 +40,14 @@ export const isMobile = () => {
   return flag
 }
 
+export const isEth = (address) => {
+  return address === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+}
+
 export default {
   extend,
   statusedList,
   decimalsNumber,
-  isMobile
+  isMobile,
+  isEth
 }
