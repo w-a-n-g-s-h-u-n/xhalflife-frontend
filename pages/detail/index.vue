@@ -216,7 +216,7 @@
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" :disabled="withdrawing || formWithdraw.amount<=0" :loading="withdrawing" @click="doWithdraw">{{ $t('detail.Confirm') }}</el-button>
+        <el-button type="primary" :disabled="isWithdrawBtnDisabled" :loading="withdrawing" @click="doWithdraw">{{ $t('detail.Confirm') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -254,7 +254,7 @@
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" :disabled="funding || showApprove || formFund.amount<=0" :loading="funding" @click="doFund">{{ $t('detail.Confirm') }}</el-button>
+        <el-button type="primary" :disabled="isFundBtnDisabled" :loading="funding" @click="doFund">{{ $t('detail.Confirm') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -436,6 +436,23 @@ export default {
       },
       account (state) {
         return state.metamask && state.metamask.account
+      },
+      isWithdrawBtnDisabled () {
+        return this.withdrawing || !this.formWithdraw.amount || this.formWithdraw.amount <= 0 || BigNumber(this.formWithdraw.amount).gt(this.withdrawable)
+      },
+      isFundBtnDisabled () {
+        return this.funding || this.showApprove || !this.formFund.amount || this.formFund.amount <= 0 || BigNumber(this.formFund.amount).gt(this.currentTokenAmount)
+      },
+      tokenMaxAmountSpend () {
+        let amount = 0
+        if (this.currentTokenInfo && this.currentTokenAmount && _.isFinite(Number(this.currentTokenAmount))) {
+          if (isEth(this.currentTokenInfo.id)) {
+            amount = BigNumber(this.currentTokenAmount).minus(0.01).toString() // TODO 可配置
+          } else {
+            amount = Number(this.currentTokenAmount)
+          }
+        }
+        return amount
       }
 
     }),
@@ -624,6 +641,18 @@ export default {
     },
 
     async doWithdraw () {
+      this.$refs.withdrawForm.validate(async (valid) => {
+        if (!valid) {
+          this.$message({
+            message: this.$t('home.checkData'),
+            type: 'warning'
+          })
+          return
+        }
+        this._doWithdraw()
+      })
+    },
+    async  _doWithdraw () {
       this.withdrawing = true
 
       try {
@@ -659,7 +688,21 @@ export default {
         this.refresh()
       }
     },
+
     async doFund () {
+      this.$refs.fundForm.validate(async (valid) => {
+        if (!valid) {
+          this.$message({
+            message: this.$t('home.checkData'),
+            type: 'warning'
+          })
+          return
+        }
+        this._doWithdraw()
+      })
+    },
+
+    async _doFund () {
       this.funding = true
       try {
         // 获得provider
