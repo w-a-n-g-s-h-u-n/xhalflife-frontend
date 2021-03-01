@@ -783,8 +783,8 @@ export default {
     },
     maxAmount (type) {
       if (type === 'fund') {
-        this.formFund.amount = this.currentTokenAmount
-      } else if (type === 'withdraw') {
+        this.formFund.amount = this.tokenMaxAmountSpend // 区分eth和其他币种
+      } else if (type === 'withdraw') { // 不区分eth
         this.formWithdraw.amount = ethers.utils.formatUnits(this.detail.withdrawable, this.detail.token.decimals)
       }
     },
