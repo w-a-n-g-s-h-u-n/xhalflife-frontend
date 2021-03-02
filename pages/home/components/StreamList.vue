@@ -132,7 +132,7 @@ export default {
       const ret = await this.$apollo.query({ query: STREAM_LIST, variables: { first: this.query.limit, lastID: this.query.page === 1 ? this.total : this.lastID} })
 
       const statusList = statusedList(ret.data.streams)
-      this.homeListData=statusList
+      this.homeListData = statusList
       this.$store.commit('updateSteamList', { key: 'homeList', value: statusList })
       let arr = []
       statusList.map((obj,id)=>{
