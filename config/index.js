@@ -12,8 +12,6 @@ export const CHAIN_WHITE_LIST_MAP = {
   // '0x5': 'Goerli'
 }
 
-console.log(registryKovan)
-
 // 不同网络不同合约地址 TODO
 export const CHAIN_CONFIG = {
   '0x2a': {
