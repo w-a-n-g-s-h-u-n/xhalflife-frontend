@@ -7,7 +7,7 @@ import registry from 'xdefi-assets/generated/pm/registry.homestead.json';
 import registryKovan from 'xdefi-assets/generated/pm/registry.kovan.json';
 import halflifeContract from '@/api/contract/abis/XHalfLife.json'
 import {mapGetters} from "vuex"
-import {NETWORK_CONFIG} from '@/config'
+import {CHAIN_CONFIG} from '@/config'
 
 const addresses = isKovanEnv() ? registryKovan.addresses : registry.addresses;
 
@@ -36,7 +36,7 @@ export default {
         return
       }
 
-      const configs = NETWORK_CONFIG[this.chainId];
+      const configs = CHAIN_CONFIG[this.chainId];
       console.log(configs);
       const multi = new ethers.Contract(
         configs.addresses.multicall,

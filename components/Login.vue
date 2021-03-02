@@ -6,7 +6,7 @@
       </el-button>
       <template v-else>
         <el-button v-if="metamaskChainId && metamaskChainId!='0x1'" type="text">
-          {{ CHAIN_LABEL[metamaskChainId] || metamaskChainId }}
+          {{ CHAIN_WHITE_LIST_MAP[metamaskChainId] || metamaskChainId }}
         </el-button>
       </template>
 
@@ -43,7 +43,7 @@ export default {
   name: 'Login',
   data () {
     return {
-      CHAIN_LABEL: config.CHAIN_LABEL,
+      CHAIN_WHITE_LIST_MAP: config.CHAIN_WHITE_LIST_MAP,
       accountDialog: false,
       isMobile: isMobile()
     }
@@ -106,7 +106,7 @@ export default {
     padding: 0 16px;
     height: 44px;
     border-radius: 22px;
-    display: flex; 
+    display: flex;
     justify-content: space-between;
     flex-wrap: nowrap;
     align-items: center
