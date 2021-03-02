@@ -40,7 +40,7 @@
   "home.Create.should_be_an_address": "Should be an address",
   "home.Create.recipentCantBeCurrentUser": "Recipent can't be current account",
   "home.Create.should_be_a_number": "Should be a number",
-  "home.Create.deposit_amount_is_too_small": "Deposit amount should not be less than 0.001",
+  "home.Create.deposit_amount_is_too_small": "Deposit amount should not be less than 0.0001",
   "home.Create.deposit_amount_is_too_big": "Deposit amount id bigger than max available",
   "home.Create.approved_amount_is_too_small": "Deposit amount is bigger than approved amount, please approve again",
   "home.Create.block_number_is_too_small": "Start block should bigger then current block number",
