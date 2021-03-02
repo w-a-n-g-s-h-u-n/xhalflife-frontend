@@ -589,10 +589,10 @@ export default {
           let tx
           if (this.isEth(tokenAddress)) {
             this.tx.showMsg(this.$t('home.checkData'))
-            tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, false, { value: decimalsAmount })
+            tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, true, { value: decimalsAmount })
           } else {
             this.tx.showMsg(this.$t('home.Create.create_stream_start'))
-            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio, false)
+            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio, true)
             console.log('tx', tx)
           }
 

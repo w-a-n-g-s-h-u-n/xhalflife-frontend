@@ -43,6 +43,7 @@ import { isMobile, decimalsNumber } from '@/utils/index'
 import { ethers } from 'ethers'
 import { getProvider, provider } from '@/api/contract/ethers'
 import XhalfLife from '@/api/contract/abis/XHalfLife.json'
+import {mapGetters} from 'vuex';
 
 export default {
   components: {
@@ -63,6 +64,12 @@ export default {
   mounted () {
     this.getStreamStats()
   },
+  computed: {
+    ...mapGetters(['metamaskChainId']),
+    chainId (state) {
+      return state.metamaskChainId
+    }
+  },
   methods: {
     onSwitchTab (v) {
       this.$nextTick(() => {
@@ -76,9 +83,9 @@ export default {
       },5000)
     },
     async getStreamStats () {
-      const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: process.env.XDEX_TOKEN_ADDRESS.toLowerCase() } })
+      const ret = await this.$apollo.query({ query: STREAM_GET_TOTAL_DATA, variables: { id: '0xa98ed4CBA3e52DCd2400A6a9A999111612F5a6f9'.toLowerCase() } })
       //const provider = await getProvider()
-      const proxyContract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XhalfLife, provider)
+      const proxyContract = new ethers.Contract('0x5da00A4C0dEbBe661d47CC51233726Ad7b50f490', XhalfLife, provider)
       const totalStreams = await proxyContract.nextStreamId()
       const totalStream = decimalsNumber(totalStreams, 0)
 
