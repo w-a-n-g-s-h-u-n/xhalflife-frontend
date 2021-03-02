@@ -1,6 +1,6 @@
 import { getProvider, provider } from '@/api/contract/ethers'
 import { decimalsNumber } from '@/utils/index'
-import { CHAIN_LABEL } from '@/config'
+import { CHAIN_WHITE_LIST_MAP } from '@/config'
 import metamask from '@/api/wallet/metamask'
 const initialMetamask = {
   account: null,
@@ -104,7 +104,7 @@ export const getters = {
     return !!state.metamask.account
   },
   isMetaMaskNetworkRight: (state) => {
-    return CHAIN_LABEL[state.metamask.chainId] //  是否在支持列表里
+    return CHAIN_WHITE_LIST_MAP[state.metamask.chainId] //  是否在支持列表里
   },
   currentAccount: (state) => {
     return state.metamask.account
