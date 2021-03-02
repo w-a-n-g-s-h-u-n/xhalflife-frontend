@@ -39,7 +39,7 @@
   "home.Create.should_be_an_address": "请检查地址格式地址",
   "home.Create.recipentCantBeCurrentUser": "接受者不能和当前账户相同",
   "home.Create.should_be_a_number": "不是一个数字",
-  "home.Create.deposit_amount_is_too_small": "最小值应大于0.001",
+  "home.Create.deposit_amount_is_too_small": "最小值应大于0.0001",
   "home.Create.deposit_amount_is_too_big": "输入值超过最大可提取值",
   "home.Create.approved_amount_is_too_small": "输入值超过已授权额度，请点击右侧增加授权额度",
   "home.Create.block_number_is_too_small": "起始区块值需大于当前区块",

@@ -465,6 +465,8 @@ export default {
       this.currentTokenInfo = this.tokenOptions[0]
     },
     async checkSubmitBtn () {
+      console.log('checkSubmitBtn', this.formData)
+
       // 0. 钱包已连接
       // 1. 所有required字段非空
       // 2. 所有非空字段通过校验
@@ -477,14 +479,18 @@ export default {
       if (formData.token && formData.recipient && formData.depositAmount &&
         formData.startBlock &&
         formData.kBlock && formData.unlockRatio) {
-        const valid = await this.$refs.createForm.validate()
-        console.log('formData validate', valid, formData)
-        if (valid) {
-          this.isSubmitBtnEnabled = true
-          return
-        } else {
-          this.isSubmitBtnEnabled = false
-          return
+        try {
+          const valid = await this.$refs.createForm.validate()
+          console.log('formData validate', valid, formData)
+          if (valid) {
+            this.isSubmitBtnEnabled = true
+            return
+          } else {
+            this.isSubmitBtnEnabled = false
+            return
+          }
+        } catch (e) {
+          console.error('refs.createForm.validate', e)
         }
       }
       this.isSubmitBtnEnabled = false
