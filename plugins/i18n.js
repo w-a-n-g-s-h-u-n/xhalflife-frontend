@@ -12,6 +12,8 @@ const i18n = new VueI18n({
   }
 })
 
+console.log(window.location.search);
+
 export default ({
   app,
   store
