@@ -111,7 +111,7 @@ export default {
     },
     lastID() {
       return this.total - (this.query.page - 1) * this.query.limit
-    }
+    },
   }),
   created () {
     if(this.total > 0){

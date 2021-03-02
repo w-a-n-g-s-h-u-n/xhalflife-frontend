@@ -38,7 +38,7 @@ export default {
       const calls = []
       const xhalflifeContract = new ethers.utils.Interface(configs.abis.halflife)
       this.streamIdQueue.forEach((id) => {
-        calls.push([process.env.XHALFLIFE_CONTRACT_ADDTRESS, xhalflifeContract.encodeFunctionData('balanceOf', [id])])
+        calls.push([configs.addresses.xHalfLife, xhalflifeContract.encodeFunctionData('balanceOf', [id])])
       })
       try {
         // @ts-ignore

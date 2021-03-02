@@ -113,6 +113,8 @@ import { selectAbi } from '@/api/contract'
 import { decimalsNumber } from '@/utils'
 import _ from 'lodash'
 import { BigNumber } from 'bignumber.js'
+import { CHAIN_CONFIG } from '@/config'
+
 
 export default {
   name: 'CreateStreamForm',
@@ -279,6 +281,9 @@ export default {
   computed: {
     ...mapGetters(['isMetaMaskConnected', 'currentAccount', 'isMetaMaskNetworkRight']),
     ...mapState({
+      chainId(state) {
+        return state.metamask.chainId
+      },
       blockNumber (state) {
         return state.blockNumber
       },
@@ -413,9 +418,13 @@ export default {
         const provider = await getProvider()
         const signer = provider.getSigner()
 
+        const configs = CHAIN_CONFIG[this.chainId]
+
+        console.log(configs);
+
         // this.tx.showMsg('检查授权额度')
         const tokenContract = new ethers.Contract(tokenAddress, selectAbi(_.toLower(tokenInfo.symbol)), signer)
-        const allowance = await tokenContract.allowance(this.currentAccount, process.env.XHALFLIFE_CONTRACT_ADDTRESS)
+        const allowance = await tokenContract.allowance(this.currentAccount, configs.addresses.xHalfLife)
         const amount = decimalsNumber(allowance, tokenInfo.decimals)
 
         // side effect
@@ -519,10 +528,11 @@ export default {
           // 获得provider
           const provider = await getProvider()
           const signer = provider.getSigner()
+          const configs = CHAIN_CONFIG[this.chainId]
           const tokenContract = new ethers.Contract(tokenAddress, selectAbi(this.formData.token.toLowerCase()), signer)
 
           const approveValue = decimalsAmount
-          const approveTx = await tokenContract.approve(process.env.XHALFLIFE_CONTRACT_ADDTRESS, approveValue)
+          const approveTx = await tokenContract.approve(configs.addresses.xHalfLife, approveValue)
           const approveResult = await approveTx.wait()
           console.log('approveResult', approveResult)
           this.tx.showMsg(this.$t('home.Create.approve_success'))
@@ -573,15 +583,16 @@ export default {
           // 获得provider
           const provider = await getProvider()
           const signer = provider.getSigner()
-          const contract = new ethers.Contract(process.env.XHALFLIFE_CONTRACT_ADDTRESS, XHalfLifeABI, signer)
+          const configs = CHAIN_CONFIG[this.chainId]
+          const contract = new ethers.Contract(configs.addresses.xHalfLife, configs.abis.halflife, signer)
 
           let tx
           if (this.isEth(tokenAddress)) {
             this.tx.showMsg(this.$t('home.checkData'))
-            tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, { value: decimalsAmount })
+            tx = await contract.createEtherStream(recipient, startBlock, kBlock, decimalsRatio, false, { value: decimalsAmount })
           } else {
             this.tx.showMsg(this.$t('home.Create.create_stream_start'))
-            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio)
+            tx = await contract.createStream(tokenAddress, recipient, decimalsAmount.toString(), startBlock, kBlock, decimalsRatio, false)
             console.log('tx', tx)
           }
 
