@@ -1,31 +1,31 @@
 <template>
   <div class="navs">
-    <el-menu :default-active="activeIndex" class="navs" mode="horizontal" background-color="#161638" active-text-color="#fff">
+    <el-menu class="navs" mode="horizontal" background-color="#161638" active-text-color="#fff">
       <div
         v-for="(nav, index) in navs"
         :key="index"
       >
       <el-menu-item 
         v-if="!nav.childrens"
-        :index="index" 
+        :index="index.toString()" 
         :key="nav.name" 
         class='menuItem'
       >
         <a
-          :href="nav.name === 'halfLife' ? '/' : nav.href"
+          :href="nav.name === 'halfLife' ? '/' : `${nav.href}?lang=${$i18n.locale}`"
           :class="['d-inline', 'd-flex', 'nav-item', nav.name === 'halfLife' ? 'active' : '']"
         >
-          <div class='text'>{{ $i18n.locale === 'zh-CN' ? nav['name-zh'] : nav['name-en'] }}</div>
+          <div class='text'>{{ $i18n.locale.includes('zh') ? nav['name-zh'] : nav['name-en'] }}</div>
           <b class='indicator'></b>
         </a>
       </el-menu-item>
-      <el-submenu v-else :index="index" class='menuItem'>
-        <template slot="title" class='submenu-title'><div class='nav-item'>{{ $i18n.locale === 'zh-CN' ? nav['name-zh'] : nav['name-en'] }}</div></template>
+      <el-submenu v-else :index="index.toString()" class='menuItem'>
+        <template slot="title" class='submenu-title'><div class='nav-item'>{{ $i18n.locale.includes('zh') ? nav['name-zh'] : nav['name-en'] }}</div></template>
         <el-menu-item v-for="(child, childIndex) in nav.childrens" :key="`${index}-${childIndex}`" :index="`${index}-${childIndex}`" class="menuItemChild">
           <a
-            :href="child.href"
+            :href="`${child.href}?lang=${$i18n.locale}`"
           >
-            <div class='text'>{{ $i18n.locale === 'zh-CN' ? child['name-zh'] : child['name-en'] }}</div>
+            <div class='text'>{{ $i18n.locale.includes('zh') ? child['name-zh'] : child['name-en'] }}</div>
           </a>
         </el-menu-item>
       </el-submenu>
@@ -42,6 +42,12 @@ export default {
   data () {
     return {
       navs
+    }
+  },
+  created () {
+    const {lang = ''} = this.$route.query;
+    if(lang){
+      this.$i18n.locale = lang.includes('zh') ? 'zh-CN' : 'en-US';
     }
   }
 }
