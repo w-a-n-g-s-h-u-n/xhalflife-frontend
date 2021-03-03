@@ -20,7 +20,7 @@ export const CHAIN_CONFIG = {
     ...registryKovan,
     addresses: {
       ...registryKovan.addresses,
-      halflife: '0x2891B0BeaF0765f254c80696Cd71Da398C4815B3'
+      halflife: '0x5da00A4C0dEbBe661d47CC51233726Ad7b50f490'
     },
     abis: {
       halflife: halflifeContract,
