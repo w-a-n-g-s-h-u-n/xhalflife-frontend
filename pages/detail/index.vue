@@ -465,7 +465,7 @@ export default {
       return yes
     },
     canCancel () {
-      const yes = this.account && (this.account === this.detail.recipient || this.account === this.detail.sender) && !this.detail.isCanceled
+      const yes = this.detail.cancelable && this.account && (this.account === this.detail.recipient || this.account === this.detail.sender) && !this.detail.isCanceled 
       return yes
     },
 
@@ -486,7 +486,6 @@ export default {
       this.detail.txs && this.showImg(this.detail)
     },
     'detail.token.id' (newVal, oldVal) {
-      console.log('watch detail.token.id', newVal)
       if (newVal) {
         this.tokenBalance()
       }

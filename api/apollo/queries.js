@@ -23,6 +23,7 @@ export const STREAM_LIST = gql`
         kBlock
         unlockRatio
         timestamp
+        cancelable
         txs(first: $first, orderBy: timestamp, orderDirection: desc) {
           block
           event
@@ -52,6 +53,7 @@ export const STREAM_DETAIL = gql`
         kBlock
         unlockRatio
         timestamp
+        cancelable
         txs(first: $first, orderBy: timestamp, orderDirection: desc) {
           block
           event
@@ -96,6 +98,7 @@ export const STREAM_LIST_BY_RECIPIENT = gql`
       kBlock
       unlockRatio
       timestamp
+      cancelable
       txs(first: $first, orderBy: timestamp, orderDirection: desc) {
         block
         event
@@ -124,6 +127,7 @@ export const STREAM_LIST_BY_SENDER = gql`
       kBlock
       unlockRatio
       timestamp
+      cancelable
       txs(first: $first, orderBy: timestamp, orderDirection: desc) {
         block
         event
@@ -144,6 +148,7 @@ export const STREAM_LIST_BY_SENDER = gql`
 export const STREAM_FUNDS_BY_STREAMID = gql`{
   streams(where: {id: 2}) {
     id
+    cancelable
     funds(first: 10, orderBy: timestamp, orderDirection: desc) {
       amount
       timestamp
