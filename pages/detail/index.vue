@@ -272,7 +272,7 @@
     <el-dialog
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      :title="'资金授权'"
+      :title="$t('home.Create.approve')"
       :visible.sync="tx.isDialogVisible"
       :width="isMobile ? '80%' : '30%'"
     >
@@ -509,7 +509,7 @@ export default {
 
     const tokenId = this.detail.token && this.detail.token.id
     if (tokenId) {
-      if (isEth(tokenId)) {
+      if (!isEth(tokenId)) {
         this.currentTokenApprovedAmount = await this.getTokenApprovedAmount(this.detail.token)
       }
     }
@@ -697,7 +697,7 @@ export default {
           })
           return
         }
-        this._doWithdraw()
+        this._doFund()
       })
     },
 
