@@ -9,7 +9,17 @@
       :status-icon="true"
       class="form"
     >
-      <el-form-item :label="`${$t('home.Token')} ${(currentTokenInfo.addr || '') && '('+currentTokenInfo.addr+')'} `" prop="token">
+      <el-form-item  prop="token">
+        <template slot="label">
+          <span>{{$t('home.Token')}}</span>
+          <span v-if="currentTokenInfo && currentTokenInfo.id">
+            ({{currentTokenInfo.addr}})
+            <el-link
+              target="_blank"
+              type="primary"
+              :href="`https://kovan.etherscan.io/token/${currentTokenInfo.id}`" :underline="false">{{currentTokenInfo.name}}</el-link>
+          </span>
+       </template>
         <el-autocomplete
           v-model="formData.token"
           size="medium"
@@ -17,7 +27,18 @@
           :placeholder="$t('home.TokenPlaceholder')"
           style="width: 100%;"
           @select="onSelectToken"
-        />
+        >
+          <template slot-scope="{ item }">
+            <div style="display: flex;justify-content: space-between;" >
+              <el-tag size="small" effect="dark">{{ item.value }}  </el-tag>
+              <span class="addr">({{item.name }} {{ item.addr }})</span>
+            </div>
+          </template>
+
+          <i class="el-icon-arrow-down el-input__icon"
+            slot="suffix">
+          </i>
+        </el-autocomplete>
       </el-form-item>
       <el-form-item error="" :label="`${$t('home.Much')} (${$t('home.available')}: ${currentTokenAmount} ${currentTokenInfo && currentTokenInfo.symbol })`" prop="depositAmount">
         <div style="display: flex;">
@@ -345,7 +366,7 @@ export default {
       console.log('querySearch queryString', queryString)
       let tokens = this.tokenOptions
       if (queryString) {
-        cb([]) // 关闭建议框
+        // cb([]) // 关闭建议框
         if (ethers.utils.isAddress(queryString)) { //  如果是一个地址，并符合要求，则自动选中
           console.log('querySearch queryString isAddress', queryString)
 
@@ -370,21 +391,25 @@ export default {
             }
             this.currentTokenInfo = tokens
             // this.formData.token = symbol
+            cb(tokens)
           } catch (e) {
             console.log('get token info error', queryString, e)
-            this.$message({
-              message: this.$t('home.checkAddress'),
-              type: 'warning'
-            })
+            // this.$message({
+            //   message: this.$t('home.checkAddress'),
+            //   type: 'warning'
+            // })
+            cb(tokens)
           }
         } else if (this.tokenMap[_.toLower(queryString)]) {
           this.currentTokenInfo = this.tokenMap[_.toLower(queryString)]
+          cb(tokens)
         } else {
           this.currentTokenInfo = {} // 触发验证
           // this.$message({
           //   message: this.$t('home.checkAddress'),
           //   type: 'warning'
           // })
+          cb(tokens)
         }
       } else {
         cb(tokens)
