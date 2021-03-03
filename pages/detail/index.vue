@@ -543,7 +543,7 @@ export default {
       const ratio = detail.unlockRatio
 
       const value = BigNumber(ratio).shiftedBy(0 - 3).toNumber()
-      const time = parseInt(((detail.kBlock * 0.69) / (-Math.log(1 - value))) * 13.1 / 43200 * 100) / 100
+      const time = parseInt(((detail.kBlock * 0.69) / (-Math.log(1 - value))) * 13.1 / 86400 * 100) / 100
       this.halfLife = time
     },
     showImg (detail) {
