@@ -465,7 +465,7 @@ export default {
       return yes
     },
     canCancel () {
-      const yes = this.detail.cancelable && this.account && (this.account === this.detail.recipient || this.account === this.detail.sender) && !this.detail.isCanceled 
+      const yes = this.detail.cancelable && this.account && (this.account === this.detail.recipient || this.account === this.detail.sender) && !this.detail.isCanceled
       return yes
     },
 
@@ -806,7 +806,7 @@ export default {
         // console.log('connect metamask', accounts)
 
         // 非 ETH
-        if (isEth(tokenAddress)) {
+        if (!isEth(tokenAddress)) {
           // 获得provider
           const provider = await getProvider()
           const signer = provider.getSigner()
