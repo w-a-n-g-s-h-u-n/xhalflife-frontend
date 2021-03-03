@@ -469,7 +469,7 @@ export default {
         address: token.id,
         addr: utils.formatAddress(token.id)
       }))
-      this.tokenMap = _.reduce(tokenList, (ret, item) => {
+      this.tokenMap = _.reduce(this.tokenOptions, (ret, item) => {
         ret[_.toLower(item.symbol)] = item
         return ret
       }, {})
