@@ -13877,7 +13877,7 @@ ws@^7.2.3:
 
 "xdefi-assets@github:xdefilab/xdefi-assets#kovan-branch-round2":
   version "0.0.1"
-  resolved "https://codeload.github.com/xdefilab/xdefi-assets/tar.gz/f461f3e2f1b741e4d5020f8fa6e920958f1a8640"
+  resolved "https://codeload.github.com/xdefilab/xdefi-assets/tar.gz/f2de63e3d1029e1d1c5de7acb18e8818f8516195"
 
 xhr-request-promise@^0.1.2:
   version "0.1.3"
