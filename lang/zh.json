@@ -35,7 +35,7 @@
   "net_work_error": "网络错误！",
 
   "home.Create": "成功创建资金流",
-  "home.Create.Failure": "创建流支付出错",
+  "home.Create.Failure": "创建资金流出错",
   "home.Create.should_be_an_address": "请检查地址格式地址",
   "home.Create.recipentCantBeCurrentUser": "接受者不能和当前账户相同",
   "home.Create.should_be_a_number": "不是一个数字",

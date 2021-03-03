@@ -9,7 +9,7 @@
       :status-icon="true"
       class="form"
     >
-      <el-form-item :label="$t('home.Token')" prop="token">
+      <el-form-item :label="`${$t('home.Token')} ${(currentTokenInfo.addr || '') && '('+currentTokenInfo.addr+')'} `" prop="token">
         <el-autocomplete
           v-model="formData.token"
           size="medium"
@@ -85,7 +85,7 @@
     </p>
 
     <el-dialog
-      :title="'创建流支付'"
+      :title="$t('home.Create.create_stream_start')"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :visible.sync="tx.isDialogVisible"
@@ -110,11 +110,10 @@ import XHalfLifeABI from '@/api/contract/abis/XHalfLife.json'
 import { isMobile } from '@/utils/index'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { selectAbi } from '@/api/contract'
-import { decimalsNumber } from '@/utils'
+import utils, { decimalsNumber } from '@/utils'
 import _ from 'lodash'
 import { BigNumber } from 'bignumber.js'
 import { CHAIN_CONFIG } from '@/config'
-
 
 export default {
   name: 'CreateStreamForm',
@@ -281,7 +280,7 @@ export default {
   computed: {
     ...mapGetters(['isMetaMaskConnected', 'currentAccount', 'isMetaMaskNetworkRight']),
     ...mapState({
-      chainId(state) {
+      chainId (state) {
         return state.metamask.chainId
       },
       blockNumber (state) {
@@ -357,17 +356,20 @@ export default {
             const name = await tokenContract.name()
             const symbol = await tokenContract.symbol()
             const balanceOf = await tokenContract.balanceOf(this.currentAccount)
+            console.log('balanceOf ', queryString, balanceOf)
             const decimals = await tokenContract.decimals()
             this.currentTokenAmount = decimalsNumber(balanceOf, decimals)
             tokens = {
-              value: symbol,
+              value: symbol + ` (${utils.formatAddress(queryString)})`,
               id: queryString,
               address: queryString,
+              addr: utils.formatAddress(queryString),
               name,
               symbol,
               decimals
             }
             this.currentTokenInfo = tokens
+            // this.formData.token = symbol
           } catch (e) {
             console.log('get token info error', queryString, e)
             this.$message({
@@ -389,6 +391,7 @@ export default {
       }
     },
     async updateTokenBalance (tokenInfo) {
+      console.log('updateTokenBalance', tokenInfo)
       try {
         const provider = await getProvider()
         const signer = provider.getSigner()
@@ -463,7 +466,8 @@ export default {
       this.tokenOptions = tokenList.map(token => ({
         ...token,
         value: token.symbol,
-        address: token.id
+        address: token.id,
+        addr: utils.formatAddress(token.id)
       }))
       this.tokenMap = _.reduce(tokenList, (ret, item) => {
         ret[_.toLower(item.symbol)] = item

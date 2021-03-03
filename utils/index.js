@@ -44,10 +44,15 @@ export const isEth = (address) => {
   return address === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
 }
 
+export const formatAddress = (v) => {
+  if (!v) { return '' }
+  return v.slice(0, 6) + '...' + v.slice(-4)
+}
 export default {
   extend,
   statusedList,
   decimalsNumber,
   isMobile,
-  isEth
+  isEth,
+  formatAddress
 }
